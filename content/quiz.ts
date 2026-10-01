@@ -309,6 +309,191 @@ export const QUIZ: Question[] = [
       "Chủ tịch Hồ Chí Minh viết câu này trong Thư gửi đồng bào Nam Bộ năm 1946.",
     source: "Kiến thức chung",
   },
+  {
+    id: "e25",
+    level: "easy",
+    question:
+      "Câu “Đoàn kết, đoàn kết, đại đoàn kết. Thành công, thành công, đại thành công” là của ai?",
+    answers: ["Hồ Chí Minh", "Lê Duẩn", "Trường Chinh", "Phạm Văn Đồng"],
+    correct: 0,
+    explain:
+      "Chủ tịch Hồ Chí Minh khẳng định sức mạnh của khối đại đoàn kết toàn dân tộc, trong đó có đoàn kết các dân tộc.",
+    source: "Kiến thức chung, liên hệ Slide 9–10",
+  },
+  {
+    id: "e26",
+    level: "easy",
+    question: "Đồng bào Ê Đê, Gia Rai, Ba Na sinh sống chủ yếu ở vùng nào?",
+    answers: [
+      "Tây Bắc",
+      "Tây Nguyên",
+      "Đồng bằng sông Cửu Long",
+      "Đồng bằng sông Hồng",
+    ],
+    correct: 1,
+    explain: "Ê Đê, Gia Rai, Ba Na là những dân tộc cư trú lâu đời ở Tây Nguyên.",
+    source: "Kiến thức chung, liên hệ Slide 8",
+  },
+  {
+    id: "e27",
+    level: "easy",
+    question: "Khèn là nhạc cụ gắn liền với lễ hội của dân tộc nào?",
+    answers: ["Khmer", "Chăm", "Mông", "Hoa"],
+    correct: 2,
+    explain:
+      "Khèn Mông gắn với lễ hội và đời sống tinh thần của người Mông, một nét bản sắc văn hóa riêng.",
+    source: "Kiến thức chung, liên hệ Slide 9",
+  },
+  {
+    id: "e28",
+    level: "easy",
+    question: "Tháp Bà Po Nagar ở Nha Trang là công trình của dân tộc nào?",
+    answers: ["Chăm", "Khmer", "Ê Đê", "Mường"],
+    correct: 0,
+    explain:
+      "Các tháp Chăm như Po Nagar do người Chăm xây dựng, là di sản kiến trúc độc đáo của văn hóa Chăm.",
+    source: "Kiến thức chung, liên hệ Slide 9",
+  },
+  {
+    id: "e29",
+    level: "easy",
+    question: "Đặc điểm nào nói về số dân của các dân tộc ở Việt Nam?",
+    answers: [
+      "Các dân tộc có số dân bằng nhau",
+      "Dân tộc thiểu số đông hơn người Kinh",
+      "Có sự chênh lệch về số dân giữa các tộc người",
+      "Số dân các dân tộc không thay đổi",
+    ],
+    correct: 2,
+    explain: "Đặc điểm thứ nhất: có sự chênh lệch về số dân giữa các tộc người.",
+    source: "Slide 7",
+  },
+  {
+    id: "e30",
+    level: "easy",
+    question: "Quốc gia dân tộc có đặc trưng gì về lãnh thổ?",
+    answers: [
+      "Không cần có lãnh thổ",
+      "Có lãnh thổ chung ổn định",
+      "Lãnh thổ thay đổi theo mùa",
+      "Mỗi gia đình một lãnh thổ riêng",
+    ],
+    correct: 1,
+    explain: "Một trong năm đặc trưng của quốc gia dân tộc: có lãnh thổ chung ổn định.",
+    source: "Slide 2",
+  },
+  {
+    id: "e31",
+    level: "easy",
+    question: "Theo bài, quốc gia dân tộc chịu sự quản lý của ai?",
+    answers: [
+      "Một tổ chức quốc tế",
+      "Một dòng họ lớn",
+      "Một tổ chức tôn giáo",
+      "Một nhà nước dân tộc độc lập",
+    ],
+    correct: 3,
+    explain:
+      "Quốc gia dân tộc có sự quản lý của một nhà nước dân tộc độc lập.",
+    source: "Slide 2",
+  },
+  {
+    id: "e32",
+    level: "easy",
+    question: "Các thành viên cùng một tộc người có chung điều gì để giao tiếp?",
+    answers: [
+      "Cộng đồng về ngôn ngữ",
+      "Cùng một nghề nghiệp",
+      "Cùng một độ tuổi",
+      "Cùng một trường học",
+    ],
+    correct: 0,
+    explain:
+      "Cộng đồng về ngôn ngữ là một trong ba đặc trưng của tộc người, cùng với văn hóa và ý thức tự giác tộc người.",
+    source: "Slide 3",
+  },
+  {
+    id: "e33",
+    level: "easy",
+    question:
+      "Đảng chủ trương phát triển vùng dân tộc và miền núi theo hướng nào?",
+    answers: [
+      "Chỉ phát triển kinh tế",
+      "Chỉ bảo tồn văn hóa",
+      "Phát triển toàn diện",
+      "Để sau các vùng khác",
+    ],
+    correct: 2,
+    explain:
+      "Phát triển toàn diện chính trị, kinh tế, văn hóa, xã hội, gắn với an ninh – quốc phòng ở vùng dân tộc và miền núi.",
+    source: "Slide 11",
+  },
+  {
+    id: "e34",
+    level: "easy",
+    question: "Mặt trận Tổ quốc Việt Nam là nơi thể hiện điều gì?",
+    answers: [
+      "Một doanh nghiệp nhà nước",
+      "Khối đại đoàn kết toàn dân tộc",
+      "Một đơn vị quân đội",
+      "Một tổ chức quốc tế",
+    ],
+    correct: 1,
+    explain:
+      "Mặt trận Tổ quốc Việt Nam là nơi tập hợp, phát huy sức mạnh khối đại đoàn kết toàn dân tộc.",
+    source: "Kiến thức chung, liên hệ Slide 10",
+  },
+  {
+    id: "e35",
+    level: "easy",
+    question: "Đàn tính là nhạc cụ tiêu biểu của dân tộc nào?",
+    answers: ["Khmer", "Chăm", "Ê Đê", "Tày"],
+    correct: 3,
+    explain:
+      "Đàn tính gắn với hát Then của người Tày (và Nùng, Thái), một nét văn hóa đặc sắc vùng núi phía Bắc.",
+    source: "Kiến thức chung, liên hệ Slide 9",
+  },
+  {
+    id: "e36",
+    level: "easy",
+    question: "Theo Hiến pháp 2013, Việt Nam là quốc gia như thế nào của các dân tộc?",
+    answers: [
+      "Quốc gia thống nhất của các dân tộc",
+      "Liên bang của nhiều nước dân tộc",
+      "Quốc gia của riêng một dân tộc",
+      "Mỗi vùng một nhà nước riêng",
+    ],
+    correct: 0,
+    explain:
+      "Điều 5 Hiến pháp 2013: Việt Nam là quốc gia thống nhất của các dân tộc cùng sinh sống trên đất nước Việt Nam.",
+    source: "Hiến pháp 2013, liên hệ Slide 9",
+  },
+  {
+    id: "e37",
+    level: "easy",
+    question: "Bài thuyết trình của nhóm gồm mấy phần?",
+    answers: ["2", "3", "4", "5"],
+    correct: 1,
+    keepOrder: true,
+    explain:
+      "Ba phần: khái niệm và đặc trưng của dân tộc; quan điểm Mác – Lênin về vấn đề dân tộc; dân tộc và quan hệ dân tộc ở Việt Nam.",
+    source: "Slide mở đầu",
+  },
+  {
+    id: "e38",
+    level: "easy",
+    question: "Nhà sàn, áo chàm, chợ phiên vùng cao thể hiện điều gì của các dân tộc?",
+    answers: [
+      "Trình độ phát triển cao",
+      "Số dân đông",
+      "Lãnh thổ riêng",
+      "Bản sắc văn hóa riêng",
+    ],
+    correct: 3,
+    explain:
+      "Mỗi dân tộc có bản sắc văn hóa riêng, góp phần tạo nên sự phong phú, đa dạng của văn hóa Việt Nam.",
+    source: "Slide 9",
+  },
 
   /* ---------- RON95: câu vừa ---------- */
   {
@@ -628,6 +813,197 @@ export const QUIZ: Question[] = [
       "Điều 5 Hiến pháp 2013: các dân tộc bình đẳng, đoàn kết, tôn trọng, giúp nhau cùng phát triển; nghiêm cấm kỳ thị, chia rẽ dân tộc.",
     source: "Hiến pháp 2013",
   },
+  {
+    id: "m23",
+    level: "medium",
+    question: "Cương lĩnh dân tộc của chủ nghĩa Mác – Lênin do ai khái quát?",
+    answers: ["C. Mác", "Ph. Ăngghen", "V.I. Lênin", "Hồ Chí Minh"],
+    correct: 2,
+    explain:
+      "Dựa trên quan điểm của Mác, Ăngghen và hai xu hướng khách quan, V.I. Lênin khái quát Cương lĩnh dân tộc.",
+    source: "Giáo trình, liên hệ Slide 5–6",
+  },
+  {
+    id: "m24",
+    level: "medium",
+    question: "Theo Cương lĩnh, các dân tộc hoàn toàn bình đẳng, không phân biệt điều gì?",
+    answers: [
+      "Dân tộc lớn hay nhỏ, trình độ phát triển cao hay thấp",
+      "Chỉ bình đẳng giữa các dân tộc lớn",
+      "Chỉ bình đẳng về kinh tế",
+      "Chỉ bình đẳng khi cùng tôn giáo",
+    ],
+    correct: 0,
+    explain:
+      "Các dân tộc đều có quyền lợi và nghĩa vụ ngang nhau, không phân biệt lớn hay nhỏ, trình độ phát triển cao hay thấp.",
+    source: "Giáo trình, liên hệ Slide 5",
+  },
+  {
+    id: "m25",
+    level: "medium",
+    question: "Cộng đồng về văn hóa của một tộc người bao gồm những gì?",
+    answers: [
+      "Chỉ trang phục truyền thống",
+      "Văn hóa vật thể và văn hóa phi vật thể",
+      "Chỉ các lễ hội",
+      "Chỉ ngôn ngữ viết",
+    ],
+    correct: 1,
+    explain:
+      "Văn hóa của tộc người gồm cả văn hóa vật thể (nhà ở, trang phục...) và phi vật thể (phong tục, lễ hội, tín ngưỡng...).",
+    source: "Giáo trình, liên hệ Slide 3",
+  },
+  {
+    id: "m26",
+    level: "medium",
+    question:
+      "Theo Tổng điều tra 2019, các dân tộc thiểu số chiếm khoảng bao nhiêu phần trăm dân số?",
+    answers: ["14,7%", "25%", "35%", "45%"],
+    correct: 0,
+    keepOrder: true,
+    explain:
+      "Người Kinh chiếm khoảng 85,3%, 53 dân tộc thiểu số chiếm khoảng 14,7% dân số cả nước.",
+    source: "Tổng điều tra 2019, liên hệ Slide 7",
+  },
+  {
+    id: "m27",
+    level: "medium",
+    question:
+      "Đồng bào dân tộc thiểu số cư trú trên khoảng bao nhiêu diện tích lãnh thổ nước ta?",
+    answers: ["1/4", "1/2", "3/4", "Toàn bộ"],
+    correct: 2,
+    keepOrder: true,
+    explain:
+      "Đồng bào dân tộc thiểu số cư trú trên khoảng 3/4 diện tích, ở nhiều vị trí trọng yếu về an ninh, quốc phòng.",
+    source: "Giáo trình, liên hệ Slide 8",
+  },
+  {
+    id: "m28",
+    level: "medium",
+    question: "Lễ hội Lồng Tồng (xuống đồng) là lễ hội của các dân tộc nào?",
+    answers: ["Chăm, Khmer", "Ê Đê, Ba Na", "Tày, Nùng", "Hoa, Sán Dìu"],
+    correct: 2,
+    explain:
+      "Lồng Tồng là lễ hội xuống đồng đầu năm của người Tày, Nùng, cầu mùa màng tốt tươi.",
+    source: "Kiến thức chung, liên hệ Slide 9",
+  },
+  {
+    id: "m29",
+    level: "medium",
+    question: "Dân tộc Mường gần gũi nhất về nguồn gốc và ngôn ngữ với dân tộc nào?",
+    answers: ["Khmer", "Kinh", "Chăm", "Hoa"],
+    correct: 1,
+    explain:
+      "Người Mường và người Kinh cùng nhóm ngôn ngữ Việt – Mường, có chung nguồn gốc lâu đời.",
+    source: "Kiến thức chung",
+  },
+  {
+    id: "m30",
+    level: "medium",
+    question: "Chính sách dân tộc về kinh tế nhằm từng bước khắc phục điều gì?",
+    answers: [
+      "Sự khác nhau về ngôn ngữ",
+      "Sự đa dạng văn hóa",
+      "Số lượng các dân tộc",
+      "Khoảng cách chênh lệch giữa các vùng, giữa các dân tộc",
+    ],
+    correct: 3,
+    explain:
+      "Chính sách kinh tế nhằm phát huy tiềm năng, từng bước khắc phục khoảng cách chênh lệch giữa các vùng, giữa các dân tộc.",
+    source: "Giáo trình, liên hệ Slide 13",
+  },
+  {
+    id: "m31",
+    level: "medium",
+    question:
+      "Theo Hiến pháp 2013, các dân tộc có quyền gì đối với tiếng nói, chữ viết của mình?",
+    answers: [
+      "Có quyền dùng tiếng nói, chữ viết của mình",
+      "Chỉ được dùng tiếng Việt",
+      "Chỉ được dùng trong gia đình",
+      "Phải xin phép mới được dùng",
+    ],
+    correct: 0,
+    explain:
+      "Các dân tộc có quyền dùng tiếng nói, chữ viết, giữ gìn bản sắc dân tộc, phát huy phong tục, tập quán, văn hóa tốt đẹp.",
+    source: "Hiến pháp 2013",
+  },
+  {
+    id: "m32",
+    level: "medium",
+    question: "Xu hướng “tách ra” trong quan hệ dân tộc biểu hiện qua điều gì?",
+    answers: [
+      "Các nước lập liên minh kinh tế",
+      "Phong trào đấu tranh chống áp bức, giành độc lập dân tộc",
+      "Các dân tộc hòa nhập văn hóa",
+      "Mở rộng giao lưu quốc tế",
+    ],
+    correct: 1,
+    explain:
+      "Xu hướng thứ nhất biểu hiện thành phong trào đấu tranh chống áp bức dân tộc, thành lập quốc gia dân tộc độc lập.",
+    source: "Giáo trình, liên hệ Slide 4",
+  },
+  {
+    id: "m33",
+    level: "medium",
+    question: "Xu hướng “liên hiệp” trong quan hệ dân tộc biểu hiện qua điều gì?",
+    answers: [
+      "Các dân tộc đóng cửa với nhau",
+      "Các dân tộc tách thành nhiều nước nhỏ",
+      "Xóa bỏ hàng rào ngăn cách, các dân tộc xích lại gần nhau",
+      "Mỗi dân tộc tự cung tự cấp",
+    ],
+    correct: 2,
+    explain:
+      "Giao lưu kinh tế, văn hóa phát triển làm các dân tộc muốn xóa bỏ hàng rào ngăn cách, xích lại gần nhau.",
+    source: "Giáo trình, liên hệ Slide 4",
+  },
+  {
+    id: "m34",
+    level: "medium",
+    question: "Chương trình 135 của Chính phủ hướng tới đối tượng nào?",
+    answers: [
+      "Các đô thị loại I",
+      "Các khu công nghiệp ven biển",
+      "Các trường đại học",
+      "Các xã đặc biệt khó khăn vùng đồng bào dân tộc và miền núi",
+    ],
+    correct: 3,
+    explain:
+      "Từ năm 1998, Chương trình 135 hỗ trợ các xã đặc biệt khó khăn vùng đồng bào dân tộc và miền núi.",
+    source: "Kiến thức chung, liên hệ Slide 11, 13",
+  },
+  {
+    id: "m35",
+    level: "medium",
+    question:
+      "Vì sao địa bàn cư trú của đồng bào dân tộc thiểu số có vị trí chiến lược quan trọng?",
+    answers: [
+      "Gồm nhiều vùng biên giới, trọng yếu về kinh tế, an ninh, quốc phòng",
+      "Vì đó đều là các thành phố lớn",
+      "Vì nằm ở trung tâm các đồng bằng",
+      "Vì có ít tài nguyên thiên nhiên",
+    ],
+    correct: 0,
+    explain:
+      "Đồng bào dân tộc thiểu số sống ở nhiều vùng biên giới, trọng yếu về kinh tế, an ninh, quốc phòng.",
+    source: "Giáo trình, liên hệ Slide 8",
+  },
+  {
+    id: "m36",
+    level: "medium",
+    question: "Văn hóa Việt Nam được mô tả như thế nào trong quan hệ giữa các dân tộc?",
+    answers: [
+      "Đồng nhất theo một khuôn mẫu",
+      "Thống nhất trong đa dạng",
+      "Mỗi vùng tách biệt hoàn toàn",
+      "Chỉ gồm văn hóa của người Kinh",
+    ],
+    correct: 1,
+    explain:
+      "Mỗi dân tộc có bản sắc riêng, cùng tạo nên nền văn hóa Việt Nam thống nhất trong đa dạng.",
+    source: "Giáo trình, liên hệ Slide 9",
+  },
 
   /* ---------- ???: câu khó ---------- */
   {
@@ -810,7 +1186,7 @@ export const QUIZ: Question[] = [
     correct: 2,
     keepOrder: true,
     explain:
-      "Năm 2005, UNESCO công nhận Không gian văn hóa Cồng chiêng Tây Nguyên là Kiệt tác truyền khẩu và phi vật thể của nhân loại.",
+      "Năm 2005, UNESCO công nhận Cồng chiêng Tây Nguyên là Kiệt tác truyền khẩu và phi vật thể của nhân loại.",
     source: "Kiến thức chung, liên hệ Slide 9",
   },
   {
@@ -838,7 +1214,197 @@ export const QUIZ: Question[] = [
     ],
     correct: 1,
     explain:
-      "Thực hành Then của người Tày, Nùng, Thái được UNESCO ghi danh là di sản văn hóa phi vật thể đại diện của nhân loại năm 2019.",
+      "Năm 2019, UNESCO ghi danh Thực hành Then của người Tày, Nùng, Thái là di sản văn hóa phi vật thể của nhân loại.",
     source: "Kiến thức chung, liên hệ Slide 9",
+  },
+  {
+    id: "h17",
+    level: "hard",
+    question:
+      "Theo giáo trình, đặc trưng nào là tiêu chí quan trọng nhất để phân định một tộc người?",
+    answers: [
+      "Cộng đồng về ngôn ngữ",
+      "Cộng đồng về văn hóa",
+      "Có lãnh thổ riêng",
+      "Ý thức tự giác tộc người",
+    ],
+    correct: 3,
+    explain:
+      "Ý thức tự giác tộc người là tiêu chí quan trọng nhất để phân định một tộc người, quyết định sự tồn tại của tộc người đó.",
+    source: "Giáo trình, liên hệ Slide 3",
+  },
+  {
+    id: "h18",
+    level: "hard",
+    question:
+      "Theo giáo trình, đặc trưng quan trọng nhất của dân tộc theo nghĩa quốc gia dân tộc là gì?",
+    answers: [
+      "Có chung phương thức sinh hoạt kinh tế",
+      "Có ngôn ngữ chung của quốc gia",
+      "Có lãnh thổ chung ổn định",
+      "Có nét tâm lý, văn hóa chung",
+    ],
+    correct: 0,
+    explain:
+      "Chung phương thức sinh hoạt kinh tế là đặc trưng quan trọng nhất, là cơ sở gắn kết các thành viên của dân tộc.",
+    source: "Giáo trình, liên hệ Slide 2",
+  },
+  {
+    id: "h19",
+    level: "hard",
+    question: "Xu hướng thứ nhất (tách ra) nổi lên mạnh trong giai đoạn nào?",
+    answers: [
+      "Thời kỳ công xã nguyên thủy",
+      "Giai đoạn đầu của chủ nghĩa tư bản",
+      "Thời kỳ phong kiến tập quyền",
+      "Sau khi chủ nghĩa xã hội thắng lợi",
+    ],
+    correct: 1,
+    explain:
+      "Xu hướng tách ra nổi lên trong giai đoạn đầu của chủ nghĩa tư bản, khi các dân tộc thức tỉnh ý thức độc lập.",
+    source: "Giáo trình, liên hệ Slide 4",
+  },
+  {
+    id: "h20",
+    level: "hard",
+    question: "Xu hướng thứ hai (liên hiệp) nổi lên khi nào?",
+    answers: [
+      "Trong xã hội chiếm hữu nô lệ",
+      "Trong thời kỳ phong kiến",
+      "Khi chủ nghĩa tư bản phát triển thành chủ nghĩa đế quốc",
+      "Khi dân tộc vừa mới hình thành",
+    ],
+    correct: 2,
+    explain:
+      "Xu hướng liên hiệp nổi lên khi chủ nghĩa tư bản phát triển thành chủ nghĩa đế quốc, giao lưu giữa các dân tộc mở rộng.",
+    source: "Giáo trình, liên hệ Slide 4",
+  },
+  {
+    id: "h21",
+    level: "hard",
+    question: "Liên hiệp công nhân các dân tộc phản ánh sự thống nhất giữa những gì?",
+    answers: [
+      "Kinh tế và văn hóa",
+      "Nhà nước và tôn giáo",
+      "Thành thị và nông thôn",
+      "Giải phóng dân tộc và giải phóng giai cấp",
+    ],
+    correct: 3,
+    explain:
+      "Liên hiệp công nhân tất cả các dân tộc phản ánh sự thống nhất giữa giải phóng dân tộc và giải phóng giai cấp.",
+    source: "Giáo trình, liên hệ Slide 6",
+  },
+  {
+    id: "h22",
+    level: "hard",
+    question: "Quyền tự quyết dân tộc bao gồm những quyền nào?",
+    answers: [
+      "Quyền tách ra lập quốc gia độc lập và quyền tự nguyện liên hiệp",
+      "Chỉ quyền tách ra lập quốc gia mới",
+      "Chỉ quyền liên hiệp với dân tộc lớn hơn",
+      "Quyền can thiệp vào công việc của dân tộc khác",
+    ],
+    correct: 0,
+    explain:
+      "Gồm quyền tách ra thành lập quốc gia độc lập và quyền tự nguyện liên hiệp với dân tộc khác, trên cơ sở bình đẳng.",
+    source: "Giáo trình, liên hệ Slide 6",
+  },
+  {
+    id: "h23",
+    level: "hard",
+    question:
+      "Nghị quyết 24-NQ/TW năm 2003 (Hội nghị Trung ương 7 khóa IX) bàn về vấn đề gì?",
+    answers: [
+      "Công tác tôn giáo",
+      "Công tác dân tộc",
+      "Phát triển giáo dục",
+      "Hội nhập kinh tế quốc tế",
+    ],
+    correct: 1,
+    explain:
+      "Nghị quyết 24 bàn về công tác dân tộc; Nghị quyết 25 của cùng hội nghị bàn về công tác tôn giáo.",
+    source: "Kiến thức chung, liên hệ Slide 10–12",
+  },
+  {
+    id: "h24",
+    level: "hard",
+    question:
+      "Theo Tổng điều tra 2019, ngoài người Kinh có bao nhiêu dân tộc có trên 1 triệu người?",
+    answers: ["6", "7", "8", "9"],
+    correct: 0,
+    keepOrder: true,
+    explain: "Sáu dân tộc: Tày, Thái, Mường, Mông, Khmer và Nùng.",
+    source: "Tổng điều tra 2019, liên hệ Slide 7",
+  },
+  {
+    id: "h25",
+    level: "hard",
+    question:
+      "Nghệ thuật Xòe Thái được UNESCO ghi danh là di sản văn hóa phi vật thể năm nào?",
+    answers: ["2015", "2018", "2021", "2023"],
+    correct: 2,
+    keepOrder: true,
+    explain:
+      "Năm 2021, Nghệ thuật Xòe Thái được ghi danh là di sản văn hóa phi vật thể đại diện của nhân loại.",
+    source: "Kiến thức chung, liên hệ Slide 9",
+  },
+  {
+    id: "h26",
+    level: "hard",
+    question:
+      "Năm 2022, nghệ thuật làm gốm của người Chăm được UNESCO ghi danh vào danh sách nào?",
+    answers: [
+      "Di sản thiên nhiên thế giới",
+      "Di sản tư liệu thế giới",
+      "Di sản văn hóa phi vật thể cần bảo vệ khẩn cấp",
+      "Kỳ quan thiên nhiên mới",
+    ],
+    correct: 2,
+    explain:
+      "Gốm Chăm được ghi danh vào Danh sách di sản văn hóa phi vật thể cần bảo vệ khẩn cấp, cần chung tay gìn giữ.",
+    source: "Kiến thức chung, liên hệ Slide 9",
+  },
+  {
+    id: "h27",
+    level: "hard",
+    question:
+      "Chương trình mục tiêu quốc gia phát triển vùng đồng bào dân tộc thiểu số và miền núi thực hiện giai đoạn nào?",
+    answers: ["2011–2015", "2016–2020", "2021–2030", "2031–2040"],
+    correct: 2,
+    keepOrder: true,
+    explain:
+      "Chương trình triển khai cho giai đoạn 2021–2030, giai đoạn I từ năm 2021 đến năm 2025.",
+    source: "Kiến thức chung, liên hệ Slide 11",
+  },
+  {
+    id: "h28",
+    level: "hard",
+    question:
+      "Theo Hiến pháp 2013, Nhà nước tạo điều kiện để các dân tộc thiểu số làm gì?",
+    answers: [
+      "Tách ra phát triển riêng",
+      "Phát huy nội lực, cùng phát triển với đất nước",
+      "Chuyển về đồng bằng sinh sống",
+      "Bỏ phong tục truyền thống",
+    ],
+    correct: 1,
+    explain:
+      "Điều 5: Nhà nước tạo điều kiện để các dân tộc thiểu số phát huy nội lực, cùng phát triển với đất nước.",
+    source: "Hiến pháp 2013, liên hệ Slide 11",
+  },
+  {
+    id: "h29",
+    level: "hard",
+    question: "Nhận định nào đúng về các dân tộc ở Việt Nam hiện nay?",
+    answers: [
+      "Mỗi dân tộc có một vùng lãnh thổ riêng",
+      "Mỗi dân tộc có một nền kinh tế riêng",
+      "Các dân tộc sống tách biệt theo từng vùng",
+      "Không dân tộc nào có lãnh thổ riêng, nền kinh tế riêng",
+    ],
+    correct: 3,
+    explain:
+      "Do cư trú xen kẽ, không dân tộc nào có lãnh thổ riêng, nền kinh tế riêng; thuận lợi cho giao lưu, đoàn kết.",
+    source: "Giáo trình, liên hệ Slide 7",
   },
 ];
