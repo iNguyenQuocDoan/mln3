@@ -124,6 +124,28 @@ const settingsStore = createStore<Settings>(
   parseSettings,
 );
 
+/*
+ * Những câu đã hỏi ở các ván trước (câu mới nhất ở cuối), để ván sau hỏi
+ * trước những câu chưa gặp. Nhớ khoảng nửa ngân hàng câu hỏi.
+ */
+const RECENT_LIMIT = 50;
+
+const recentStore = createStore<string[]>("mln131-race-recent", (value) =>
+  Array.isArray(value) && value.every((id) => typeof id === "string")
+    ? value
+    : null,
+);
+
+export function readRecent(): string[] {
+  return recentStore.get() ?? [];
+}
+
+export function rememberAsked(questionId: string) {
+  const list = readRecent().filter((id) => id !== questionId);
+  list.push(questionId);
+  recentStore.set(list.slice(-RECENT_LIMIT));
+}
+
 /** Ván đang lưu (null nếu chưa có hoặc dữ liệu hỏng). */
 export function useGame(): GameState | null {
   return useStore(gameStore);
