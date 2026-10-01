@@ -99,9 +99,85 @@ body {
   animation: fade-in 320ms ease-out both;
 }
 
+/*
+ * Hiệu ứng vào của bản đồ và các mục nội dung. Chạy một lần mỗi khi slide
+ * hiện ra; thời điểm bắt đầu của từng phần tử đặt qua biến --delay.
+ */
+@keyframes map-draw {
+  from {
+    stroke-dashoffset: 1;
+  }
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+@keyframes map-fill {
+  from {
+    fill-opacity: 0;
+  }
+  to {
+    fill-opacity: 1;
+  }
+}
+
+@keyframes rise-in {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes islet-in {
+  from {
+    opacity: 0;
+    transform: scale(0.3);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* Đường viền dùng pathLength="1", nên nét đứt dài 1 = cả đường viền. */
+.anim-map-outline {
+  stroke-dasharray: 1 1;
+  animation: map-draw 1600ms cubic-bezier(0.45, 0, 0.25, 1) both;
+}
+
+.anim-map-fill {
+  animation: map-fill 700ms ease-out 1100ms both;
+}
+
+.anim-islet {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: islet-in 420ms cubic-bezier(0.22, 1, 0.36, 1) both;
+  animation-delay: var(--delay, 0ms);
+}
+
+.anim-fade {
+  animation: fade-in 500ms ease-out both;
+  animation-delay: var(--delay, 0ms);
+}
+
+.anim-rise {
+  animation: rise-in 600ms cubic-bezier(0.22, 1, 0.36, 1) both;
+  animation-delay: var(--delay, 0ms);
+}
+
 @media (prefers-reduced-motion: reduce) {
   .slide-enter,
-  .fade-in {
+  .fade-in,
+  .anim-map-outline,
+  .anim-map-fill,
+  .anim-islet,
+  .anim-fade,
+  .anim-rise {
     animation: none;
   }
 }

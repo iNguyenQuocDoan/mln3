@@ -1,5 +1,10 @@
+import type { CSSProperties } from "react";
 import { VietnamMap } from "@/components/art/vietnam-map";
 import { SlideFrame } from "./frame";
+
+/* Các mục hiện lần lượt 01 → 06 trong lúc bản đồ đang được vẽ. */
+const FIRST_ITEM_DELAY_MS = 350;
+const ITEM_STEP_MS = 160;
 
 type Feature = { number: string; title: string; text: string };
 
@@ -54,8 +59,14 @@ function FeatureList({
       {items.map((item, i) => (
         <li
           key={item.number}
-          className="grid grid-cols-[72px_1fr] gap-x-4 self-start"
-          style={{ gridColumn: column, gridRow: i + 1 }}
+          className="anim-rise grid grid-cols-[72px_1fr] gap-x-4 self-start"
+          style={
+            {
+              gridColumn: column,
+              gridRow: i + 1,
+              "--delay": `${FIRST_ITEM_DELAY_MS + (start - 1 + i) * ITEM_STEP_MS}ms`,
+            } as CSSProperties
+          }
         >
           <span className="text-heading leading-none font-extrabold text-son tabular-nums">
             {item.number}
@@ -80,7 +91,7 @@ export function FeaturesSlide() {
     >
       <FeatureList items={FEATURES.slice(0, 3)} start={1} column={1} />
       <div className="col-start-2 row-span-3 row-start-1 flex items-center justify-center">
-        <VietnamMap className="h-full max-h-180" labelSize={40} />
+        <VietnamMap className="h-full max-h-180" labelSize={40} animated />
       </div>
       <FeatureList items={FEATURES.slice(3)} start={4} column={3} />
     </SlideFrame>
