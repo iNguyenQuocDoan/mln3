@@ -91,7 +91,7 @@ export function VietnamMap({
             cx={HOANG_SA.x + dx}
             cy={HOANG_SA.y + dy}
             r={5.5}
-            className={animated ? "anim-islet" : undefined}
+            className={animated ? "anim-pop" : undefined}
             style={
               animated ? delay(TIMING.hoangSa + i * TIMING.isletStep) : undefined
             }
@@ -103,7 +103,7 @@ export function VietnamMap({
             cx={TRUONG_SA.x + dx}
             cy={TRUONG_SA.y + dy}
             r={5.5}
-            className={animated ? "anim-islet" : undefined}
+            className={animated ? "anim-pop" : undefined}
             style={
               animated
                 ? delay(TIMING.truongSa + i * TIMING.isletStep)

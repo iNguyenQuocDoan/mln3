@@ -1,5 +1,6 @@
 import { BrocadeBand } from "@/components/art/brocade-band";
 import { PARTS, getPart } from "@/content/parts";
+import { stagger } from "@/components/motion";
 import { keepWords } from "@/content/typography";
 
 /** Slide mở đầu mỗi phần: số phần, tên phần và dải vị trí trong bài. */
@@ -11,7 +12,7 @@ export function PartDivider({ part }: { part: number }) {
       <BrocadeBand id={`band-part-${part}`} className="absolute inset-x-0 top-0" />
 
       <div className="absolute top-58 left-32 flex items-center gap-20">
-        <div className="w-75 shrink-0">
+        <div className="anim-fade w-75 shrink-0" style={stagger(0)}>
           <p className="text-lead font-semibold text-on-cham-soft">Phần</p>
           <p
             className="text-vang font-extrabold tabular-nums"
@@ -20,7 +21,7 @@ export function PartDivider({ part }: { part: number }) {
             {part}
           </p>
         </div>
-        <div className="w-295">
+        <div className="anim-rise w-295" style={stagger(1)}>
           <h2 className="text-display font-extrabold text-balance">
             {keepWords(title)}
           </h2>
@@ -32,7 +33,10 @@ export function PartDivider({ part }: { part: number }) {
         </div>
       </div>
 
-      <ol className="absolute inset-x-32 bottom-20 grid grid-cols-5 gap-8">
+      <ol
+        className="anim-fade absolute inset-x-32 bottom-20 grid grid-cols-5 gap-8"
+        style={stagger(3)}
+      >
         {PARTS.map((p) => {
           const current = p.number === part;
           return (

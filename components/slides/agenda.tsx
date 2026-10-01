@@ -1,4 +1,5 @@
 import { PARTS } from "@/content/parts";
+import { stagger } from "@/components/motion";
 import { keepWords } from "@/content/typography";
 import { SlideFrame } from "./frame";
 
@@ -6,10 +7,11 @@ export function AgendaSlide() {
   return (
     <SlideFrame title="Nội dung">
       <ol className="border-t-2 border-cham-line">
-        {PARTS.map((part) => (
+        {PARTS.map((part, i) => (
           <li
             key={part.number}
-            className="flex items-baseline gap-10 border-b-2 border-cham-line py-9"
+            className="anim-rise flex items-baseline gap-10 border-b-2 border-cham-line py-9"
+            style={stagger(i)}
           >
             <span className="w-16 text-heading font-extrabold text-son tabular-nums">
               {part.number}

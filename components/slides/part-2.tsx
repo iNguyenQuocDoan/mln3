@@ -1,8 +1,16 @@
 import { DiagramArrow, DoubleArrow, InlineArrow } from "@/components/art/arrows";
+import { delay, moveFrom, stagger } from "@/components/motion";
 import { keepWords } from "@/content/typography";
 import { SlideFrame } from "./frame";
 
-/* Tách ra: một cộng đồng trong khối chung tách ra thành cộng đồng độc lập. */
+/*
+ * Tách ra: một cộng đồng trong khối chung tách ra thành cộng đồng độc lập.
+ * Hiệu ứng: ở hình bên phải, chấm đỏ bắt đầu ở bên trong khối lớn (giống
+ * hình bên trái), trượt ra ngoài, rồi một đường viền riêng được vẽ quanh nó.
+ */
+const SEPARATE_MS = 1000;
+const OWN_BORDER_MS = SEPARATE_MS + 650;
+
 function SeparationDiagram() {
   return (
     <svg
@@ -35,26 +43,44 @@ function SeparationDiagram() {
         cx={655}
         cy={130}
         r={54}
+        pathLength={1}
         fill="none"
         stroke="var(--color-son)"
         strokeWidth={4}
+        className="anim-draw"
+        style={delay(OWN_BORDER_MS)}
       />
-      <circle cx={655} cy={130} r={40} fill="var(--color-son)" />
+      <circle
+        cx={655}
+        cy={130}
+        r={40}
+        fill="var(--color-son)"
+        className="anim-move"
+        style={moveFrom(-127, 38, SEPARATE_MS)}
+      />
     </svg>
   );
 }
 
-/* Liên hiệp: các cộng đồng riêng rẽ gắn kết trong một khối chung. */
+/*
+ * Liên hiệp: các cộng đồng riêng rẽ gắn kết trong một khối chung.
+ * Hiệu ứng: ba vòng ở hình bên phải bắt đầu rời nhau (giống hình bên trái),
+ * tiến lại gần nhau, rồi vòng bao chung được vẽ quanh cả ba.
+ */
+const UNITE_MS = 1300;
+const SHARED_BORDER_MS = UNITE_MS + 650;
+
 function UnionDiagram() {
   const apart = [
     [70, 80],
     [190, 80],
     [130, 190],
   ];
+  // [x, y, dx, dy]: vị trí cuối và độ lệch lúc bắt đầu.
   const together = [
-    [565, 78],
-    [610, 156],
-    [520, 156],
+    [565, 78, -60, 15],
+    [610, 156, 15, -63],
+    [520, 156, 45, 47],
   ];
   return (
     <svg
@@ -81,11 +107,14 @@ function UnionDiagram() {
         cx={565}
         cy={130}
         r={120}
+        pathLength={1}
         fill="none"
         stroke="var(--color-cham)"
         strokeWidth={6}
+        className="anim-draw"
+        style={delay(SHARED_BORDER_MS)}
       />
-      {together.map(([x, y]) => (
+      {together.map(([x, y, dx, dy]) => (
         <circle
           key={`t-${x}-${y}`}
           cx={x}
@@ -94,6 +123,8 @@ function UnionDiagram() {
           fill="var(--color-cham-tint)"
           stroke="var(--color-cham)"
           strokeWidth={4}
+          className="anim-move"
+          style={moveFrom(dx, dy, UNITE_MS)}
         />
       ))}
     </svg>
@@ -107,7 +138,7 @@ export function TrendsSlide() {
       subtitle="của sự phát triển quan hệ dân tộc"
       className="grid grid-cols-[1fr_120px_1fr]"
     >
-      <section>
+      <section className="anim-rise" style={stagger(0)}>
         <p className="text-body text-cham-soft">Xu hướng thứ nhất</p>
         <h3 className="mt-3 text-keyword font-extrabold text-son">TÁCH RA</h3>
         <div className="mt-8">
@@ -119,14 +150,18 @@ export function TrendsSlide() {
         </p>
       </section>
 
-      <div className="relative flex justify-center" aria-hidden="true">
+      <div
+        className="anim-fade relative flex justify-center"
+        style={stagger(1)}
+        aria-hidden="true"
+      >
         <div className="h-full w-0.5 bg-cham-line" />
         <div className="absolute top-60 grid size-24 place-items-center rounded-full border-2 border-cham-line bg-paper text-cham">
           <DoubleArrow className="w-14" />
         </div>
       </div>
 
-      <section>
+      <section className="anim-rise" style={stagger(2)}>
         <p className="text-body text-cham-soft">Xu hướng thứ hai</p>
         <h3 className="mt-3 text-keyword font-extrabold">LIÊN HIỆP</h3>
         <div className="mt-8">
@@ -168,10 +203,11 @@ export function ProgramSlide() {
       subtitle="của chủ nghĩa Mác – Lênin"
       className="grid grid-cols-3 content-center items-start gap-10"
     >
-      {PROGRAM.map((item) => (
+      {PROGRAM.map((item, i) => (
         <section
           key={item.number}
-          className="border-t-8 border-cham bg-cham-tint px-12 pt-12 pb-14"
+          className="anim-rise border-t-8 border-cham bg-cham-tint px-12 pt-12 pb-14"
+          style={stagger(i)}
         >
           <p className="text-heading font-extrabold text-son tabular-nums">
             {item.number}

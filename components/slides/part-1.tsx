@@ -1,3 +1,4 @@
+import { delay, stagger } from "@/components/motion";
 import { keepWords } from "@/content/typography";
 import { SlideFrame } from "./frame";
 
@@ -26,16 +27,20 @@ function MeaningColumn({
   summary,
   traits,
   accent,
+  order,
 }: {
   term: string;
   english: string;
   summary: string;
   traits: Trait[];
   accent: "cham" | "son";
+  /** Thứ tự xuất hiện trên slide. */
+  order: number;
 }) {
   return (
     <section
-      className={`border-t-8 pt-8 ${accent === "son" ? "border-son" : "border-cham"}`}
+      className={`anim-rise border-t-8 pt-8 ${accent === "son" ? "border-son" : "border-cham"}`}
+      style={stagger(order)}
     >
       <h3
         className={`text-heading font-bold ${accent === "son" ? "text-son" : "text-cham"}`}
@@ -73,6 +78,7 @@ export function ConceptSlide() {
         summary="Cộng đồng chính trị – xã hội"
         traits={NATION_TRAITS}
         accent="cham"
+        order={0}
       />
       <MeaningColumn
         term="Dân tộc – tộc người"
@@ -80,12 +86,22 @@ export function ConceptSlide() {
         summary="Ba đặc trưng cơ bản"
         traits={ETHNIC_TRAITS}
         accent="son"
+        order={2}
       />
     </SlideFrame>
   );
 }
 
-/* Sơ đồ: một vòng lớn (quốc gia) bao gồm nhiều vòng nhỏ (tộc người). */
+/*
+ * Sơ đồ: một vòng lớn (quốc gia) bao gồm nhiều vòng nhỏ (tộc người).
+ * Hiệu ứng: vẽ vòng quốc gia trước, các tộc người lần lượt hiện bên trong,
+ * sau cùng là câu giải thích.
+ */
+const NATION_MS = 350;
+const GROUPS_MS = 900;
+const GROUP_STEP_MS = 110;
+const STATEMENT_MS = 1550;
+
 const NATION = { x: 430, y: 370, r: 330 };
 const ETHNIC_R = 86;
 const ETHNIC_GROUPS = [
@@ -110,11 +126,26 @@ function NationDiagram() {
         cy={NATION.y}
         r={NATION.r}
         fill="var(--color-cham-tint)"
+        className="anim-fade"
+        style={delay(NATION_MS)}
+      />
+      <circle
+        cx={NATION.x}
+        cy={NATION.y}
+        r={NATION.r}
+        pathLength={1}
+        fill="none"
         stroke="var(--color-cham)"
         strokeWidth={6}
+        className="anim-draw"
+        style={delay(NATION_MS)}
       />
-      {ETHNIC_GROUPS.map(([x, y]) => (
-        <g key={`${x}-${y}`}>
+      {ETHNIC_GROUPS.map(([x, y], i) => (
+        <g
+          key={`${x}-${y}`}
+          className="anim-pop"
+          style={delay(GROUPS_MS + i * GROUP_STEP_MS)}
+        >
           <circle
             cx={x}
             cy={y}
@@ -142,6 +173,8 @@ function NationDiagram() {
         fontSize={36}
         fontWeight={700}
         fill="var(--color-cham)"
+        className="anim-fade"
+        style={delay(GROUPS_MS)}
       >
         Quốc gia – dân tộc
       </text>
@@ -157,10 +190,16 @@ export function DistinctionSlide() {
     >
       <NationDiagram />
       <div>
-        <p className="text-heading font-bold text-balance">
+        <p
+          className="anim-rise text-heading font-bold text-balance"
+          style={delay(STATEMENT_MS)}
+        >
           {keepWords("Dân tộc theo nghĩa tộc người không đồng nhất với quốc gia.")}
         </p>
-        <p className="mt-10 text-lead text-cham-soft text-balance">
+        <p
+          className="anim-rise mt-10 text-lead text-cham-soft text-balance"
+          style={stagger(1, STATEMENT_MS)}
+        >
           {keepWords("Một quốc gia có thể bao gồm nhiều tộc người khác nhau.")}
         </p>
       </div>
