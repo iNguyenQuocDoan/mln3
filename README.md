@@ -112,11 +112,15 @@ bỏ ván chơi thử (menu ≡ → **Bỏ ván này**, hoặc **Ván mới** �
 
 ### Câu hỏi
 
-Câu hỏi nằm ở `content/quiz.ts`: 62 câu, gồm 24 câu E5, 22 câu RON95 và 16
-câu khó. Thứ tự rút câu được xáo mỗi ván mới, và mỗi lần một câu được rút,
-bốn đáp án lại được xáo vị trí A–D. Vì vậy gặp lại câu cũ thì đáp án đúng
-nằm ở ô khác. Cách xếp được lưu cùng ván chơi, nên tải lại trang không làm
-đáp án đổi chỗ giữa chừng.
+Câu hỏi nằm ở `content/quiz.ts`: 103 câu, gồm 38 câu E5, 36 câu RON95 và 29
+câu khó.
+
+- Mỗi ván mới, thứ tự rút câu được xáo lại. Trình duyệt nhớ khoảng 50 câu
+  đã hỏi gần nhất (localStorage), nên ván sau hỏi trước những câu chưa gặp
+  ở các ván trước; câu đã hỏi bị dồn xuống cuối.
+- Mỗi lần một câu được rút, bốn đáp án lại được xáo vị trí A–D, nên gặp lại
+  câu cũ thì đáp án đúng nằm ở ô khác. Cách xếp được lưu cùng ván chơi, nên
+  tải lại trang không làm đáp án đổi chỗ giữa chừng.
 
 Mỗi câu có 4 đáp án; `correct` là vị trí đáp án đúng trong danh sách (0 là
 đáp án đầu tiên); `explain` hiện sau khi trả lời; `source` ghi slide để đối

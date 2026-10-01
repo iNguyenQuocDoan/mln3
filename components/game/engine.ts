@@ -178,10 +178,15 @@ export const NITRO_CELLS = 2;
 
 const LEVELS: Level[] = ["easy", "medium", "hard"];
 
+/**
+ * Tạo ván mới. `recent`: mã các câu đã hỏi ở những ván trước; mỗi mức sẽ
+ * hỏi trước các câu chưa hỏi (xáo ngẫu nhiên), các câu đã hỏi dồn xuống cuối.
+ */
 export function createGame(
   options: GameOptions,
   bank: Question[],
   rng: Rng,
+  recent: string[] = [],
 ): GameState {
   const count = options.teamNames.length;
   if (count < MIN_TEAMS || count > MAX_TEAMS) {
@@ -207,9 +212,9 @@ export function createGame(
     rolls: options.teamNames.map(() => []),
     order: [],
     pools: {
-      easy: shuffle(idsOf(bank, "easy"), rng),
-      medium: shuffle(idsOf(bank, "medium"), rng),
-      hard: shuffle(idsOf(bank, "hard"), rng),
+      easy: freshFirst(idsOf(bank, "easy"), recent, rng),
+      medium: freshFirst(idsOf(bank, "medium"), recent, rng),
+      hard: freshFirst(idsOf(bank, "hard"), recent, rng),
     },
     lastAsked: {},
   };
@@ -558,6 +563,13 @@ function arrange(bank: Question[], questionId: string, rng: Rng): number[] {
     (_, i) => i,
   );
   return question?.keepOrder ? slots : shuffle(slots, rng);
+}
+
+/** Xáo các câu chưa hỏi lên đầu, các câu đã hỏi ở ván trước xuống cuối. */
+function freshFirst(ids: string[], recent: string[], rng: Rng): string[] {
+  const fresh = ids.filter((id) => !recent.includes(id));
+  const seen = ids.filter((id) => recent.includes(id));
+  return [...shuffle(fresh, rng), ...shuffle(seen, rng)];
 }
 
 function idsOf(bank: Question[], level: Level): string[] {

@@ -46,6 +46,13 @@ test("câu hỏi và đáp án đủ ngắn để vừa màn hình", () => {
   }
 });
 
+test("lời giải thích kèm nguồn gói gọn trong hai dòng", () => {
+  const tooLong = QUIZ.filter(
+    (item) => item.explain.length + item.source.length > 150,
+  ).map((item) => item.id);
+  assert.deepEqual(tooLong, []);
+});
+
 test("mỗi mức có ít nhất 8 câu để một ván ít bị lặp câu", () => {
   for (const level of LEVELS) {
     const count = QUIZ.filter((item) => item.level === level).length;

@@ -41,6 +41,8 @@ import { Results } from "./results";
 import { setMuted, sfx } from "./sound";
 import {
   readGame,
+  readRecent,
+  rememberAsked,
   saveGame,
   updateGame,
   updateSettings,
@@ -123,6 +125,7 @@ export function RaceGame() {
         },
         QUIZ,
         Math.random,
+        readRecent(),
       ),
     );
     setView("race");
@@ -173,6 +176,7 @@ export function RaceGame() {
   function pick(index: number | null) {
     const next = updateGame((state) => answer(state, index, QUIZ));
     if (next?.phase.kind !== "answered") return;
+    rememberAsked(next.phase.questionId);
     if (next.phase.correct) sfx.correct();
     else sfx.wrong();
   }
@@ -351,7 +355,10 @@ function RaceScreen({
               </span>
             </p>
           ) : null}
-          <MenuButton open={menuOpen} onClick={onMenu} />
+          {/* Nổi trên các thẻ câu hỏi/sự kiện để MC luôn mở được menu. */}
+          <div className="relative z-50">
+            <MenuButton open={menuOpen} onClick={onMenu} />
+          </div>
         </div>
       </header>
 

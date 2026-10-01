@@ -166,6 +166,14 @@ describe("tạo ván mới", () => {
     assert.deepEqual(second, ["e1", "e2", "e3"]);
   });
 
+  test("ván mới hỏi trước những câu chưa hỏi ở các ván trước", () => {
+    const options = { teamNames: ["A", "B"], trackLength: 10, answerSeconds: 20 };
+    const game = createGame(options, bank, fixed(0), ["e2", "m1"]);
+    assert.deepEqual(game.pools.easy, ["e3", "e1", "e2"]);
+    assert.equal(game.pools.medium.at(-1), "m1");
+    assert.deepEqual([...game.pools.hard].sort(), ["h1", "h2"]);
+  });
+
   test("báo lỗi khi ngân hàng câu hỏi thiếu một mức", () => {
     const noHard = bank.filter((item) => item.level !== "hard");
     assert.throws(
