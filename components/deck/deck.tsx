@@ -9,7 +9,8 @@ import {
   type CSSProperties,
   type ReactNode,
 } from "react";
-import { getPart } from "@/content/parts";
+import { DECK_INFO, sectionOfSlide } from "@/content/parts";
+import { SCRIPT } from "@/content/script";
 import { StepContext } from "./step-context";
 
 const STAGE_WIDTH = 1920;
@@ -20,10 +21,13 @@ export type DeckSlide = {
   id: string;
   kind: "cover" | "divider" | "content" | "closing";
   tone: "light" | "dark";
-  /** Phần (1–5) mà slide thuộc về. */
+  /** Phần (1–3) mà slide mở đầu (với slide chuyển phần). */
   part?: number;
-  /** Số bước bên trong slide, mặc định 1. */
-  steps?: number;
+  /**
+   * Số thứ tự slide theo bản Word (1–15), mỗi bước một số. Slide có nhiều
+   * bước (ví dụ slide 7–9) giữ nguyên bố cục, chỉ đổi nội dung theo bước.
+   */
+  docSlides?: number[];
   /** Tên slide, đọc cho trình đọc màn hình. */
   label: string;
   content: ReactNode;
@@ -77,7 +81,7 @@ export function Deck({ slides }: { slides: DeckSlide[] }) {
     slides.findIndex((s) => s.id === hash),
   );
   const slide = slides[index];
-  const stepCount = slide.steps ?? 1;
+  const stepCount = slide.docSlides?.length ?? 1;
 
   // Bước chỉ có hiệu lực với slide đã tạo ra nó; sang slide khác thì về 0.
   const [stepState, setStepState] = useState({ id: "", step: 0 });
@@ -111,7 +115,7 @@ export function Deck({ slides }: { slides: DeckSlide[] }) {
       setStep(step - 1);
     } else if (index > 0) {
       const previous = slides[index - 1];
-      goTo(index - 1, (previous.steps ?? 1) - 1);
+      goTo(index - 1, (previous.docSlides?.length ?? 1) - 1);
     }
   }
 
@@ -160,7 +164,7 @@ export function Deck({ slides }: { slides: DeckSlide[] }) {
         toggleFullscreen();
         break;
       default:
-        if (/^[1-5]$/.test(event.key)) goToPart(Number(event.key));
+        if (/^[1-9]$/.test(event.key)) goToPart(Number(event.key));
     }
   });
 
@@ -186,6 +190,10 @@ export function Deck({ slides }: { slides: DeckSlide[] }) {
   }, []);
 
   const dark = slide.tone === "dark";
+  const docSlide = slide.docSlides?.[step];
+  const liveLabel = docSlide
+    ? `Slide ${docSlide}: ${SCRIPT[docSlide].title}`
+    : slide.label;
   const stageStyle: CSSProperties = {
     transform: `translate(-50%, -50%) scale(${scale})`,
     visibility: scale ? "visible" : "hidden",
@@ -217,18 +225,16 @@ export function Deck({ slides }: { slides: DeckSlide[] }) {
             className="slide-enter absolute inset-0"
             style={{ "--enter-x": `${direction * 28}px` } as CSSProperties}
             aria-roledescription="slide"
-            aria-label={`${index + 1} / ${slides.length}: ${slide.label}`}
+            aria-label={liveLabel}
           >
             {slide.content}
           </section>
         </StepContext>
-        {slide.kind === "content" && (
-          <SlideFooter part={slide.part} index={index} total={slides.length} />
-        )}
+        {docSlide ? <SlideFooter docSlide={docSlide} /> : null}
       </div>
 
       <p className="sr-only" aria-live="polite">
-        {`Slide ${index + 1} trên ${slides.length}: ${slide.label}`}
+        {liveLabel}
       </p>
 
       <DeckControls
@@ -243,28 +249,18 @@ export function Deck({ slides }: { slides: DeckSlide[] }) {
   );
 }
 
-function SlideFooter({
-  part,
-  index,
-  total,
-}: {
-  part?: number;
-  index: number;
-  total: number;
-}) {
+/** Chân slide: phần, nội dung phụ trách và số slide theo bản Word. */
+function SlideFooter({ docSlide }: { docSlide: number }) {
+  const section = sectionOfSlide(docSlide);
   const pad = (n: number) => String(n).padStart(2, "0");
   return (
     <footer className="absolute inset-x-32 bottom-12 flex items-baseline justify-between text-label text-cham-soft">
-      {part ? (
-        <p className="flex items-baseline gap-4">
-          <span className="font-semibold text-son">Phần {part}</span>
-          <span>{getPart(part).short}</span>
-        </p>
-      ) : (
-        <span />
-      )}
+      <p className="flex items-baseline gap-4">
+        <span className="font-semibold text-son">Phần {section.part}</span>
+        <span>{section.title}</span>
+      </p>
       <p className="tabular-nums">
-        {pad(index + 1)} / {pad(total)}
+        {pad(docSlide)} / {pad(DECK_INFO.totalSlides)}
       </p>
     </footer>
   );

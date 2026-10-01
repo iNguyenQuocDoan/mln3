@@ -1,11 +1,13 @@
 import { BrocadeBand } from "@/components/art/brocade-band";
-import { PARTS, getPart } from "@/content/parts";
 import { stagger } from "@/components/motion";
+import { PARTS, getPart, sectionsOfPart } from "@/content/parts";
 import { keepWords } from "@/content/typography";
 
 /** Slide mở đầu mỗi phần: số phần, tên phần và dải vị trí trong bài. */
 export function PartDivider({ part }: { part: number }) {
-  const { title, presenter } = getPart(part);
+  const { title } = getPart(part);
+  const sections = sectionsOfPart(part);
+  const presenters = sections.map((s) => s.presenter).filter(Boolean);
 
   return (
     <div className="absolute inset-0 bg-cham text-on-cham">
@@ -25,16 +27,23 @@ export function PartDivider({ part }: { part: number }) {
           <h2 className="text-display font-extrabold text-balance">
             {keepWords(title)}
           </h2>
-          {presenter ? (
-            <p className="mt-10 text-lead text-on-cham-soft">
-              Trình bày: {presenter}
+          {sections.length > 1 ? (
+            <ul className="mt-10 space-y-2 border-l-4 border-vang pl-8 text-lead text-on-cham-soft">
+              {sections.map((section) => (
+                <li key={section.member}>{keepWords(section.title)}</li>
+              ))}
+            </ul>
+          ) : null}
+          {presenters.length > 0 ? (
+            <p className="mt-6 text-lead text-on-cham-soft">
+              Trình bày: {presenters.join(", ")}
             </p>
           ) : null}
         </div>
       </div>
 
       <ol
-        className="anim-fade absolute inset-x-32 bottom-20 grid grid-cols-5 gap-8"
+        className="anim-fade absolute inset-x-32 bottom-20 grid grid-cols-3 gap-10"
         style={stagger(3)}
       >
         {PARTS.map((p) => {
@@ -50,7 +59,7 @@ export function PartDivider({ part }: { part: number }) {
               }`}
             >
               <span className="tabular-nums">{p.number}</span>
-              <span className="ml-3">{keepWords(p.short)}</span>
+              <span className="ml-3">{keepWords(p.title)}</span>
             </li>
           );
         })}

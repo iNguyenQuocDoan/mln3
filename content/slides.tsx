@@ -1,15 +1,25 @@
+import type { ReactNode } from "react";
 import type { DeckSlide } from "@/components/deck/deck";
 import { AgendaSlide } from "@/components/slides/agenda";
+import { ClosingSlide } from "@/components/slides/closing";
 import { CoverSlide } from "@/components/slides/cover";
 import { PartDivider } from "@/components/slides/divider";
-import { ConceptSlide, DistinctionSlide } from "@/components/slides/part-1";
-import { ProgramSlide, TrendsSlide } from "@/components/slides/part-2";
-import { FeaturesSlide } from "@/components/slides/part-3";
-import { PositionSlide, ViewpointSlide } from "@/components/slides/part-4";
-import { POLICIES, PolicySlide } from "@/components/slides/part-5";
-import { RecapSlide } from "@/components/slides/recap";
-import { ClosingSlide } from "@/components/slides/closing";
+import { FeaturesSteps } from "@/components/slides/features-steps";
+import {
+  EthnicSlide,
+  FormationSlide,
+  NationSlide,
+} from "@/components/slides/part-1";
+import { TrendsSlide } from "@/components/slides/part-2";
+import {
+  DevelopmentSlide,
+  PositionSlide,
+  ResponsibilitySlide,
+} from "@/components/slides/part-4";
+import { PolicySteps } from "@/components/slides/policy-steps";
+import { ProgramSteps } from "@/components/slides/program-steps";
 import { getPart } from "./parts";
+import { SCRIPT } from "./script";
 
 function divider(part: number): DeckSlide {
   return {
@@ -19,6 +29,25 @@ function divider(part: number): DeckSlide {
     part,
     label: `Phần ${part}: ${getPart(part).title}`,
     content: <PartDivider part={part} />,
+  };
+}
+
+/**
+ * Slide nội dung theo bản Word. `docSlides` là số slide trong bản Word;
+ * một slide trên web có thể gồm nhiều slide liên tiếp (mỗi slide một bước).
+ */
+function content(
+  id: string,
+  docSlides: number[],
+  node: ReactNode,
+): DeckSlide {
+  return {
+    id,
+    kind: "content",
+    tone: "light",
+    docSlides,
+    label: docSlides.map((n) => SCRIPT[n].title).join("; "),
+    content: node,
   };
 }
 
@@ -33,89 +62,28 @@ export const slides: DeckSlide[] = [
   },
   {
     id: "noi-dung",
-    kind: "content",
+    kind: "cover",
     tone: "light",
     label: "Nội dung",
     content: <AgendaSlide />,
   },
+
   divider(1),
-  {
-    id: "khai-niem",
-    kind: "content",
-    tone: "light",
-    part: 1,
-    label: "Khái niệm dân tộc",
-    content: <ConceptSlide />,
-  },
-  {
-    id: "phan-biet",
-    kind: "content",
-    tone: "light",
-    part: 1,
-    label: "Phân biệt hai nghĩa của khái niệm dân tộc",
-    content: <DistinctionSlide />,
-  },
+  content("hinh-thanh", [1], <FormationSlide />),
+  content("quoc-gia-dan-toc", [2], <NationSlide />),
+  content("toc-nguoi", [3], <EthnicSlide />),
+
   divider(2),
-  {
-    id: "hai-xu-huong",
-    kind: "content",
-    tone: "light",
-    part: 2,
-    label: "Hai xu hướng khách quan của sự phát triển quan hệ dân tộc",
-    content: <TrendsSlide />,
-  },
-  {
-    id: "cuong-linh",
-    kind: "content",
-    tone: "light",
-    part: 2,
-    label: "Cương lĩnh dân tộc của chủ nghĩa Mác – Lênin",
-    content: <ProgramSlide />,
-  },
+  content("hai-xu-huong", [4], <TrendsSlide />),
+  content("cuong-linh", [5, 6], <ProgramSteps />),
+
   divider(3),
-  {
-    id: "dac-diem",
-    kind: "content",
-    tone: "light",
-    part: 3,
-    label: "Sáu đặc điểm dân tộc ở Việt Nam",
-    content: <FeaturesSlide />,
-  },
-  divider(4),
-  {
-    id: "vi-tri",
-    kind: "content",
-    tone: "light",
-    part: 4,
-    label:
-      "Vấn đề dân tộc và đoàn kết dân tộc: vấn đề chiến lược cơ bản, lâu dài, đồng thời là vấn đề cấp bách hiện nay",
-    content: <PositionSlide />,
-  },
-  {
-    id: "quan-diem",
-    kind: "content",
-    tone: "light",
-    part: 4,
-    label: "Quan điểm giải quyết vấn đề dân tộc",
-    content: <ViewpointSlide />,
-  },
-  divider(5),
-  {
-    id: "chinh-sach",
-    kind: "content",
-    tone: "light",
-    part: 5,
-    steps: POLICIES.length,
-    label: "Chính sách dân tộc của Đảng và Nhà nước Việt Nam",
-    content: <PolicySlide />,
-  },
-  {
-    id: "tong-ket",
-    kind: "content",
-    tone: "light",
-    label: "Tổng kết",
-    content: <RecapSlide />,
-  },
+  content("dac-diem", [7, 8, 9], <FeaturesSteps />),
+  content("vi-tri", [10], <PositionSlide />),
+  content("phat-trien", [11], <DevelopmentSlide />),
+  content("trach-nhiem", [12], <ResponsibilitySlide />),
+  content("chinh-sach", [13, 14, 15], <PolicySteps />),
+
   {
     id: "cam-on",
     kind: "closing",

@@ -20,6 +20,8 @@
   --color-cham-line: #c9cfe2;
   --color-son: #c4161c;
   --color-vang: #e3b44b;
+  /* Vàng đậm: dùng cho nét/ký hiệu màu vàng trên nền trắng (tương phản ≥ 3:1). */
+  --color-vang-dam: #a87b12;
   --color-on-cham: #ffffff;
   --color-on-cham-soft: #b9c0da;
 

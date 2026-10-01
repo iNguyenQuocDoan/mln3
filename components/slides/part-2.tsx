@@ -1,5 +1,6 @@
-import { DiagramArrow, DoubleArrow, InlineArrow } from "@/components/art/arrows";
+import { DiagramArrow, DoubleArrow } from "@/components/art/arrows";
 import { delay, moveFrom, stagger } from "@/components/motion";
+import { SCRIPT } from "@/content/script";
 import { keepWords } from "@/content/typography";
 import { SlideFrame } from "./frame";
 
@@ -134,8 +135,7 @@ function UnionDiagram() {
 export function TrendsSlide() {
   return (
     <SlideFrame
-      title="Hai xu hướng khách quan"
-      subtitle="của sự phát triển quan hệ dân tộc"
+      title={SCRIPT[4].title}
       className="grid grid-cols-[1fr_120px_1fr]"
     >
       <section className="anim-rise" style={stagger(0)}>
@@ -144,9 +144,10 @@ export function TrendsSlide() {
         <div className="mt-8">
           <SeparationDiagram />
         </div>
-        <p className="mt-8 text-lead font-semibold text-balance">
-          Cộng đồng dân cư <InlineArrow className="mx-2 text-son" /> cộng đồng
-          dân tộc độc lập
+        <p className="mt-8 text-lead font-semibold text-pretty">
+          {keepWords(
+            "Cộng đồng dân cư muốn tách ra để hình thành cộng đồng dân tộc độc lập.",
+          )}
         </p>
       </section>
 
@@ -167,57 +168,10 @@ export function TrendsSlide() {
         <div className="mt-8">
           <UnionDiagram />
         </div>
-        <p className="mt-8 text-lead font-semibold text-balance">
-          Các dân tộc <InlineArrow className="mx-2" /> liên hiệp với nhau
-        </p>
-        <p className="mt-3 text-body text-cham-soft">
-          {keepWords("Trong từng quốc gia, thậm chí ở nhiều quốc gia")}
+        <p className="mt-8 text-lead font-semibold text-pretty">
+          {keepWords("Các dân tộc muốn liên hiệp lại với nhau.")}
         </p>
       </section>
-    </SlideFrame>
-  );
-}
-
-const PROGRAM = [
-  {
-    number: "01",
-    keyword: "Bình đẳng",
-    text: "Các dân tộc hoàn toàn bình đẳng",
-  },
-  {
-    number: "02",
-    keyword: "Tự quyết",
-    text: "Các dân tộc được quyền tự quyết",
-  },
-  {
-    number: "03",
-    keyword: "Liên hiệp",
-    text: "Liên hiệp công nhân tất cả các dân tộc",
-  },
-];
-
-export function ProgramSlide() {
-  return (
-    <SlideFrame
-      title="Cương lĩnh dân tộc"
-      subtitle="của chủ nghĩa Mác – Lênin"
-      className="grid grid-cols-3 content-center items-start gap-10"
-    >
-      {PROGRAM.map((item, i) => (
-        <section
-          key={item.number}
-          className="anim-rise border-t-8 border-cham bg-cham-tint px-12 pt-12 pb-14"
-          style={stagger(i)}
-        >
-          <p className="text-heading font-extrabold text-son tabular-nums">
-            {item.number}
-          </p>
-          <h3 className="mt-6 text-keyword font-extrabold">{item.keyword}</h3>
-          <p className="mt-10 border-t-2 border-cham-line pt-8 text-lead text-balance">
-            {keepWords(item.text)}
-          </p>
-        </section>
-      ))}
     </SlideFrame>
   );
 }

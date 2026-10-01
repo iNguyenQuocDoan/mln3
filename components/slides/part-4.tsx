@@ -1,106 +1,125 @@
 import { stagger } from "@/components/motion";
+import { SCRIPT } from "@/content/script";
 import { keepWords } from "@/content/typography";
 import { SlideFrame } from "./frame";
 
-/* Câu nguồn: "Vấn đề dân tộc và đoàn kết dân tộc được xác định là vấn đề
- * chiến lược cơ bản, lâu dài, đồng thời cũng là vấn đề cấp bách hiện nay." */
+/* ---------- Slide 10: Vị trí của vấn đề dân tộc và nguyên tắc quan hệ ---------- */
+
+const RELATIONS = ["BÌNH ĐẲNG", "ĐOÀN KẾT", "TƯƠNG TRỢ", "GIÚP NHAU CÙNG PHÁT TRIỂN"];
+
 export function PositionSlide() {
   return (
-    <SlideFrame
-      title="Vấn đề dân tộc và đoàn kết dân tộc"
-      subtitle="được xác định là"
-      className="flex flex-col justify-center"
-    >
-      <p
-        className="anim-rise border-l-8 border-cham py-2 pl-10 text-keyword font-extrabold"
-        style={stagger(0)}
-      >
-        Vấn đề chiến lược cơ bản, lâu dài
+    <SlideFrame title={SCRIPT[10].title} className="flex flex-col justify-center">
+      <p className="anim-fade text-lead text-cham-soft" style={stagger(0)}>
+        Vấn đề dân tộc và đoàn kết dân tộc
       </p>
-
       <p
-        className="anim-fade my-10 pl-12 text-lead text-cham-soft"
+        className="anim-rise mt-4 border-l-8 border-cham py-1 pl-8 text-banner font-extrabold"
+        style={stagger(1)}
+      >
+        {keepWords("Có vị trí chiến lược cơ bản, lâu dài")}
+      </p>
+      <p
+        className="anim-rise mt-6 border-l-8 border-son py-1 pl-8 text-banner font-extrabold text-son"
         style={stagger(2)}
       >
-        đồng thời cũng là
+        {keepWords("Đồng thời là vấn đề cấp bách của cách mạng Việt Nam")}
       </p>
 
-      <p
-        className="anim-rise border-l-8 border-son py-2 pl-10 text-keyword font-extrabold text-son"
-        style={stagger(3)}
-      >
-        Vấn đề cấp bách hiện nay
+      <p className="anim-fade mt-20 text-lead text-cham-soft" style={stagger(3)}>
+        Các dân tộc
       </p>
-    </SlideFrame>
-  );
-}
-
-const PRINCIPLES = ["BÌNH ĐẲNG", "ĐOÀN KẾT", "TƯƠNG TRỢ", "CÙNG PHÁT TRIỂN"];
-
-const FIELDS = [
-  "Chính trị",
-  "Kinh tế",
-  "Văn hóa",
-  "Xã hội",
-  "An ninh – quốc phòng",
-];
-
-export function ViewpointSlide() {
-  const blocksStart = PRINCIPLES.length + 1;
-
-  return (
-    <SlideFrame title="Quan điểm giải quyết vấn đề dân tộc">
-      <p className="anim-fade text-body text-cham-soft" style={stagger(0)}>
-        Các dân tộc trong đại gia đình Việt Nam
-      </p>
-      <ul className="mt-5 flex justify-between border-y-2 border-cham-line py-9">
-        {PRINCIPLES.map((word, i) => (
+      <ul className="mt-4 flex justify-between border-y-2 border-cham-line py-8">
+        {RELATIONS.map((word, i) => (
           <li
             key={word}
-            className="anim-rise text-banner font-extrabold"
-            style={stagger(i + 1)}
+            className="anim-rise text-heading font-extrabold"
+            style={stagger(4 + i)}
           >
             {word}
           </li>
         ))}
       </ul>
+    </SlideFrame>
+  );
+}
 
-      <div className="mt-20 grid grid-cols-3 gap-16">
-        <section
-          className="anim-rise border-t-4 border-cham pt-6"
-          style={stagger(blocksStart)}
-        >
-          <h3 className="text-lead font-bold">Ưu tiên đầu tư</h3>
-          <p className="mt-4 text-body text-pretty text-cham-soft">
-            {keepWords(
-              "Phát triển kinh tế – xã hội các vùng dân tộc và miền núi.",
-            )}
-          </p>
-        </section>
+/* ---------- Slide 11: Phát triển toàn diện và ưu tiên đầu tư ---------- */
 
-        <section
-          className="anim-rise border-t-4 border-cham pt-6"
-          style={stagger(blocksStart + 1)}
+const FIELDS = ["Chính trị", "Kinh tế", "Văn hóa", "Xã hội"];
+
+export function DevelopmentSlide() {
+  return (
+    <SlideFrame
+      title={SCRIPT[11].title}
+      className="grid grid-cols-[1fr_1fr] content-center items-start gap-24"
+    >
+      <section>
+        <h3 className="anim-fade text-heading font-bold" style={stagger(0)}>
+          Phát triển toàn diện
+        </h3>
+        <ul className="mt-8 grid grid-cols-2 gap-4">
+          {FIELDS.map((field, i) => (
+            <li
+              key={field}
+              className="anim-rise bg-cham-tint px-8 py-7 text-lead font-bold"
+              style={stagger(1 + i)}
+            >
+              {field}
+            </li>
+          ))}
+        </ul>
+        <p
+          className="anim-rise mt-4 border-2 border-son px-8 py-6 text-body font-semibold text-son"
+          style={stagger(5)}
         >
-          <h3 className="text-lead font-bold">Phát triển toàn diện</h3>
-          <ul className="mt-4 space-y-1 text-body text-cham-soft">
-            {FIELDS.map((field) => (
-              <li key={field}>{field}</li>
+          {keepWords("Gắn với an ninh và quốc phòng ở vùng dân tộc và miền núi")}
+        </p>
+      </section>
+
+      <section className="anim-rise" style={stagger(7)}>
+        <h3 className="text-heading font-bold">Ưu tiên đầu tư</h3>
+        <p className="mt-8 border-l-8 border-son pl-8 text-banner font-extrabold text-balance">
+          {keepWords("Phát triển kinh tế – xã hội vùng dân tộc và miền núi")}
+        </p>
+      </section>
+    </SlideFrame>
+  );
+}
+
+/* ---------- Slide 12: Trách nhiệm thực hiện công tác dân tộc ---------- */
+
+/* Hai hàng theo đúng hai dòng của bản Word. */
+const RESPONSIBLE = [
+  ["Toàn Đảng", "Toàn dân"],
+  ["Các cấp", "Các ngành", "Toàn bộ hệ thống chính trị"],
+];
+
+export function ResponsibilitySlide() {
+  return (
+    <SlideFrame title={SCRIPT[12].title} className="flex flex-col justify-center">
+      <p
+        className="anim-fade max-w-370 text-heading font-semibold text-balance"
+        style={stagger(0)}
+      >
+        {keepWords(
+          "Công tác dân tộc và thực hiện chính sách dân tộc là nhiệm vụ của",
+        )}
+      </p>
+      <div className="mt-14 space-y-5">
+        {RESPONSIBLE.map((row, r) => (
+          <ul key={row.join()} className="flex gap-5">
+            {row.map((who, i) => (
+              <li
+                key={who}
+                className="anim-rise border-l-8 border-cham bg-cham-tint px-9 py-7 text-heading font-bold"
+                style={stagger(1 + (r === 0 ? 0 : RESPONSIBLE[0].length) + i)}
+              >
+                {keepWords(who)}
+              </li>
             ))}
           </ul>
-        </section>
-
-        <section
-          className="anim-rise border-t-4 border-cham pt-6"
-          style={stagger(blocksStart + 2)}
-        >
-          <h3 className="text-lead font-bold">Trách nhiệm chung</h3>
-          <p className="mt-4 text-body text-pretty text-cham-soft">
-            {keepWords(
-              "Toàn Đảng, toàn dân, toàn quân, các cấp, các ngành và toàn bộ hệ thống chính trị.",
-            )}
-          </p>
-        </section>
+        ))}
       </div>
     </SlideFrame>
   );

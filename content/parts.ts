@@ -1,6 +1,6 @@
 /**
  * Thông tin chung của bài thuyết trình.
- * Điền tên nhóm, thành viên, giảng viên nếu muốn hiện trên slide bìa;
+ * Điền tên nhóm, giảng viên nếu muốn hiện trên slide bìa;
  * trường nào để trống sẽ không hiển thị.
  */
 export const DECK_INFO = {
@@ -9,47 +9,71 @@ export const DECK_INFO = {
   group: "",
   instructor: "",
   source: "Slide môn MLN131, slide 155–163",
+  /** Tổng số slide nội dung theo bản phân công. */
+  totalSlides: 15,
 };
 
 export type Part = {
-  number: 1 | 2 | 3 | 4 | 5;
-  /** Tên đầy đủ, dùng ở mục lục và slide chuyển phần. */
+  number: 1 | 2 | 3;
+  /** Tên phần, theo lời mở đầu: "Bài trình bày gồm ba phần". */
   title: string;
-  /** Tên ngắn, dùng ở chân slide và dải điều hướng. */
-  short: string;
+};
+
+export const PARTS: Part[] = [
+  { number: 1, title: "Khái niệm và đặc trưng của dân tộc" },
+  {
+    number: 2,
+    title: "Quan điểm của chủ nghĩa Mác – Lênin về vấn đề dân tộc",
+  },
+  { number: 3, title: "Dân tộc và quan hệ dân tộc ở Việt Nam" },
+];
+
+export type Section = {
+  /** Thành viên phụ trách (1–5), theo bảng phân công. */
+  member: 1 | 2 | 3 | 4 | 5;
+  part: Part["number"];
+  /** Nội dung phụ trách. */
+  title: string;
+  /** Các slide (theo bản Word) thành viên phụ trách. */
+  slides: [number, number];
   /** Tên người trình bày. Để trống thì không hiển thị. */
   presenter: string;
 };
 
-export const PARTS: Part[] = [
+export const SECTIONS: Section[] = [
   {
-    number: 1,
-    title: "Khái niệm và đặc trưng cơ bản của dân tộc",
-    short: "Khái niệm dân tộc",
+    member: 1,
+    part: 1,
+    title: "Khái niệm và đặc trưng cơ bản",
+    slides: [1, 3],
     presenter: "",
   },
   {
-    number: 2,
-    title: "Chủ nghĩa Mác – Lênin về vấn đề dân tộc",
-    short: "Chủ nghĩa Mác – Lênin về vấn đề dân tộc",
+    member: 2,
+    part: 2,
+    title: "Hai xu hướng và Cương lĩnh dân tộc",
+    slides: [4, 6],
     presenter: "",
   },
   {
-    number: 3,
-    title: "Đặc điểm dân tộc ở Việt Nam",
-    short: "Đặc điểm dân tộc ở Việt Nam",
+    member: 3,
+    part: 3,
+    title: "Sáu đặc điểm dân tộc ở Việt Nam",
+    slides: [7, 9],
     presenter: "",
   },
   {
-    number: 4,
-    title: "Quan điểm về dân tộc và giải quyết quan hệ dân tộc ở Việt Nam",
-    short: "Quan điểm về giải quyết vấn đề dân tộc",
+    member: 4,
+    part: 3,
+    title: "Quan điểm của Đảng và Nhà nước",
+    slides: [10, 12],
     presenter: "",
   },
   {
-    number: 5,
-    title: "Chính sách dân tộc của Đảng và Nhà nước Việt Nam",
-    short: "Chính sách dân tộc",
+    member: 5,
+    part: 3,
+    title: "Chính sách dân tộc và tổng kết",
+    slides: [13, 15],
     presenter: "",
   },
 ];
@@ -58,4 +82,17 @@ export function getPart(number: number): Part {
   const part = PARTS.find((p) => p.number === number);
   if (!part) throw new Error(`Không có phần ${number}`);
   return part;
+}
+
+/** Phần nội dung (theo bảng phân công) chứa slide số `slide`. */
+export function sectionOfSlide(slide: number): Section {
+  const section = SECTIONS.find(
+    (s) => slide >= s.slides[0] && slide <= s.slides[1],
+  );
+  if (!section) throw new Error(`Không có slide ${slide}`);
+  return section;
+}
+
+export function sectionsOfPart(part: number): Section[] {
+  return SECTIONS.filter((s) => s.part === part);
 }
