@@ -5,37 +5,17 @@ import {
   useEffectEvent,
   useRef,
   useState,
-  useSyncExternalStore,
   type CSSProperties,
 } from "react";
+import { toggleFullscreen, useStageScale } from "@/components/stage";
 import { SCRIPT } from "@/content/script";
 import { useDeckController } from "./controller";
 import { SlideBody } from "./slide-view";
-import { STAGE_HEIGHT, STAGE_WIDTH, type DeckSlide } from "./types";
+import type { DeckSlide } from "./types";
 
 export type { DeckSlide } from "./types";
 
 const IDLE_AFTER_MS = 2200;
-
-function subscribeResize(onChange: () => void) {
-  window.addEventListener("resize", onChange);
-  return () => window.removeEventListener("resize", onChange);
-}
-
-function readScale() {
-  return Math.min(
-    window.innerWidth / STAGE_WIDTH,
-    window.innerHeight / STAGE_HEIGHT,
-  );
-}
-
-function toggleFullscreen() {
-  if (document.fullscreenElement) {
-    void document.exitFullscreen();
-  } else {
-    void document.documentElement.requestFullscreen?.().catch(() => {});
-  }
-}
 
 /** Mở màn hình người trình bày trong cửa sổ riêng (để trên laptop). */
 function openPresenter(slideId: string) {
@@ -50,7 +30,7 @@ function openPresenter(slideId: string) {
 export function Deck({ slides }: { slides: DeckSlide[] }) {
   const { index, slide, step, stepCount, direction, setStep, next, prev } =
     useDeckController(slides);
-  const scale = useSyncExternalStore(subscribeResize, readScale, () => 0);
+  const scale = useStageScale();
   const [idle, setIdle] = useState(true);
   const touchStart = useRef<{ x: number; y: number } | null>(null);
 
