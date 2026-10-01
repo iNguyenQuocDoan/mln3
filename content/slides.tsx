@@ -2,6 +2,7 @@ import type { DeckSlide } from "@/components/deck/deck";
 import { AgendaSlide } from "@/components/slides/agenda";
 import { CoverSlide } from "@/components/slides/cover";
 import { PartDivider } from "@/components/slides/divider";
+import { ConceptSlide, DistinctionSlide } from "@/components/slides/part-1";
 import { getPart } from "./parts";
 
 function divider(part: number): DeckSlide {
@@ -32,6 +33,22 @@ export const slides: DeckSlide[] = [
     content: <AgendaSlide />,
   },
   divider(1),
+  {
+    id: "khai-niem",
+    kind: "content",
+    tone: "light",
+    part: 1,
+    label: "Khái niệm dân tộc",
+    content: <ConceptSlide />,
+  },
+  {
+    id: "phan-biet",
+    kind: "content",
+    tone: "light",
+    part: 1,
+    label: "Phân biệt hai nghĩa của khái niệm dân tộc",
+    content: <DistinctionSlide />,
+  },
   divider(2),
   divider(3),
   divider(4),
