@@ -1,11 +1,17 @@
 import type { Metadata, Viewport } from "next";
-import { Be_Vietnam_Pro } from "next/font/google";
+import localFont from "next/font/local";
 import "./globals.css";
 
-const beVietnamPro = Be_Vietnam_Pro({
+// Self-hosted so builds don't depend on reaching fonts.gstatic.com.
+const beVietnamPro = localFont({
   variable: "--font-be-vietnam",
-  subsets: ["latin", "vietnamese"],
-  weight: ["400", "500", "600", "700", "800"],
+  src: [
+    { path: "./fonts/BeVietnamPro-Regular.woff", weight: "400" },
+    { path: "./fonts/BeVietnamPro-Medium.woff", weight: "500" },
+    { path: "./fonts/BeVietnamPro-SemiBold.woff", weight: "600" },
+    { path: "./fonts/BeVietnamPro-Bold.woff", weight: "700" },
+    { path: "./fonts/BeVietnamPro-ExtraBold.woff", weight: "800" },
+  ],
 });
 
 export const metadata: Metadata = {
