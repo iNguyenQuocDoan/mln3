@@ -1,4 +1,4 @@
-import type { CSSProperties } from "react";
+import { delay } from "@/components/motion";
 import { VIETNAM_MAINLAND_PATH } from "./vietnam-path";
 
 /*
@@ -40,10 +40,6 @@ const TIMING = {
   hoangSaLabel: 1700,
   truongSaLabel: 1950,
 };
-
-function delay(ms: number) {
-  return { "--delay": `${ms}ms` } as CSSProperties;
-}
 
 type VietnamMapProps = {
   className?: string;

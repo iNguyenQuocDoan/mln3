@@ -1,10 +1,6 @@
-import type { CSSProperties } from "react";
 import { VietnamMap } from "@/components/art/vietnam-map";
+import { stagger } from "@/components/motion";
 import { SlideFrame } from "./frame";
-
-/* Các mục hiện lần lượt 01 → 06 trong lúc bản đồ đang được vẽ. */
-const FIRST_ITEM_DELAY_MS = 350;
-const ITEM_STEP_MS = 160;
 
 type Feature = { number: string; title: string; text: string };
 
@@ -60,13 +56,12 @@ function FeatureList({
         <li
           key={item.number}
           className="anim-rise grid grid-cols-[72px_1fr] gap-x-4 self-start"
-          style={
-            {
-              gridColumn: column,
-              gridRow: i + 1,
-              "--delay": `${FIRST_ITEM_DELAY_MS + (start - 1 + i) * ITEM_STEP_MS}ms`,
-            } as CSSProperties
-          }
+          // Các mục hiện lần lượt 01 → 06 trong lúc bản đồ đang được vẽ.
+          style={{
+            gridColumn: column,
+            gridRow: i + 1,
+            ...stagger(start - 1 + i),
+          }}
         >
           <span className="text-heading leading-none font-extrabold text-son tabular-nums">
             {item.number}

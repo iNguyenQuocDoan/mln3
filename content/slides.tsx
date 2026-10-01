@@ -5,6 +5,7 @@ import { PartDivider } from "@/components/slides/divider";
 import { ConceptSlide, DistinctionSlide } from "@/components/slides/part-1";
 import { ProgramSlide, TrendsSlide } from "@/components/slides/part-2";
 import { FeaturesSlide } from "@/components/slides/part-3";
+import { PositionSlide, ViewpointSlide } from "@/components/slides/part-4";
 import { getPart } from "./parts";
 
 function divider(part: number): DeckSlide {
@@ -78,5 +79,22 @@ export const slides: DeckSlide[] = [
     content: <FeaturesSlide />,
   },
   divider(4),
+  {
+    id: "vi-tri",
+    kind: "content",
+    tone: "light",
+    part: 4,
+    label:
+      "Vấn đề dân tộc và đoàn kết dân tộc: vấn đề chiến lược cơ bản, lâu dài, đồng thời là vấn đề cấp bách hiện nay",
+    content: <PositionSlide />,
+  },
+  {
+    id: "quan-diem",
+    kind: "content",
+    tone: "light",
+    part: 4,
+    label: "Quan điểm giải quyết vấn đề dân tộc",
+    content: <ViewpointSlide />,
+  },
   divider(5),
 ];
