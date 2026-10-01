@@ -1,4 +1,5 @@
 import { PARTS } from "@/content/parts";
+import { keepWords } from "@/content/typography";
 import { SlideFrame } from "./frame";
 
 export function AgendaSlide() {
@@ -13,7 +14,7 @@ export function AgendaSlide() {
             <span className="w-16 text-heading font-extrabold text-son tabular-nums">
               {part.number}
             </span>
-            <span className="flex-1 text-lead font-semibold">{part.title}</span>
+            <span className="flex-1 text-lead font-semibold">{keepWords(part.title)}</span>
             {part.presenter ? (
               <span className="text-body text-cham-soft">{part.presenter}</span>
             ) : null}

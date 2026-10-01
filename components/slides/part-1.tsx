@@ -1,3 +1,4 @@
+import { keepWords } from "@/content/typography";
 import { SlideFrame } from "./frame";
 
 type Trait = { key: string; text: string };
@@ -54,7 +55,7 @@ function MeaningColumn({
           >
             <dt className="text-lead font-bold">{trait.key}</dt>
             <dd className="pt-1 text-body text-pretty text-cham-soft">
-              {trait.text}
+              {keepWords(trait.text)}
             </dd>
           </div>
         ))}
@@ -157,10 +158,10 @@ export function DistinctionSlide() {
       <NationDiagram />
       <div>
         <p className="text-heading font-bold text-balance">
-          Dân tộc theo nghĩa tộc người không đồng nhất với quốc gia.
+          {keepWords("Dân tộc theo nghĩa tộc người không đồng nhất với quốc gia.")}
         </p>
         <p className="mt-10 text-lead text-cham-soft text-balance">
-          Một quốc gia có thể bao gồm nhiều tộc người khác nhau.
+          {keepWords("Một quốc gia có thể bao gồm nhiều tộc người khác nhau.")}
         </p>
       </div>
     </SlideFrame>

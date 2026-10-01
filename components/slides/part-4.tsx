@@ -1,4 +1,5 @@
 import { stagger } from "@/components/motion";
+import { keepWords } from "@/content/typography";
 import { SlideFrame } from "./frame";
 
 /* Câu nguồn: "Vấn đề dân tộc và đoàn kết dân tộc được xác định là vấn đề
@@ -71,7 +72,9 @@ export function ViewpointSlide() {
         >
           <h3 className="text-lead font-bold">Ưu tiên đầu tư</h3>
           <p className="mt-4 text-body text-pretty text-cham-soft">
-            Phát triển kinh tế – xã hội các vùng dân tộc và miền núi.
+            {keepWords(
+              "Phát triển kinh tế – xã hội các vùng dân tộc và miền núi.",
+            )}
           </p>
         </section>
 
@@ -93,8 +96,9 @@ export function ViewpointSlide() {
         >
           <h3 className="text-lead font-bold">Trách nhiệm chung</h3>
           <p className="mt-4 text-body text-pretty text-cham-soft">
-            Toàn Đảng, toàn dân, toàn quân, các cấp, các ngành và toàn bộ hệ
-            thống chính trị.
+            {keepWords(
+              "Toàn Đảng, toàn dân, toàn quân, các cấp, các ngành và toàn bộ hệ thống chính trị.",
+            )}
           </p>
         </section>
       </div>

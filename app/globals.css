@@ -172,6 +172,11 @@ body {
   animation-delay: var(--delay, 0ms);
 }
 
+/* Đổi nội dung khi người trình bày chọn tab: ngắn và nhẹ hơn hiệu ứng vào. */
+.anim-swap {
+  animation: rise-in 360ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
 @media (prefers-reduced-motion: reduce) {
   .slide-enter,
   .fade-in,
@@ -179,7 +184,8 @@ body {
   .anim-map-fill,
   .anim-islet,
   .anim-fade,
-  .anim-rise {
+  .anim-rise,
+  .anim-swap {
     animation: none;
   }
 }

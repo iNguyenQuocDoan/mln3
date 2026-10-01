@@ -1,5 +1,6 @@
 import { BrocadeBand } from "@/components/art/brocade-band";
 import { PARTS, getPart } from "@/content/parts";
+import { keepWords } from "@/content/typography";
 
 /** Slide mở đầu mỗi phần: số phần, tên phần và dải vị trí trong bài. */
 export function PartDivider({ part }: { part: number }) {
@@ -20,7 +21,9 @@ export function PartDivider({ part }: { part: number }) {
           </p>
         </div>
         <div className="w-295">
-          <h2 className="text-display font-extrabold text-balance">{title}</h2>
+          <h2 className="text-display font-extrabold text-balance">
+            {keepWords(title)}
+          </h2>
           {presenter ? (
             <p className="mt-10 text-lead text-on-cham-soft">
               Trình bày: {presenter}
@@ -43,7 +46,7 @@ export function PartDivider({ part }: { part: number }) {
               }`}
             >
               <span className="tabular-nums">{p.number}</span>
-              <span className="ml-3">{p.short}</span>
+              <span className="ml-3">{keepWords(p.short)}</span>
             </li>
           );
         })}

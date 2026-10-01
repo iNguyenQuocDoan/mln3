@@ -294,7 +294,7 @@ function DeckControls({
   return (
     <nav
       aria-label="Điều hướng slide"
-      className={`fixed right-6 bottom-6 flex gap-3 transition-opacity duration-300 ${hidden ? "pointer-events-none opacity-0" : "opacity-100"}`}
+      className={`fixed bottom-6 left-1/2 flex -translate-x-1/2 gap-3 transition-opacity duration-300 ${hidden ? "pointer-events-none opacity-0" : "opacity-100"}`}
     >
       <button
         type="button"

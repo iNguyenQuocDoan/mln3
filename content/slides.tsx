@@ -6,6 +6,7 @@ import { ConceptSlide, DistinctionSlide } from "@/components/slides/part-1";
 import { ProgramSlide, TrendsSlide } from "@/components/slides/part-2";
 import { FeaturesSlide } from "@/components/slides/part-3";
 import { PositionSlide, ViewpointSlide } from "@/components/slides/part-4";
+import { POLICIES, PolicySlide } from "@/components/slides/part-5";
 import { getPart } from "./parts";
 
 function divider(part: number): DeckSlide {
@@ -97,4 +98,13 @@ export const slides: DeckSlide[] = [
     content: <ViewpointSlide />,
   },
   divider(5),
+  {
+    id: "chinh-sach",
+    kind: "content",
+    tone: "light",
+    part: 5,
+    steps: POLICIES.length,
+    label: "Chính sách dân tộc của Đảng và Nhà nước Việt Nam",
+    content: <PolicySlide />,
+  },
 ];

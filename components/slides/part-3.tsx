@@ -1,5 +1,6 @@
 import { VietnamMap } from "@/components/art/vietnam-map";
 import { stagger } from "@/components/motion";
+import { keepWords } from "@/content/typography";
 import { SlideFrame } from "./frame";
 
 type Feature = { number: string; title: string; text: string };
@@ -67,9 +68,9 @@ function FeatureList({
             {item.number}
           </span>
           <div>
-            <h3 className="text-lead font-bold text-balance">{item.title}</h3>
+            <h3 className="text-lead font-bold text-balance">{keepWords(item.title)}</h3>
             <p className="mt-2 text-body text-pretty text-cham-soft">
-              {item.text}
+              {keepWords(item.text)}
             </p>
           </div>
         </li>

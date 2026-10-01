@@ -1,4 +1,5 @@
 import { DiagramArrow, DoubleArrow, InlineArrow } from "@/components/art/arrows";
+import { keepWords } from "@/content/typography";
 import { SlideFrame } from "./frame";
 
 /* Tách ra: một cộng đồng trong khối chung tách ra thành cộng đồng độc lập. */
@@ -135,7 +136,7 @@ export function TrendsSlide() {
           Các dân tộc <InlineArrow className="mx-2" /> liên hiệp với nhau
         </p>
         <p className="mt-3 text-body text-cham-soft">
-          Trong từng quốc gia, thậm chí ở nhiều quốc gia
+          {keepWords("Trong từng quốc gia, thậm chí ở nhiều quốc gia")}
         </p>
       </section>
     </SlideFrame>
@@ -177,7 +178,7 @@ export function ProgramSlide() {
           </p>
           <h3 className="mt-6 text-keyword font-extrabold">{item.keyword}</h3>
           <p className="mt-10 border-t-2 border-cham-line pt-8 text-lead text-balance">
-            {item.text}
+            {keepWords(item.text)}
           </p>
         </section>
       ))}
