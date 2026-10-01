@@ -7,6 +7,8 @@ import { ProgramSlide, TrendsSlide } from "@/components/slides/part-2";
 import { FeaturesSlide } from "@/components/slides/part-3";
 import { PositionSlide, ViewpointSlide } from "@/components/slides/part-4";
 import { POLICIES, PolicySlide } from "@/components/slides/part-5";
+import { RecapSlide } from "@/components/slides/recap";
+import { ClosingSlide } from "@/components/slides/closing";
 import { getPart } from "./parts";
 
 function divider(part: number): DeckSlide {
@@ -106,5 +108,19 @@ export const slides: DeckSlide[] = [
     steps: POLICIES.length,
     label: "Chính sách dân tộc của Đảng và Nhà nước Việt Nam",
     content: <PolicySlide />,
+  },
+  {
+    id: "tong-ket",
+    kind: "content",
+    tone: "light",
+    label: "Tổng kết",
+    content: <RecapSlide />,
+  },
+  {
+    id: "cam-on",
+    kind: "closing",
+    tone: "dark",
+    label: "Cảm ơn thầy cô và các bạn đã lắng nghe",
+    content: <ClosingSlide />,
   },
 ];
