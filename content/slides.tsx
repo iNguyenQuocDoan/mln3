@@ -1,5 +1,5 @@
 import type { ReactNode } from "react";
-import type { DeckSlide } from "@/components/deck/deck";
+import type { DeckSlide } from "@/components/deck/types";
 import { AgendaSlide } from "@/components/slides/agenda";
 import { ClosingSlide } from "@/components/slides/closing";
 import { CoverSlide } from "@/components/slides/cover";
