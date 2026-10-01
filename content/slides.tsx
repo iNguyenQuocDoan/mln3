@@ -4,6 +4,7 @@ import { CoverSlide } from "@/components/slides/cover";
 import { PartDivider } from "@/components/slides/divider";
 import { ConceptSlide, DistinctionSlide } from "@/components/slides/part-1";
 import { ProgramSlide, TrendsSlide } from "@/components/slides/part-2";
+import { FeaturesSlide } from "@/components/slides/part-3";
 import { getPart } from "./parts";
 
 function divider(part: number): DeckSlide {
@@ -68,6 +69,14 @@ export const slides: DeckSlide[] = [
     content: <ProgramSlide />,
   },
   divider(3),
+  {
+    id: "dac-diem",
+    kind: "content",
+    tone: "light",
+    part: 3,
+    label: "Sáu đặc điểm dân tộc ở Việt Nam",
+    content: <FeaturesSlide />,
+  },
   divider(4),
   divider(5),
 ];
