@@ -1,29 +1,42 @@
 "use client";
 
 import { useEffect, useRef, useState, type ReactNode } from "react";
-import { DECK_INFO, sectionOfSlide } from "@/content/parts";
-import { SCRIPT } from "@/content/script";
+import { getMember, getSection, pad2 } from "@/content/parts";
 import { useDeckController, type DeckPosition } from "./controller";
+import { NotesBody } from "./notes";
 import { SlideBody } from "./slide-view";
-import { STAGE_HEIGHT, STAGE_WIDTH, type DeckSlide } from "./types";
+import {
+  STAGE_HEIGHT,
+  STAGE_WIDTH,
+  screenNumber,
+  screenTotal,
+  type DeckSlide,
+} from "./types";
 
 /*
  * Màn hình người trình bày: mở trên laptop (phím P ở màn hình trình chiếu).
- * Hiện slide hiện tại, slide kế tiếp, lời thuyết trình và câu chuyển người
- * theo bản Word. Điều hướng ở đây thì màn hình trình chiếu đi theo và
- * ngược lại.
+ * Hiện màn hình hiện tại, màn hình kế tiếp, lời thuyết trình và câu chuyển
+ * người theo bản Word, cùng đồng hồ bấm giờ. Điều hướng ở đây thì màn hình
+ * trình chiếu đi theo và ngược lại.
  */
 export function Presenter({ slides }: { slides: DeckSlide[] }) {
   const { slide, step, upcoming, setStep, next, prev, index } =
     useDeckController(slides);
-  const docSlide = slide.docSlides?.[step];
-  const script = docSlide ? SCRIPT[docSlide] : undefined;
-  const section = docSlide ? sectionOfSlide(docSlide) : undefined;
+  const current = slide.steps[step];
+  const total = screenTotal(slides);
+  const position = { number: screenNumber(slides, index, step), total };
+  const section = slide.section ? getSection(slide.section) : undefined;
+  const presenter = section ? getMember(section.member).presenter : "";
 
   return (
     <main className="grid h-dvh grid-cols-[minmax(0,3fr)_minmax(0,2fr)] gap-8 overflow-hidden bg-cham p-8 text-on-cham">
       <section className="flex min-h-0 flex-col gap-6">
-        <ScaledSlide slide={slide} step={step} setStep={setStep} />
+        <ScaledSlide
+          slide={slide}
+          step={step}
+          setStep={setStep}
+          position={position}
+        />
         <div className="grid grid-cols-[minmax(0,1fr)_minmax(0,1fr)] items-start gap-6">
           <div>
             <p className="text-label font-semibold text-on-cham-soft">
@@ -36,6 +49,10 @@ export function Presenter({ slides }: { slides: DeckSlide[] }) {
               slide={slides[upcoming.index]}
               step={upcoming.step}
               setStep={() => {}}
+              position={{
+                number: screenNumber(slides, upcoming.index, upcoming.step),
+                total,
+              }}
             />
           ) : (
             <p className="text-label text-on-cham-soft">Hết bài.</p>
@@ -46,32 +63,21 @@ export function Presenter({ slides }: { slides: DeckSlide[] }) {
       <aside className="flex min-h-0 flex-col">
         <header className="border-b-2 border-on-cham-soft/30 pb-5">
           <p className="text-label text-on-cham-soft">
-            {docSlide
-              ? `Slide ${docSlide} / ${DECK_INFO.totalSlides} · Phần ${section?.part} · Thành viên ${section?.member}${section?.presenter ? ` (${section.presenter})` : ""}`
-              : `Trang ${index + 1} / ${slides.length}`}
+            Màn {pad2(position.number)} / {pad2(total)}
+            {section
+              ? ` · Mục ${pad2(section.number)} · Thành viên ${section.member}${presenter ? ` (${presenter})` : ""}`
+              : ""}
           </p>
           <h1 className="mt-2 text-lead font-bold text-balance">
-            {script?.title ?? slide.label}
+            {current.title}
           </h1>
         </header>
 
-        <div className="min-h-0 flex-1 space-y-5 overflow-y-auto py-6 pr-2 text-label leading-relaxed">
-          {script ? (
-            script.speech.map((paragraph) => <p key={paragraph}>{paragraph}</p>)
-          ) : (
-            <p className="text-on-cham-soft">
-              Slide này không có lời thuyết trình riêng.
-            </p>
-          )}
-          {script?.handoff ? (
-            <p className="border-l-6 border-vang bg-on-cham/10 py-3 pl-5">
-              <span className="font-semibold text-vang">Câu chuyển người: </span>
-              {script.handoff}
-            </p>
-          ) : null}
+        <div className="min-h-0 flex-1 overflow-y-auto py-6 pr-2 text-label leading-relaxed">
+          <NotesBody step={current} />
         </div>
 
-        <footer className="flex items-center justify-between gap-6 border-t-2 border-on-cham-soft/30 pt-5">
+        <footer className="flex flex-wrap items-center justify-between gap-x-6 gap-y-3 border-t-2 border-on-cham-soft/30 pt-5">
           <Stopwatch />
           <div className="flex gap-3">
             <PresenterButton onClick={prev} label="Trước" />
@@ -85,9 +91,7 @@ export function Presenter({ slides }: { slides: DeckSlide[] }) {
 
 function describe(slides: DeckSlide[], position: DeckPosition | null) {
   if (!position) return "—";
-  const target = slides[position.index];
-  const doc = target.docSlides?.[position.step];
-  return doc ? `Slide ${doc}: ${SCRIPT[doc].title}` : target.label;
+  return slides[position.index].steps[position.step].title;
 }
 
 /** Slide thu nhỏ theo bề rộng khung chứa, không chạy hiệu ứng. */
@@ -95,10 +99,12 @@ function ScaledSlide({
   slide,
   step,
   setStep,
+  position,
 }: {
   slide: DeckSlide;
   step: number;
   setStep: (step: number) => void;
+  position: { number: number; total: number };
 }) {
   const box = useRef<HTMLDivElement>(null);
   const [width, setWidth] = useState(0);
@@ -127,7 +133,12 @@ function ScaledSlide({
             transform: `scale(${width / STAGE_WIDTH})`,
           }}
         >
-          <SlideBody slide={slide} step={step} setStep={setStep} />
+          <SlideBody
+            slide={slide}
+            step={step}
+            setStep={setStep}
+            position={position}
+          />
         </div>
       ) : null}
     </div>

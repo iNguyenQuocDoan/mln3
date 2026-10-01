@@ -1,122 +1,147 @@
 "use client";
 
+import { FlowBox, Joiner } from "@/components/art/flow";
 import { useSlideStep } from "@/components/deck/step-context";
 import { stagger } from "@/components/motion";
-import { SCRIPT } from "@/content/script";
 import { keepWords } from "@/content/typography";
 import { SlideFrame } from "./frame";
 
 /*
- * Slide 13–15: chính sách dân tộc theo từng lĩnh vực. Danh sách năm lĩnh
- * vực đứng yên bên trái; mỗi bước làm nổi các lĩnh vực của slide đó và hiện
- * nội dung tương ứng bên phải. Bấm vào một lĩnh vực để đến slide chứa nó.
+ * 07. Chính sách dân tộc: năm lĩnh vực, mỗi lĩnh vực một màn hình. Danh
+ * sách năm lĩnh vực đứng yên bên trái như các thẻ; bấm vào một lĩnh vực để
+ * đến màn hình của nó. Thứ tự theo giáo trình và lời thuyết trình bản Word
+ * (văn hóa trước xã hội).
  */
-type Policy = { field: string; lines: string[]; step: number };
+type Policy = {
+  field: string;
+  content: "values" | "statement" | "security";
+  text: string[];
+};
 
-const POLICIES: Policy[] = [
+export const POLICIES: Policy[] = [
   {
     field: "Chính trị",
-    step: 0,
-    lines: [
-      "Thực hiện bình đẳng, đoàn kết, tôn trọng, giúp nhau cùng phát triển giữa các dân tộc.",
-    ],
+    content: "values",
+    text: ["Bình đẳng", "Đoàn kết", "Tôn trọng", "Cùng phát triển"],
   },
   {
     field: "Kinh tế",
-    step: 0,
-    lines: [
-      "Phát triển kinh tế – xã hội miền núi, vùng đồng bào các dân tộc thiểu số.",
+    content: "statement",
+    text: [
+      "Phát triển kinh tế – xã hội miền núi và vùng đồng bào dân tộc thiểu số",
     ],
   },
   {
     field: "Văn hóa",
-    step: 1,
-    lines: ["Xây dựng nền văn hóa Việt Nam tiên tiến, đậm đà bản sắc dân tộc."],
+    content: "statement",
+    text: ["Xây dựng nền văn hóa Việt Nam tiên tiến, đậm đà bản sắc dân tộc"],
   },
   {
     field: "Xã hội",
-    step: 1,
-    lines: [
-      "Thực hiện chính sách xã hội, bảo đảm an sinh xã hội vùng đồng bào dân tộc thiểu số.",
-    ],
+    content: "statement",
+    text: ["Thực hiện chính sách xã hội và bảo đảm an sinh xã hội"],
   },
   {
-    field: "An ninh – quốc phòng",
-    step: 2,
-    lines: [
-      "Tăng cường sức mạnh bảo vệ Tổ quốc.",
-      "Bảo đảm ổn định chính trị.",
-      "Thực hiện tốt an ninh chính trị, trật tự an toàn xã hội.",
-    ],
+    field: "An ninh – Quốc phòng",
+    content: "security",
+    text: ["Ổn định chính trị", "An ninh chính trị", "Trật tự an toàn xã hội"],
   },
 ];
 
-const DOC_SLIDES = [13, 14, 15];
-
 export function PolicySteps() {
   const { step, setStep } = useSlideStep();
-  const docSlide = DOC_SLIDES[step] ?? DOC_SLIDES[0];
-  const shown = POLICIES.filter((p) => p.step === step);
+  const policy = POLICIES[step] ?? POLICIES[0];
 
   return (
     <SlideFrame
-      title={SCRIPT[docSlide].title}
-      className="grid grid-cols-[560px_1fr] gap-20"
-      swapTitle
+      title="Chính sách dân tộc"
+      className="grid grid-cols-[600px_1fr] items-start gap-20 pt-8"
     >
       <ul
-        aria-label="Các lĩnh vực của chính sách dân tộc"
-        className="anim-fade flex flex-col self-center border-t-2 border-cham-line"
+        aria-label="Năm lĩnh vực của chính sách dân tộc"
+        className="anim-fade flex flex-col border-t-2 border-cham-line"
         style={stagger(0)}
       >
-        {POLICIES.map((policy) => {
-          const current = policy.step === step;
+        {POLICIES.map((item, i) => {
+          const current = i === step;
           return (
-            <li key={policy.field}>
+            <li key={item.field}>
               <button
                 type="button"
                 aria-current={current ? "step" : undefined}
-                onClick={() => setStep(policy.step)}
-                className={`w-full border-b-2 border-cham-line px-10 py-6 text-left text-lead font-bold uppercase transition-colors duration-300 focus-visible:outline-4 focus-visible:-outline-offset-4 focus-visible:outline-son ${
+                onClick={() => setStep(i)}
+                className={`flex w-full items-baseline gap-5 border-b-2 border-cham-line px-8 py-5 text-left text-lead font-bold uppercase transition-colors duration-300 focus-visible:outline-4 focus-visible:-outline-offset-4 focus-visible:outline-son ${
                   current
                     ? "bg-cham text-on-cham"
-                    : "text-cham hover:bg-cham-tint"
+                    : "text-cham-soft hover:bg-cham-tint"
                 }`}
               >
-                {policy.field}
+                <span
+                  className={`text-label tabular-nums ${current ? "text-vang" : "text-son"}`}
+                >
+                  {i + 1}
+                </span>
+                {keepWords(item.field)}
               </button>
             </li>
           );
         })}
       </ul>
 
-      <div key={step} className="flex flex-col justify-center gap-16">
-        {shown.map((policy, i) => (
-          <section
-            key={policy.field}
-            className="anim-rise"
-            style={stagger(i, step === 0 ? 450 : 60)}
-          >
-            <p className="text-body font-semibold text-son">{policy.field}</p>
-            {policy.lines.length === 1 ? (
-              <p className="mt-4 text-heading leading-15 font-semibold text-pretty">
-                {keepWords(policy.lines[0])}
-              </p>
-            ) : (
-              <ul className="mt-4 space-y-6">
-                {policy.lines.map((line) => (
-                  <li
-                    key={line}
-                    className="border-l-8 border-cham pl-8 text-heading leading-15 font-semibold text-pretty"
-                  >
-                    {keepWords(line)}
-                  </li>
-                ))}
-              </ul>
-            )}
-          </section>
-        ))}
-      </div>
+      <section key={step} className="anim-swap flex flex-col">
+        <p className="text-label font-semibold text-son">
+          Lĩnh vực {step + 1} / {POLICIES.length}
+        </p>
+        <h3 className="mt-2 text-banner leading-[1.15] font-extrabold uppercase">
+          {keepWords(policy.field)}
+        </h3>
+        <div className="mt-10">
+          <PolicyContent policy={policy} />
+        </div>
+      </section>
     </SlideFrame>
+  );
+}
+
+function PolicyContent({ policy }: { policy: Policy }) {
+  if (policy.content === "values") {
+    return (
+      <ul className="max-w-180 border-t-2 border-cham-line">
+        {policy.text.map((value) => (
+          <li
+            key={value}
+            className="border-b-2 border-cham-line py-3 text-heading leading-[1.3] font-bold"
+          >
+            {keepWords(value)}
+          </li>
+        ))}
+      </ul>
+    );
+  }
+
+  if (policy.content === "security") {
+    return (
+      <>
+        <p className="text-lead text-cham-soft">
+          {keepWords("Tăng cường sức mạnh bảo vệ Tổ quốc trên cơ sở:")}
+        </p>
+        <div className="mt-6 flex w-150 flex-col">
+          {policy.text.map((item, i) => (
+            <div key={item} className="flex flex-col">
+              {i > 0 ? (
+                <Joiner className="h-14 text-heading text-son">+</Joiner>
+              ) : null}
+              <FlowBox className="text-sub">{keepWords(item)}</FlowBox>
+            </div>
+          ))}
+        </div>
+      </>
+    );
+  }
+
+  return (
+    <p className="border-l-8 border-son pl-8 text-heading leading-[1.3] font-semibold text-balance">
+      {keepWords(policy.text[0])}
+    </p>
   );
 }

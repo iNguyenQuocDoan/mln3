@@ -23,19 +23,28 @@ npm start          # mở http://localhost:3000
 
 | Phím | Tác dụng |
 | --- | --- |
-| → ↓ PageDown Space | Slide hoặc bước tiếp theo (dùng được với bút trình chiếu) |
+| → ↓ PageDown Space | Màn hình tiếp theo (dùng được với bút trình chiếu) |
 | ← ↑ PageUp | Lùi lại |
-| Home / End | Về slide đầu / cuối |
+| Home / End | Về màn hình đầu / cuối |
 | 1, 2, 3 | Nhảy tới slide mở đầu Phần 1, 2, 3 |
 | F | Bật/tắt toàn màn hình |
-| P | Mở màn hình người trình bày |
+| N | Bật/tắt ghi chú người trình bày ngay trên màn hình chiếu (mặc định ẩn) |
+| P | Mở màn hình người trình bày (cửa sổ riêng) |
+| Esc | Đóng ghi chú |
 
-Rê chuột sẽ hiện các nút điều khiển ở giữa mép dưới; để yên khoảng 2 giây
-thì nút và con trỏ tự ẩn. Trên màn hình cảm ứng có thể vuốt trái/phải.
+Rê chuột sẽ hiện thanh điều khiển nhỏ ở giữa mép dưới (lùi, số màn hình,
+tiếp, toàn màn hình, ghi chú, người trình bày); để yên khoảng 2 giây thì
+thanh và con trỏ tự ẩn. Trên màn hình cảm ứng có thể vuốt trái/phải.
 
-Các slide 5–6, 7–9 và 13–15 nằm chung một trang: bấm "tiếp" sẽ đổi nội dung
-trong trang (bố cục, bản đồ, danh sách lĩnh vực giữ nguyên). Số ở góc phải
-chân slide là số slide theo bản Word (ví dụ `07 / 15`).
+Chân mỗi slide nội dung có thanh tiến độ mảnh, mục đang trình bày (ví dụ
+`04 Cương lĩnh dân tộc Mác – Lênin`) và số màn hình (ví dụ `12 / 29`).
+Một số slide gồm nhiều màn hình (hai nghĩa của dân tộc, quyền tự quyết,
+sáu đặc điểm, chính sách, tổng kết): bấm "tiếp" chỉ đổi phần nội dung,
+bố cục giữ nguyên.
+
+Ghi chú (phím N) nằm đè lên phần dưới màn hình, không làm slide co lại.
+Nếu chiếu bằng một màn hình duy nhất thì khán giả cũng thấy ghi chú, nên
+chỉ bật khi cần.
 
 ## Màn hình người trình bày
 
@@ -45,9 +54,11 @@ chân slide là số slide theo bản Word (ví dụ `07 / 15`).
 3. Bấm **P** để mở cửa sổ người trình bày, rồi kéo cửa sổ này về màn hình
    laptop.
 
-Cửa sổ người trình bày hiện slide đang chiếu, slide kế tiếp, lời thuyết
-trình và câu chuyển người theo bản Word, cùng đồng hồ bấm giờ. Bấm chuyển
-slide ở cửa sổ nào thì cửa sổ kia cũng chuyển theo.
+Cửa sổ người trình bày hiện màn hình đang chiếu, màn hình kế tiếp, lời
+thuyết trình và câu chuyển người theo bản Word, cùng đồng hồ bấm giờ. Bấm
+chuyển ở cửa sổ nào thì cửa sổ kia cũng chuyển theo. Màn hình nào bản Word
+chưa có lời thì hiện dòng **Gợi ý (chưa có trong bản Word)**, viết lại từ
+chữ trên màn hình; nhóm có thể sửa ở `content/script.ts` → `HINTS`.
 
 ## Trò chơi "Đường đua tiếp nhiên liệu"
 
@@ -138,29 +149,52 @@ thứ tự thì các số tăng dần.
 | Muốn sửa | File |
 | --- | --- |
 | Tên nhóm, giảng viên (hiện ở slide bìa) | `content/parts.ts` → `DECK_INFO` |
-| Tên người trình bày từng phần | `content/parts.ts` → `SECTIONS[].presenter` |
-| Tiêu đề và lời thuyết trình 15 slide | `content/script.ts` |
-| Chữ trên từng slide | `components/slides/` (mỗi phần một file) |
+| Tên người trình bày | `content/parts.ts` → `MEMBERS[].presenter` |
+| Tên tám mục, mục nào thuộc phần nào, ai trình bày | `content/parts.ts` → `SECTIONS` |
+| Lời thuyết trình theo bản Word | `content/script.ts` → `SCRIPT` |
+| Gợi ý lời cho màn hình mới | `content/script.ts` → `HINTS` |
+| Thứ tự màn hình, đoạn lời gắn với màn hình nào | `content/slides.tsx` |
+| Chữ trên từng màn hình | `components/slides/` (mỗi mục một file) |
 | Câu hỏi của trò chơi | `content/quiz.ts` |
 
 Trường nào để trống thì không hiển thị trên slide.
 
-> **Cần đối chiếu:** bản Word ghi nội dung thứ ba của Cương lĩnh dân tộc cần
-> bổ sung nguyên văn. Slide 6 đang dùng cách diễn đạt trong giáo trình
-> ("Liên hiệp công nhân tất cả các dân tộc"). Nếu tài liệu gốc khác, sửa ở
-> `components/slides/program-steps.tsx`.
+Thứ tự trên màn hình theo giáo trình và lời thuyết trình bản Word: chính
+sách **văn hóa** trước **xã hội**; trong "Ba hướng thực hiện", **phát triển
+toàn diện** trước **ưu tiên đầu tư**. Muốn đổi thứ tự thì sửa mảng `POLICIES`
+(`components/slides/policy-steps.tsx`) hoặc `DIRECTIONS`
+(`components/slides/part-4.tsx`), và nhớ đổi cả thứ tự lời trong
+`content/slides.tsx`.
 
 ## Cấu trúc bài
 
-| Trang web | Slide (bản Word) | Thành viên |
-| --- | --- | --- |
-| Bìa, Nội dung | — | — |
-| Phần 1 | 1–3 | 1 |
-| Phần 2 | 4–6 | 2 |
-| Phần 3 | 7–9, 10–12, 13–15 | 3, 4, 5 |
-| Trò chơi (mở trang `/tro-choi`) | — | — |
-| Cảm ơn | — | — |
+29 màn hình. Số màn hình ở chân slide đếm cả bìa, mục lục và slide chuyển
+phần.
 
-Thiết kế dùng font Be Vietnam Pro, bảng màu chàm và son. Bản đồ Việt Nam vẽ
-từ dữ liệu Natural Earth (phạm vi công cộng), có quần đảo Hoàng Sa và
-Trường Sa.
+| Màn hình | Nội dung | Lời theo bản Word | Thành viên |
+| --- | --- | --- | --- |
+| 1–2 | Bìa, Nội dung (tám mục) | slide 1 (lời chào) | 1 |
+| 3 | Phần 1 | — | — |
+| 4 | 01 Sự hình thành dân tộc | slide 1 | 1 |
+| 5–6 | 02 Hai nghĩa của dân tộc (so sánh, hai bước) | slide 2, 3 | 1 |
+| 7 | Phần 2 | — | — |
+| 8 | 03 Hai xu hướng khách quan | slide 4 | 2 |
+| 9–13 | 04 Cương lĩnh: bình đẳng, quyền tự quyết (2 màn), liên hiệp, tóm tắt | slide 5, 6 | 2 |
+| 14 | Phần 3 | — | — |
+| 15–17 | 05 Sáu đặc điểm: tổng quan, dân cư & địa bàn, phát triển & văn hóa | slide 7, 8, 9 | 3 |
+| 18–20 | 06 Quan điểm của Đảng, Nhà nước (năm quan điểm) | slide 10, 11, 12 | 4 |
+| 21–25 | 07 Chính sách dân tộc (mỗi lĩnh vực một màn) | slide 13, 14, 15 | 5 |
+| 26–27 | 08 Tổng kết: 2 → 2 → 3 → 6 → 5 → 5 | slide 15 (lời kết) | 5 |
+| 28 | Trò chơi (mở trang `/tro-choi`) | — | — |
+| 29 | Cảm ơn | — | — |
+
+Thiết kế dùng font Be Vietnam Pro (tự lưu trong `app/fonts/`), bảng màu
+chàm và son. Bản đồ Việt Nam vẽ từ dữ liệu Natural Earth (phạm vi công
+cộng), có quần đảo Hoàng Sa và Trường Sa.
+
+Ảnh trang phục truyền thống ở màn "Phát triển & văn hóa":
+["A colorful discovery"](https://commons.wikimedia.org/wiki/File:A_colorful_discovery.jpg),
+tác giả AlbMem, giấy phép
+[CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0), qua
+Wikimedia Commons (đã thu nhỏ còn 1200 × 800). Nguồn ảnh ghi ngay dưới ảnh
+trên slide.

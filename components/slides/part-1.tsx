@@ -1,80 +1,82 @@
-import { DiagramArrow } from "@/components/art/arrows";
-import { delay, moveFrom, stagger } from "@/components/motion";
-import { SCRIPT } from "@/content/script";
+"use client";
+
+import { ArrowDown, FlowBox, SumRow } from "@/components/art/flow";
+import { useSlideStep } from "@/components/deck/step-context";
+import { stagger } from "@/components/motion";
 import { keepWords } from "@/content/typography";
 import { SlideFrame } from "./frame";
 
-/* ---------- Slide 1: Sự hình thành dân tộc ---------- */
+/* ---------- 01. Sự hình thành dân tộc ---------- */
+
+/*
+ * Hai cột so sánh. Ô kết quả "Dân tộc hình thành" ở hai cột nằm cùng một
+ * hàng, nên người xem đọc ngang là thấy hai con đường khác nhau:
+ * phương Tây đi từ thay đổi phương thức sản xuất, phương Đông dựa trên
+ * văn hóa và tâm lý, còn cộng đồng kinh tế yếu (ô viền đứt).
+ */
+const DIAGRAM_HEIGHT = "h-108";
 
 export function FormationSlide() {
   return (
     <SlideFrame
-      title={SCRIPT[1].title}
+      title="Sự hình thành dân tộc"
       className="grid grid-cols-[1fr_2px_1fr] gap-x-20"
     >
-      <section className="anim-rise" style={stagger(0)}>
-        <h3 className="text-heading font-bold">Ở phương Tây</h3>
-
-        {/* Phương thức sản xuất phong kiến → tư bản chủ nghĩa */}
-        <div className="mt-10 flex h-56 items-center gap-4">
-          <p
-            className="anim-fade flex-1 border-2 border-cham-line px-7 py-6 text-body text-cham-soft"
-            style={delay(550)}
-          >
-            {keepWords("Phương thức sản xuất phong kiến")}
-          </p>
-          <svg
-            viewBox="0 0 96 40"
-            className="anim-fade w-24 shrink-0"
-            style={delay(750)}
-            aria-hidden="true"
-          >
-            <DiagramArrow x1={6} x2={88} y={20} />
-          </svg>
-          <p
-            className="anim-rise flex-1 bg-cham px-7 py-6 text-body font-semibold text-on-cham"
-            style={delay(900)}
-          >
+      <section className="anim-rise flex flex-col" style={stagger(0)}>
+        <h3 className="text-banner font-extrabold">PHƯƠNG TÂY</h3>
+        <div className={`mt-8 flex flex-col items-center ${DIAGRAM_HEIGHT}`}>
+          <FlowBox tone="muted" className="w-150 text-lead">
+            Phong kiến
+          </FlowBox>
+          <ArrowDown grow length={48} />
+          <FlowBox className="w-150 text-lead">
             {keepWords("Phương thức sản xuất tư bản chủ nghĩa")}
-          </p>
+          </FlowBox>
+          <ArrowDown grow length={48} />
+          <FlowBox tone="solid" className="w-150 text-lead">
+            {keepWords("Dân tộc hình thành")}
+          </FlowBox>
         </div>
-
-        <p className="mt-10 text-lead text-pretty">
+        <p className="mt-10 text-body leading-[1.45] text-pretty">
           {keepWords(
-            "Dân tộc xuất hiện khi phương thức sản xuất tư bản chủ nghĩa thay thế phương thức sản xuất phong kiến.",
+            "Dân tộc xuất hiện khi phương thức sản xuất tư bản chủ nghĩa được xác lập và thay thế phương thức sản xuất phong kiến.",
           )}
         </p>
       </section>
 
       <div className="anim-fade bg-cham-line" style={stagger(1)} />
 
-      <section className="anim-rise" style={stagger(2)}>
-        <h3 className="text-heading font-bold">Ở phương Đông</h3>
-
-        {/* Dân tộc hình thành trên nền tảng văn hóa và tâm lý dân tộc */}
-        <div className="mt-10 flex h-56 flex-col items-center justify-center">
-          <p
-            className="anim-move border-4 border-son px-12 py-3 text-lead font-bold text-son"
-            style={moveFrom(0, -28, 1150)}
-          >
-            Dân tộc
-          </p>
-          <p
-            className="anim-rise mt-3 w-full bg-cham px-7 py-6 text-center text-body font-semibold text-on-cham"
-            style={delay(950)}
-          >
-            {keepWords("Văn hóa và tâm lý dân tộc tương đối chín muồi")}
-          </p>
+      <section className="anim-rise flex flex-col" style={stagger(1)}>
+        <h3 className="text-banner font-extrabold">PHƯƠNG ĐÔNG</h3>
+        <div className={`mt-8 flex flex-col ${DIAGRAM_HEIGHT}`}>
+          <SumRow
+            grow
+            arrowLength={48}
+            boxPadding="px-3 py-3"
+            boxClassName="h-40 text-body leading-tight"
+            items={[
+              { label: "Văn hóa" },
+              { label: keepWords("Tâm lý dân tộc") },
+              {
+                tone: "weak",
+                label: (
+                  <>
+                    {keepWords("Cộng đồng kinh tế")}
+                    <span className="mt-1 block text-label font-normal">
+                      {keepWords("kém phát triển")}
+                    </span>
+                  </>
+                ),
+              },
+            ]}
+          />
+          <FlowBox tone="solid" className="mx-auto w-150 text-lead">
+            {keepWords("Dân tộc hình thành")}
+          </FlowBox>
         </div>
-
-        <p className="mt-10 text-lead text-pretty">
+        <p className="mt-10 text-body leading-[1.45] text-pretty">
           {keepWords(
-            "Dân tộc hình thành trên nền tảng văn hóa và tâm lý dân tộc tương đối chín muồi.",
-          )}
-        </p>
-        <p className="mt-6 text-body text-pretty text-cham-soft">
-          {keepWords(
-            "Cộng đồng kinh tế đạt mức độ nhất định nhưng nhìn chung còn kém phát triển và phân tán.",
+            "Văn hóa và tâm lý dân tộc đã phát triển tương đối chín muồi, trong khi cộng đồng kinh tế còn kém phát triển và phân tán.",
           )}
         </p>
       </section>
@@ -82,159 +84,88 @@ export function FormationSlide() {
   );
 }
 
-/* ---------- Slide 2: Dân tộc theo nghĩa quốc gia dân tộc ---------- */
+/* ---------- 02. Hai nghĩa của dân tộc ---------- */
 
-/* Từ khóa lấy theo cách ghi nhớ trong lời thuyết trình. */
-const NATION_TRAITS = [
-  { key: "Kinh tế", text: "Có chung phương thức sinh hoạt kinh tế" },
-  { key: "Lãnh thổ", text: "Có lãnh thổ chung ổn định" },
-  { key: "Nhà nước", text: "Có sự quản lý của một nhà nước dân tộc độc lập" },
-  { key: "Ngôn ngữ", text: "Có ngôn ngữ chung của quốc gia" },
-  {
-    key: "Bản sắc văn hóa",
-    text: "Có nét tâm lý và văn hóa tạo nên bản sắc dân tộc",
-  },
-];
+type Meaning = {
+  heading: string;
+  term: string;
+  traits: string[];
+};
 
-export function NationSlide() {
+const NATION: Meaning = {
+  heading: "Quốc gia – dân tộc",
+  term: "Nation",
+  traits: ["Kinh tế", "Lãnh thổ", "Nhà nước", "Ngôn ngữ", "Văn hóa"],
+};
+
+const ETHNIE: Meaning = {
+  heading: "Dân tộc – tộc người",
+  term: "Ethnies",
+  traits: ["Ngôn ngữ", "Văn hóa", "Ý thức tự giác tộc người"],
+};
+
+/*
+ * Một màn hình so sánh, hai bước: bước 1 nói nghĩa quốc gia – dân tộc
+ * (cột phải chỉ hiện tên, mờ); bước 2 hiện đủ cột tộc người và câu kết
+ * luận. Bố cục giữ nguyên giữa hai bước để không nhảy chữ.
+ */
+export function MeaningsSlide() {
+  const { step } = useSlideStep();
+  const both = step >= 1;
+
   return (
-    <SlideFrame
-      title={SCRIPT[2].title}
-      subtitle="Cộng đồng chính trị – xã hội"
-      className="flex flex-col justify-center"
-    >
-      <dl className="border-t-2 border-cham-line">
-        {NATION_TRAITS.map((trait, i) => (
-          <div
-            key={trait.key}
-            className="anim-rise grid grid-cols-[420px_1fr] items-baseline border-b-2 border-cham-line py-5"
-            style={stagger(i)}
-          >
-            <dt className="text-heading font-bold">{keepWords(trait.key)}</dt>
-            <dd className="text-lead text-cham-soft">
-              {keepWords(trait.text)}
-            </dd>
-          </div>
-        ))}
-      </dl>
+    <SlideFrame title="Hai nghĩa của dân tộc" className="flex flex-col">
+      <div className="grid flex-1 grid-cols-[1fr_2px_1fr] gap-x-20">
+        <MeaningColumn meaning={NATION} shown />
+        <div className="bg-cham-line" />
+        <MeaningColumn meaning={ETHNIE} shown={both} />
+      </div>
+      <p
+        key={both ? "shown" : "hidden"}
+        className={`mt-8 border-l-8 border-son bg-cham-tint px-10 py-5 text-sub font-bold ${both ? "anim-swap" : "invisible"}`}
+      >
+        {keepWords("Hai khái niệm có liên quan nhưng không đồng nhất.")}
+      </p>
     </SlideFrame>
   );
 }
 
-/* ---------- Slide 3: Dân tộc theo nghĩa tộc người ---------- */
-
-const ETHNIC_TRAITS = [
-  {
-    label: "Ngôn ngữ",
-    text: "Cộng đồng về ngôn ngữ",
-    color: "var(--color-cham)",
-    circle: { x: 290, y: 230 },
-    labelAt: { x: 196, y: 186 },
-  },
-  {
-    label: "Văn hóa",
-    text: "Cộng đồng về văn hóa",
-    color: "var(--color-son)",
-    circle: { x: 470, y: 230 },
-    labelAt: { x: 566, y: 186 },
-  },
-  {
-    label: "Ý thức tự giác",
-    text: "Ý thức tự giác tộc người",
-    color: "var(--color-vang-dam)",
-    circle: { x: 380, y: 386 },
-    labelAt: { x: 380, y: 500 },
-  },
-];
-
-const VENN_R = 180;
-const VENN_MS = 450;
-const VENN_STEP_MS = 220;
-
-export function EthnicSlide() {
+function MeaningColumn({
+  meaning,
+  shown,
+}: {
+  meaning: Meaning;
+  shown: boolean;
+}) {
   return (
-    <SlideFrame
-      title={SCRIPT[3].title}
-      className="grid grid-cols-[760px_1fr] items-center gap-24"
+    <section
+      className={`transition-opacity duration-300 ${shown ? "" : "opacity-35"}`}
     >
-      <svg
-        viewBox="0 0 760 600"
-        className="w-190"
-        role="img"
-        aria-label="Sơ đồ ba đặc trưng của tộc người: ngôn ngữ, văn hóa, ý thức tự giác"
+      <h3 className="text-banner font-extrabold uppercase">
+        {keepWords(meaning.heading)}
+      </h3>
+      <p className="mt-1 text-lead text-cham-soft italic">{meaning.term}</p>
+      <div
+        key={shown ? "shown" : "hidden"}
+        className={shown ? "anim-swap" : "invisible"}
       >
-        {ETHNIC_TRAITS.map((trait, i) => (
-          <g
-            key={trait.label}
-            className="anim-pop"
-            style={delay(VENN_MS + i * VENN_STEP_MS)}
-          >
-            <circle
-              cx={trait.circle.x}
-              cy={trait.circle.y}
-              r={VENN_R}
-              fill={trait.color}
-              fillOpacity={0.09}
-              stroke={trait.color}
-              strokeWidth={4}
-            />
-          </g>
-        ))}
-        {ETHNIC_TRAITS.map((trait, i) => (
-          <text
-            key={trait.label}
-            x={trait.labelAt.x}
-            y={trait.labelAt.y}
-            textAnchor="middle"
-            fontSize={34}
-            fontWeight={700}
-            fill={trait.color}
-            stroke="var(--color-paper)"
-            strokeWidth={10}
-            strokeLinejoin="round"
-            paintOrder="stroke"
-            className="anim-fade"
-            style={delay(VENN_MS + i * VENN_STEP_MS + 150)}
-          >
-            {trait.label}
-          </text>
-        ))}
-        <text
-          x={380}
-          y={302}
-          textAnchor="middle"
-          fontSize={30}
-          fontWeight={800}
-          fill="var(--color-cham)"
-          stroke="var(--color-paper)"
-          strokeWidth={10}
-          strokeLinejoin="round"
-          paintOrder="stroke"
-          className="anim-fade"
-          style={delay(VENN_MS + 3 * VENN_STEP_MS + 200)}
-        >
-          Tộc người
-        </text>
-      </svg>
-
-      <ul className="space-y-12">
-        {ETHNIC_TRAITS.map((trait, i) => (
-          <li
-            key={trait.label}
-            className="anim-rise flex items-baseline gap-6"
-            style={delay(VENN_MS + i * VENN_STEP_MS + 100)}
-          >
-            <span
-              aria-hidden="true"
-              className="size-6 shrink-0 translate-y-1"
-              style={{ background: trait.color }}
-            />
-            <span className="text-heading font-bold">
-              {keepWords(trait.text)}
-            </span>
-          </li>
-        ))}
-      </ul>
-    </SlideFrame>
+        <p className="mt-6 text-body font-semibold text-son">
+          {meaning.traits.length} đặc trưng
+        </p>
+        <ol className="mt-3 border-t-2 border-cham-line">
+          {meaning.traits.map((trait, i) => (
+            <li
+              key={trait}
+              className="flex items-baseline gap-6 border-b-2 border-cham-line py-2.5"
+            >
+              <span className="w-8 text-label text-cham-soft tabular-nums">
+                {i + 1}
+              </span>
+              <span className="text-sub font-semibold">{keepWords(trait)}</span>
+            </li>
+          ))}
+        </ol>
+      </div>
+    </section>
   );
 }

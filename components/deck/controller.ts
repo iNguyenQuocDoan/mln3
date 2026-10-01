@@ -56,8 +56,14 @@ export function useDeckController(slides: DeckSlide[]) {
   const step =
     stepState.id === slide.id ? Math.min(stepState.step, stepCount - 1) : 0;
 
-  const [direction, setDirection] = useState<1 | -1>(1);
   const channel = useRef<BroadcastChannel | null>(null);
+
+  // Đổi #id trên thanh địa chỉ (hoặc lùi/tiến trang): vào slide từ bước đầu.
+  useEffect(() => {
+    const reset = () => setStepState({ id: readHash(), step: 0 });
+    window.addEventListener("hashchange", reset);
+    return () => window.removeEventListener("hashchange", reset);
+  }, []);
 
   function show(targetIndex: number, targetStep: number, announce: boolean) {
     const clamped = Math.min(Math.max(targetIndex, 0), slides.length - 1);
@@ -66,7 +72,6 @@ export function useDeckController(slides: DeckSlide[]) {
       Math.max(targetStep, 0),
       stepCountOf(target) - 1,
     );
-    setDirection(clamped >= index ? 1 : -1);
     setStepState({ id: target.id, step: clampedStep });
     writeHash(target.id);
     if (announce) {
@@ -140,7 +145,7 @@ export function useDeckController(slides: DeckSlide[]) {
   const onKeyDown = useEffectEvent((event: KeyboardEvent) => {
     if (event.defaultPrevented || event.altKey || event.ctrlKey || event.metaKey)
       return;
-    const target = event.target as HTMLElement | null;
+    const target = event.target instanceof Element ? event.target : null;
     const onControl = Boolean(target?.closest("button, a, input, textarea"));
 
     switch (event.key) {
@@ -186,7 +191,6 @@ export function useDeckController(slides: DeckSlide[]) {
     slide,
     step,
     stepCount,
-    direction,
     upcoming,
     goTo,
     setStep,

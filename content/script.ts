@@ -1,7 +1,10 @@
 /**
  * Tiêu đề và lời thuyết trình của 15 slide, giữ nguyên theo bản Word
- * của nhóm. Lời thuyết trình chỉ hiện ở màn hình người trình bày,
- * không hiện trên TV.
+ * của nhóm. Lời thuyết trình chỉ hiện ở màn hình người trình bày và
+ * ghi chú (phím N), không hiện trên TV.
+ *
+ * Bài trên web đã tách thành nhiều màn hình hơn bản Word; content/slides.tsx
+ * gắn từng đoạn lời dưới đây vào màn hình tương ứng.
  */
 export type SlideScript = {
   title: string;
@@ -121,4 +124,23 @@ export const SCRIPT: Record<number, SlideScript> = {
       "Nhóm em đã trình bày ba phần chính: khái niệm và đặc trưng của dân tộc, quan điểm Mác – Lênin về vấn đề dân tộc, và dân tộc cùng quan hệ dân tộc ở Việt Nam. Phần chính sách gồm chính trị, kinh tế, văn hóa, xã hội và an ninh, quốc phòng. Nhóm em xin kết thúc bài trình bày và cảm ơn thầy cô cùng các bạn đã lắng nghe.",
     ],
   },
+};
+
+/**
+ * Gợi ý lời nói cho các màn hình mới (bản Word chưa có lời cho các màn hình
+ * này). Viết lại từ chính chữ trên màn hình, không thêm ý mới. Nhóm có thể
+ * sửa hoặc thay bằng lời của mình.
+ */
+export const HINTS = {
+  selfDeterminationMeaning:
+    "Đọc định nghĩa trên màn hình, nhấn hai ý: tự quyết định vận mệnh và tự lựa chọn con đường phát triển.",
+  selfDeterminationBranches:
+    "Quyền tự quyết có hai nhánh: quyền tách ra để thành lập quốc gia dân tộc độc lập, và quyền tự nguyện liên hiệp với dân tộc khác trên cơ sở bình đẳng. Vì vậy tự quyết không chỉ có tách ra, mà là tự quyết định vận mệnh và tự lựa chọn con đường phát triển.",
+  workersUnion:
+    "Nội dung thứ ba của cương lĩnh là liên hiệp công nhân tất cả các dân tộc. Nội dung này nhấn mạnh sự đoàn kết và liên hiệp giữa công nhân thuộc các dân tộc khác nhau.",
+  programSummary:
+    "Tóm lại, cương lĩnh dân tộc gồm ba nội dung: các dân tộc hoàn toàn bình đẳng, các dân tộc được quyền tự quyết, và liên hiệp công nhân tất cả các dân tộc.",
+  recapNumbers: "Cả bài có thể nhớ bằng dãy số 2, 2, 3, 6, 5, 5.",
+  recapList:
+    "Đọc lần lượt từng dòng: hai nghĩa của dân tộc, hai xu hướng khách quan, ba nội dung Cương lĩnh dân tộc, sáu đặc điểm dân tộc Việt Nam, năm quan điểm lớn, năm lĩnh vực chính sách.",
 };

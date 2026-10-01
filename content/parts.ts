@@ -9,8 +9,6 @@ export const DECK_INFO = {
   group: "",
   instructor: "",
   source: "Slide môn MLN131, slide 155–163",
-  /** Tổng số slide nội dung theo bản phân công. */
-  totalSlides: 15,
 };
 
 export type Part = {
@@ -28,54 +26,44 @@ export const PARTS: Part[] = [
   { number: 3, title: "Dân tộc và quan hệ dân tộc ở Việt Nam" },
 ];
 
-export type Section = {
+export type Member = {
   /** Thành viên phụ trách (1–5), theo bảng phân công. */
-  member: 1 | 2 | 3 | 4 | 5;
-  part: Part["number"];
-  /** Nội dung phụ trách. */
-  title: string;
-  /** Các slide (theo bản Word) thành viên phụ trách. */
-  slides: [number, number];
+  number: 1 | 2 | 3 | 4 | 5;
   /** Tên người trình bày. Để trống thì không hiển thị. */
   presenter: string;
 };
 
+export const MEMBERS: Member[] = [
+  { number: 1, presenter: "" },
+  { number: 2, presenter: "" },
+  { number: 3, presenter: "" },
+  { number: 4, presenter: "" },
+  { number: 5, presenter: "" },
+];
+
+export type Section = {
+  /** Số mục (1–8), hiện ở mục lục và chân slide. */
+  number: number;
+  title: string;
+  part: Part["number"];
+  member: Member["number"];
+};
+
+/** Tám mục nội dung của bài, theo thứ tự trình bày. */
 export const SECTIONS: Section[] = [
+  { number: 1, title: "Sự hình thành dân tộc", part: 1, member: 1 },
+  { number: 2, title: "Hai nghĩa của dân tộc", part: 1, member: 1 },
+  { number: 3, title: "Hai xu hướng khách quan", part: 2, member: 2 },
+  { number: 4, title: "Cương lĩnh dân tộc Mác – Lênin", part: 2, member: 2 },
+  { number: 5, title: "Sáu đặc điểm dân tộc Việt Nam", part: 3, member: 3 },
   {
-    member: 1,
-    part: 1,
-    title: "Khái niệm và đặc trưng cơ bản",
-    slides: [1, 3],
-    presenter: "",
-  },
-  {
-    member: 2,
-    part: 2,
-    title: "Hai xu hướng và Cương lĩnh dân tộc",
-    slides: [4, 6],
-    presenter: "",
-  },
-  {
-    member: 3,
+    number: 6,
+    title: "Quan điểm của Đảng, Nhà nước Việt Nam",
     part: 3,
-    title: "Sáu đặc điểm dân tộc ở Việt Nam",
-    slides: [7, 9],
-    presenter: "",
-  },
-  {
     member: 4,
-    part: 3,
-    title: "Quan điểm của Đảng và Nhà nước",
-    slides: [10, 12],
-    presenter: "",
   },
-  {
-    member: 5,
-    part: 3,
-    title: "Chính sách dân tộc và tổng kết",
-    slides: [13, 15],
-    presenter: "",
-  },
+  { number: 7, title: "Chính sách dân tộc", part: 3, member: 5 },
+  { number: 8, title: "Tổng kết", part: 3, member: 5 },
 ];
 
 export function getPart(number: number): Part {
@@ -84,15 +72,23 @@ export function getPart(number: number): Part {
   return part;
 }
 
-/** Phần nội dung (theo bảng phân công) chứa slide số `slide`. */
-export function sectionOfSlide(slide: number): Section {
-  const section = SECTIONS.find(
-    (s) => slide >= s.slides[0] && slide <= s.slides[1],
-  );
-  if (!section) throw new Error(`Không có slide ${slide}`);
+export function getSection(number: number): Section {
+  const section = SECTIONS.find((s) => s.number === number);
+  if (!section) throw new Error(`Không có mục ${number}`);
   return section;
+}
+
+export function getMember(number: number): Member {
+  const member = MEMBERS.find((m) => m.number === number);
+  if (!member) throw new Error(`Không có thành viên ${number}`);
+  return member;
 }
 
 export function sectionsOfPart(part: number): Section[] {
   return SECTIONS.filter((s) => s.part === part);
+}
+
+/** "01", "02"...: số mục luôn hai chữ số. */
+export function pad2(n: number) {
+  return String(n).padStart(2, "0");
 }
