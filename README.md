@@ -49,6 +49,86 @@ Cửa sổ người trình bày hiện slide đang chiếu, slide kế tiếp, l
 trình và câu chuyển người theo bản Word, cùng đồng hồ bấm giờ. Bấm chuyển
 slide ở cửa sổ nào thì cửa sổ kia cũng chuyển theo.
 
+## Trò chơi "Đường đua tiếp nhiên liệu"
+
+Trò chơi ôn tập sau phần thuyết trình. Vào từ slide **Trò chơi** (ngay trước
+slide Cảm ơn) hoặc mở thẳng http://localhost:3000/tro-choi. Người chơi dùng
+chuột bấm trực tiếp trên màn hình chiếu.
+
+### Một ván chơi
+
+1. Ở slide Trò chơi, bấm **Vào đường đua**. Trang chuyển ngay trong trình
+   duyệt nên TV vẫn ở chế độ toàn màn hình.
+2. Sảnh chờ: chọn số đội (2–6), đặt tên đội, độ dài đường đua, thời gian
+   trả lời, bật/tắt âm thanh, rồi bấm **Bắt đầu đua**. Sảnh chờ hiện thời
+   lượng ước tính theo số đội và độ dài đường.
+3. Mỗi đội cử một bạn lên bấm **Gieo** xúc xắc. Số lớn hơn đi trước; các đội
+   ra trùng số gieo lại. Có thứ tự rồi thì bấm **Xuất phát**.
+4. Tới lượt đội nào, một bạn của đội đó lên chọn cây xăng và trả lời.
+
+| Cây xăng | Bên trong | Trả lời đúng | Sai hoặc hết giờ |
+| --- | --- | --- | --- |
+| E5 (1 lít) | câu dễ | tiến 1 ô | đứng yên |
+| RON95 (2 lít) | câu vừa | tiến 2 ô | đứng yên |
+| ??? | rút thăm một sự kiện, xem bảng dưới | | |
+
+| Sự kiện của bình ??? | Kết quả |
+| --- | --- |
+| Câu hỏi khó | đúng thì tiến 3 ô |
+| Nitro | tiến 2 ô ngay |
+| Cướp xăng | chọn một đội đang có xăng: đội đó lùi 1 ô, mình tiến 1 ô |
+| Nổ lốp | lùi 1 ô (không xảy ra khi xe còn ở vạch xuất phát) |
+| Cảnh sát | mất lượt |
+
+Đội đầu tiên chạm vạch đích thắng. Các đội còn lại xếp theo số ô, bằng nhau
+thì xét số câu đúng, rồi số lít xăng đã đổ.
+
+**Cân bằng ngầm** (chỉ nhóm biết, màn hình không hiện): tỉ lệ các sự kiện
+của bình ??? thay đổi theo thế của đội đang chơi, để không đội nào hên quá mà
+bỏ xa cả lớp.
+
+| Thế của đội | Câu khó | Nitro | Cướp xăng | Nổ lốp | Cảnh sát |
+| --- | --- | --- | --- | --- | --- |
+| Sát nhau (chênh dưới 2 ô) | 50% | 15% | 15% | 10% | 10% |
+| Bỏ xa mọi đội khác từ 2 ô | 50% | 5% | 5% | 20% | 20% |
+| Đứng cuối, kém đội đầu từ 2 ô | 50% | 25% | 25% | 0% | 0% |
+
+Muốn chỉnh các con số này thì sửa `MYSTERY_ODDS` và `BALANCE_GAP` trong
+`components/game/engine.ts`.
+
+### Điều khiển cho người dẫn
+
+| Phím / nút | Tác dụng |
+| --- | --- |
+| F | Bật/tắt toàn màn hình |
+| M | Bật/tắt âm thanh |
+| Esc | Đóng menu |
+| Nút ≡ ở góc phải | Toàn màn hình, âm thanh, **Dừng đua và xếp hạng** (khi hết giờ), **Bỏ ván này**, **Về bài thuyết trình** |
+
+Ván chơi, kể cả kết quả gieo xúc xắc và thứ tự xuất phát, được lưu vào
+localStorage của trình duyệt sau mỗi lần bấm. Lỡ tải lại trang hoặc quay về
+slide thì vào lại game sẽ có nút **Chơi tiếp**. Trước buổi thuyết trình, nhớ
+bỏ ván chơi thử (menu ≡ → **Bỏ ván này**, hoặc **Ván mới** ở bảng kết quả).
+
+### Câu hỏi
+
+Câu hỏi nằm ở `content/quiz.ts`: 62 câu, gồm 24 câu E5, 22 câu RON95 và 16
+câu khó. Thứ tự rút câu được xáo mỗi ván mới, và mỗi lần một câu được rút,
+bốn đáp án lại được xáo vị trí A–D. Vì vậy gặp lại câu cũ thì đáp án đúng
+nằm ở ô khác. Cách xếp được lưu cùng ván chơi, nên tải lại trang không làm
+đáp án đổi chỗ giữa chừng.
+
+Mỗi câu có 4 đáp án; `correct` là vị trí đáp án đúng trong danh sách (0 là
+đáp án đầu tiên); `explain` hiện sau khi trả lời; `source` ghi slide để đối
+chiếu. Câu có đáp án là số, năm hoặc thứ tự (ví dụ 51, 52, 53, 54) được đánh
+dấu `keepOrder: true` để giữ nguyên thứ tự cho dễ đọc. Các câu có nguồn
+"Kiến thức chung", "Hiến pháp 2013" hoặc "Tổng điều tra 2019" nằm ngoài 15
+slide, nhóm nên đọc lại trước khi chơi.
+
+Sửa xong chạy `npm test`. Lệnh này kiểm tra luật chơi và ngân hàng câu hỏi:
+đủ bốn đáp án, không trùng mã câu, câu không dài quá khung hiển thị, câu giữ
+thứ tự thì các số tăng dần.
+
 ## Chỉnh nội dung
 
 | Muốn sửa | File |
@@ -57,6 +137,7 @@ slide ở cửa sổ nào thì cửa sổ kia cũng chuyển theo.
 | Tên người trình bày từng phần | `content/parts.ts` → `SECTIONS[].presenter` |
 | Tiêu đề và lời thuyết trình 15 slide | `content/script.ts` |
 | Chữ trên từng slide | `components/slides/` (mỗi phần một file) |
+| Câu hỏi của trò chơi | `content/quiz.ts` |
 
 Trường nào để trống thì không hiển thị trên slide.
 
@@ -73,6 +154,7 @@ Trường nào để trống thì không hiển thị trên slide.
 | Phần 1 | 1–3 | 1 |
 | Phần 2 | 4–6 | 2 |
 | Phần 3 | 7–9, 10–12, 13–15 | 3, 4, 5 |
+| Trò chơi (mở trang `/tro-choi`) | — | — |
 | Cảm ơn | — | — |
 
 Thiết kế dùng font Be Vietnam Pro, bảng màu chàm và son. Bản đồ Việt Nam vẽ
