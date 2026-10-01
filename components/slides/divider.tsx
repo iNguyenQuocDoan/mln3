@@ -9,8 +9,8 @@ export function PartDivider({ part }: { part: number }) {
     <div className="absolute inset-0 bg-cham text-on-cham">
       <BrocadeBand id={`band-part-${part}`} className="absolute inset-x-0 top-0" />
 
-      <div className="absolute top-[232px] left-32 flex items-center gap-20">
-        <div className="w-[300px] shrink-0">
+      <div className="absolute top-58 left-32 flex items-center gap-20">
+        <div className="w-75 shrink-0">
           <p className="text-lead font-semibold text-on-cham-soft">Phần</p>
           <p
             className="text-vang font-extrabold tabular-nums"
@@ -19,7 +19,7 @@ export function PartDivider({ part }: { part: number }) {
             {part}
           </p>
         </div>
-        <div className="w-[1180px]">
+        <div className="w-295">
           <h2 className="text-display font-extrabold text-balance">{title}</h2>
           {presenter ? (
             <p className="mt-10 text-lead text-on-cham-soft">

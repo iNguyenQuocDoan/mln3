@@ -5,7 +5,7 @@ import { DECK_INFO } from "@/content/parts";
 export function CoverSlide() {
   return (
     <div className="absolute inset-0">
-      <div className="absolute top-24 left-32 flex w-[1080px] flex-col">
+      <div className="absolute top-24 left-32 flex w-270 flex-col">
         <p className="text-lead font-bold">{DECK_INFO.course}</p>
 
         <h1 className="mt-40 text-display font-extrabold">
@@ -27,7 +27,7 @@ export function CoverSlide() {
       </div>
 
       <VietnamMap
-        className="absolute top-14 right-24 h-[872px]"
+        className="absolute top-14 right-24 h-218"
         labelSize={30}
       />
 

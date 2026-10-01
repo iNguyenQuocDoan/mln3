@@ -100,7 +100,7 @@ function NationDiagram() {
   return (
     <svg
       viewBox="0 0 860 800"
-      className="h-full max-h-[740px] w-auto"
+      className="h-full max-h-185 w-auto"
       role="img"
       aria-label="Sơ đồ: một quốc gia bao gồm nhiều tộc người"
     >

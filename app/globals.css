@@ -36,6 +36,9 @@
   --text-title: 68px;
   --text-title--line-height: 1.08;
   --text-title--letter-spacing: -0.015em;
+  --text-keyword: 84px;
+  --text-keyword--line-height: 1.1;
+  --text-keyword--letter-spacing: -0.01em;
   --text-display: 104px;
   --text-display--line-height: 1.12;
   --text-display--letter-spacing: -0.02em;

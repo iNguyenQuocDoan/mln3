@@ -3,6 +3,7 @@ import { AgendaSlide } from "@/components/slides/agenda";
 import { CoverSlide } from "@/components/slides/cover";
 import { PartDivider } from "@/components/slides/divider";
 import { ConceptSlide, DistinctionSlide } from "@/components/slides/part-1";
+import { ProgramSlide, TrendsSlide } from "@/components/slides/part-2";
 import { getPart } from "./parts";
 
 function divider(part: number): DeckSlide {
@@ -50,6 +51,22 @@ export const slides: DeckSlide[] = [
     content: <DistinctionSlide />,
   },
   divider(2),
+  {
+    id: "hai-xu-huong",
+    kind: "content",
+    tone: "light",
+    part: 2,
+    label: "Hai xu hướng khách quan của sự phát triển quan hệ dân tộc",
+    content: <TrendsSlide />,
+  },
+  {
+    id: "cuong-linh",
+    kind: "content",
+    tone: "light",
+    part: 2,
+    label: "Cương lĩnh dân tộc của chủ nghĩa Mác – Lênin",
+    content: <ProgramSlide />,
+  },
   divider(3),
   divider(4),
   divider(5),
