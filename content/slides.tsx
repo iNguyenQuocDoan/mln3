@@ -5,6 +5,7 @@ import { ClosingSlide } from "@/components/slides/closing";
 import { CoverSlide } from "@/components/slides/cover";
 import { PartDivider } from "@/components/slides/divider";
 import { FeaturesSteps } from "@/components/slides/features-steps";
+import { GameIntroSlide } from "@/components/slides/game-intro";
 import {
   EthnicSlide,
   FormationSlide,
@@ -83,6 +84,14 @@ export const slides: DeckSlide[] = [
   content("phat-trien", [11], <DevelopmentSlide />),
   content("trach-nhiem", [12], <ResponsibilitySlide />),
   content("chinh-sach", [13, 14, 15], <PolicySteps />),
+
+  {
+    id: "tro-choi",
+    kind: "game",
+    tone: "dark",
+    label: "Trò chơi: Đường đua tiếp nhiên liệu",
+    content: <GameIntroSlide />,
+  },
 
   {
     id: "cam-on",

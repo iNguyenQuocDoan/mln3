@@ -5,7 +5,7 @@ export const STAGE_HEIGHT = 1080;
 
 export type DeckSlide = {
   id: string;
-  kind: "cover" | "divider" | "content" | "closing";
+  kind: "cover" | "divider" | "content" | "game" | "closing";
   tone: "light" | "dark";
   /** Phần (1–3) mà slide mở đầu (với slide chuyển phần). */
   part?: number;
