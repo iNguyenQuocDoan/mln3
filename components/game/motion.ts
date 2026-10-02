@@ -1,17 +1,17 @@
-import type { Move } from "./engine";
+/** Xúc xắc lăn (CSS `die-tumble`) rồi mới dừng ở mặt vừa đổ. */
+export const ROLL_MS = 950;
 
-/** Thời gian (ms) để xe chạy hết `cells` ô. */
-export function driveMs(kind: Move["kind"], cells: number) {
-  const perCell = kind === "nitro" ? 280 : 420;
-  return Math.min(2000, Math.max(700, Math.abs(cells) * perCell + 260));
-}
+/** Thời gian (ms) giữa mỗi bước khi quân cờ chạy qua từng ô — không teleport. */
+export const TILE_STEP_MS = 280;
 
-/** Thời gian của cả bước chạy; hết bước này mới sang lượt đội kế tiếp. */
-export function moveMs(move: Move) {
-  if (move.kind === "police") return 1800;
-  if (move.shifts.length === 0) return 500;
-  return (
-    Math.max(...move.shifts.map((shift) => driveMs(move.kind, shift.cells))) +
-    450
-  );
+/** Quân cờ dừng ở ô vừa đến một lúc để khán giả đọc tên ô và biết có 🎁 không. */
+export const LAND_PAUSE_MS = 1400;
+
+/** Các ô quân cờ đi qua khi dời từ `from` tới `to` (không gồm `from`). */
+export function buildSteps(from: number, to: number): number[] {
+  if (from === to) return [to];
+  const dir = to > from ? 1 : -1;
+  const steps: number[] = [];
+  for (let p = from + dir; dir > 0 ? p <= to : p >= to; p += dir) steps.push(p);
+  return steps;
 }

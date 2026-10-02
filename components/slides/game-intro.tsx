@@ -1,8 +1,7 @@
 import Link from "next/link";
 import { BrocadeBand } from "@/components/art/brocade-band";
-import { Car } from "@/components/game/car";
-import { PUMPS, TEAM_COLORS } from "@/components/game/palette";
-import { PumpGlyph } from "@/components/game/pump";
+import { TeamAvatar } from "@/components/game/team-piece";
+import { TEAM_DEFS } from "@/content/game-teams";
 import { delay, stagger } from "@/components/motion";
 
 /**
@@ -15,36 +14,27 @@ export function GameIntroSlide() {
       <BrocadeBand id="band-game" className="absolute inset-x-0 top-0" />
 
       <div className="absolute top-40 left-32 w-250">
-        <p
-          className="anim-fade text-lead font-bold text-on-cham-soft"
-          style={delay(150)}
-        >
+        <p className="anim-fade text-lead font-bold text-on-cham-soft" style={delay(150)}>
           Trò chơi ôn tập
         </p>
-        <h2
-          className="anim-rise mt-6 text-display font-extrabold"
-          style={stagger(0)}
-        >
+        <h2 className="anim-rise mt-6 text-display font-extrabold" style={stagger(0)}>
           Đường đua
           <br />
-          tiếp nhiên liệu
+          đại đoàn kết
         </h2>
-        <p
-          className="anim-rise mt-8 text-lead text-on-cham-soft"
-          style={stagger(1)}
-        >
-          Các đội gieo xúc xắc chọn thứ tự, rồi lần lượt cử người lên chọn cây
-          xăng và trả lời câu hỏi về bài vừa trình bày. Đội về đích trước
-          thắng.
+        <p className="anim-rise mt-8 text-lead text-on-cham-soft" style={stagger(1)}>
+          Năm đội lần lượt trả lời câu hỏi, đúng mới được đổ xúc xắc và lật thẻ may rủi trên hành
+          trình gồm các ô xuyên Việt — từ KHỞI HÀNH tới KHỐI ĐẠI ĐOÀN KẾT TOÀN DÂN TỘC.
         </p>
-        <ul className="anim-rise mt-12 flex gap-14" style={stagger(2)}>
-          {PUMPS.map((pump) => (
-            <li key={pump.id} className="flex items-center gap-4">
-              <PumpGlyph pump={pump} size={52} />
-              <span className="text-lead font-extrabold">{pump.name}</span>
-              <span className="text-body text-on-cham-soft">
-                {pump.liters}
-              </span>
+        <ul className="anim-rise mt-12 flex flex-wrap gap-4" style={stagger(2)}>
+          {TEAM_DEFS.map((team) => (
+            <li
+              key={team.id}
+              className="flex items-center gap-2 rounded-full py-1.5 pr-5 pl-1.5 text-body font-extrabold"
+              style={{ background: team.color, color: team.ink }}
+            >
+              <TeamAvatar teamId={team.id} size={40} />
+              {team.name}
             </li>
           ))}
         </ul>
@@ -55,21 +45,6 @@ export function GameIntroSlide() {
         >
           Vào đường đua
         </Link>
-      </div>
-
-      <div
-        className="anim-fade absolute top-72 right-32 flex flex-col gap-10"
-        style={delay(700)}
-        aria-hidden="true"
-      >
-        {TEAM_COLORS.slice(0, 4).map((color, i) => (
-          <Car
-            key={color}
-            color={color}
-            width={300}
-            style={{ marginLeft: i % 2 === 0 ? 0 : 120 }}
-          />
-        ))}
       </div>
     </div>
   );

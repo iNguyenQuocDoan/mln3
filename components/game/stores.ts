@@ -1,28 +1,24 @@
 "use client";
 
 import { useMemo, useSyncExternalStore } from "react";
-import { isGameState, MAX_TEAMS, MIN_TEAMS, type GameState } from "./engine";
+import { createGame, isGameState, type GameState } from "./engine";
+import { clampMusicVolume, GAME_AUDIO } from "./audio-config";
 
 /*
- * Ván chơi và cài đặt được giữ trong bộ nhớ của trang và chép sang
- * localStorage: lỡ tải lại trang hoặc quay về slide rồi vào lại vẫn chơi
- * tiếp được. Nếu trình duyệt chặn localStorage thì vẫn chơi bình thường,
- * chỉ không giữ được qua lần tải lại.
+ * Ván chơi được giữ trong bộ nhớ của trang và chép sang localStorage: lỡ
+ * tải lại trang vẫn chơi tiếp được. Nếu trình duyệt chặn localStorage thì
+ * vẫn chơi bình thường, chỉ không giữ được qua lần tải lại.
  */
 
 type Store<T> = {
   subscribe(listener: () => void): () => void;
-  /** Chuỗi JSON đang lưu; giữ nguyên tham chiếu khi dữ liệu không đổi. */
   snapshot(): string | null;
   decode(text: string | null): T | null;
   get(): T | null;
   set(value: T | null): void;
 };
 
-function createStore<T>(
-  key: string,
-  parse: (value: unknown) => T | null,
-): Store<T> {
+function createStore<T>(key: string, parse: (value: unknown) => T | null): Store<T> {
   let raw: string | null | undefined;
   const listeners = new Set<() => void>();
 
@@ -74,79 +70,34 @@ function useStore<T>(store: Store<T>): T | null {
   return useMemo(() => store.decode(text), [store, text]);
 }
 
+const gameStore = createStore<GameState>("mln131-board-game-v5", (value) =>
+  isGameState(value) ? value : null,
+);
+
 export type Settings = {
-  teamNames: string[];
-  trackLength: number;
-  /** null: không đếm giờ. */
-  answerSeconds: number | null;
+  /** Hiệu ứng âm thanh (xúc xắc, đúng/sai, lật thẻ…). */
   sound: boolean;
+  /** Nhạc nền — bật/tắt riêng với hiệu ứng. */
+  music: boolean;
+  musicVolume: number;
 };
-
-export const TRACK_LENGTHS = [6, 8, 10, 12];
-export const ANSWER_SECONDS: (number | null)[] = [15, 20, 30, null];
-export const MAX_NAME_LENGTH = 16;
-
-export const DEFAULT_SETTINGS: Settings = {
-  teamNames: ["Đội 1", "Đội 2", "Đội 3", "Đội 4"],
-  trackLength: 10,
-  answerSeconds: 20,
-  sound: true,
-};
+const DEFAULT_SETTINGS: Settings = { sound: true, music: true, musicVolume: GAME_AUDIO.background.volume };
 
 function parseSettings(value: unknown): Settings | null {
   if (typeof value !== "object" || value === null) return null;
   const input = value as Record<string, unknown>;
-  const names = input.teamNames;
   return {
-    teamNames:
-      Array.isArray(names) &&
-      names.length >= MIN_TEAMS &&
-      names.length <= MAX_TEAMS &&
-      names.every((name) => typeof name === "string")
-        ? names.map((name) => name.slice(0, MAX_NAME_LENGTH))
-        : DEFAULT_SETTINGS.teamNames,
-    trackLength: TRACK_LENGTHS.includes(input.trackLength as number)
-      ? (input.trackLength as number)
-      : DEFAULT_SETTINGS.trackLength,
-    answerSeconds: ANSWER_SECONDS.includes(input.answerSeconds as number | null)
-      ? (input.answerSeconds as number | null)
-      : DEFAULT_SETTINGS.answerSeconds,
-    sound: typeof input.sound === "boolean" ? input.sound : true,
+    sound: typeof input.sound === "boolean" ? input.sound : DEFAULT_SETTINGS.sound,
+    music: typeof input.music === "boolean" ? input.music : DEFAULT_SETTINGS.music,
+    musicVolume:
+      typeof input.musicVolume === "number"
+        ? clampMusicVolume(input.musicVolume)
+        : DEFAULT_SETTINGS.musicVolume,
   };
 }
 
-const gameStore = createStore<GameState>("mln131-race-game", (value) =>
-  isGameState(value) ? value : null,
-);
+const settingsStore = createStore<Settings>("mln131-board-settings", parseSettings);
 
-const settingsStore = createStore<Settings>(
-  "mln131-race-settings",
-  parseSettings,
-);
-
-/*
- * Những câu đã hỏi ở các ván trước (câu mới nhất ở cuối), để ván sau hỏi
- * trước những câu chưa gặp. Nhớ khoảng nửa ngân hàng câu hỏi.
- */
-const RECENT_LIMIT = 50;
-
-const recentStore = createStore<string[]>("mln131-race-recent", (value) =>
-  Array.isArray(value) && value.every((id) => typeof id === "string")
-    ? value
-    : null,
-);
-
-export function readRecent(): string[] {
-  return recentStore.get() ?? [];
-}
-
-export function rememberAsked(questionId: string) {
-  const list = readRecent().filter((id) => id !== questionId);
-  list.push(questionId);
-  recentStore.set(list.slice(-RECENT_LIMIT));
-}
-
-/** Ván đang lưu (null nếu chưa có hoặc dữ liệu hỏng). */
 export function useGame(): GameState | null {
   return useStore(gameStore);
 }
@@ -155,28 +106,64 @@ export function useSettings(): Settings {
   return useStore(settingsStore) ?? DEFAULT_SETTINGS;
 }
 
-export function readGame(): GameState | null {
-  return gameStore.get();
-}
-
 export function saveGame(state: GameState | null) {
   gameStore.set(state);
 }
 
-/** Áp một bước luật chơi lên ván đang lưu; trả về trạng thái mới. */
+/** Mở /tro-choi lần đầu: tạo sẵn ván "chưa bắt đầu"; có ván đang dở thì giữ. */
+export function ensureGame() {
+  if (!gameStore.get()) gameStore.set(createGame());
+}
+
+export function updateSettings(change: Partial<Settings>) {
+  settingsStore.set({ ...(settingsStore.get() ?? DEFAULT_SETTINGS), ...change });
+}
+
+/*
+ * Hoàn tác: giữ một ngăn xếp các trạng thái trước đó trong bộ nhớ của tab
+ * (không cần lưu localStorage — chỉ dùng để sửa thao tác bấm nhầm vừa rồi).
+ */
+const UNDO_LIMIT = 20;
+let undoStack: GameState[] = [];
+
+/**
+ * Áp một bước luật chơi lên ván đang lưu; trả về trạng thái mới. Các bước
+ * tự động (xúc xắc dừng, hoạt ảnh chạy xong) gọi với `record: false` để
+ * không chiếm chỗ trong lịch sử hoàn tác — Undo luôn quay về trước một
+ * thao tác thật của MC (đổ xúc xắc, chọn đáp án, chọn thẻ, chọn mục tiêu).
+ */
 export function updateGame(
   step: (state: GameState) => GameState,
+  { record = true }: { record?: boolean } = {},
 ): GameState | null {
   const current = gameStore.get();
   if (!current) return null;
   const next = step(current);
-  if (next !== current) gameStore.set(next);
+  if (next === current) return next;
+  if (record) undoStack = [...undoStack.slice(-(UNDO_LIMIT - 1)), current];
+  gameStore.set(next);
   return next;
 }
 
-export function updateSettings(change: Partial<Settings>) {
-  settingsStore.set({
-    ...(settingsStore.get() ?? DEFAULT_SETTINGS),
-    ...change,
-  });
+export function hasUndo(): boolean {
+  return undoStack.length > 0;
+}
+
+/**
+ * Khôi phục trạng thái ngay trước thao tác gần nhất. Danh sách câu đã dùng
+ * thì giữ nguyên (hợp với trạng thái hiện tại): câu nào đã lộ ra màn hình
+ * thì không bao giờ được hỏi lại, kể cả sau khi hoàn tác.
+ */
+export function undo(): GameState | null {
+  const previous = undoStack.pop();
+  if (!previous) return null;
+  const current = gameStore.get();
+  const used = new Set([...previous.usedQuestionIds, ...(current?.usedQuestionIds ?? [])]);
+  const restored = { ...previous, usedQuestionIds: [...used] };
+  gameStore.set(restored);
+  return restored;
+}
+
+export function clearUndoHistory() {
+  undoStack = [];
 }

@@ -162,227 +162,10 @@ body {
 }
 
 /*
- * Trò chơi "Đường đua tiếp nhiên liệu" (trang /tro-choi).
- * Chuyển động chỉ chạy khi người chơi vừa bấm: xe chạy, thẻ lật, đèn xuất
- * phát và pháo giấy khi về đích.
+ * Trò chơi "Đường đua đại đoàn kết" (trang /tro-choi).
+ * Chuyển động chỉ chạy khi có diễn biến: xúc xắc lăn, thẻ lật, quân cờ về
+ * đích và pháo giấy khi có đội chiến thắng.
  */
-
-/* Xe chạy giữa các ô; thời lượng đặt theo số ô ngay trên phần tử. */
-.car-slot {
-  transition-property: transform;
-  transition-timing-function: cubic-bezier(0.5, 0, 0.2, 1);
-}
-
-@keyframes wheel-spin {
-  to {
-    transform: rotate(360deg);
-  }
-}
-
-.car-wheel {
-  transform-box: fill-box;
-  transform-origin: center;
-}
-
-.car-driving .car-wheel {
-  animation: wheel-spin 300ms linear infinite;
-}
-
-@keyframes puff {
-  from {
-    opacity: 0.8;
-    transform: translate(0, 0) scale(0.5);
-  }
-  to {
-    opacity: 0;
-    transform: translate(-48px, -12px) scale(1.7);
-  }
-}
-
-.car-puff {
-  transform-box: fill-box;
-  transform-origin: center;
-  animation: puff 700ms ease-out infinite both;
-}
-
-@keyframes flame {
-  0%,
-  100% {
-    transform: scaleX(1);
-  }
-  50% {
-    transform: scaleX(0.72);
-  }
-}
-
-.car-flame {
-  transform-box: fill-box;
-  transform-origin: right center;
-  animation: flame 110ms linear infinite;
-}
-
-@keyframes shake {
-  0%,
-  100% {
-    transform: none;
-  }
-  20% {
-    transform: translateY(-4px) rotate(-3deg);
-  }
-  40% {
-    transform: translateY(2px) rotate(2deg);
-  }
-  60% {
-    transform: translateY(-3px) rotate(-2deg);
-  }
-  80% {
-    transform: translateY(1px) rotate(1deg);
-  }
-}
-
-.anim-shake {
-  animation: shake 450ms ease-in-out 2;
-}
-
-/* Số ô vừa tiến/lùi bay lên trên nóc xe. */
-@keyframes float-up {
-  0% {
-    opacity: 0;
-    transform: translateY(12px) scale(0.7);
-  }
-  15% {
-    opacity: 1;
-    transform: scale(1.1);
-  }
-  75% {
-    opacity: 1;
-    transform: translateY(-18px);
-  }
-  100% {
-    opacity: 0;
-    transform: translateY(-40px);
-  }
-}
-
-.anim-float {
-  animation: float-up 1600ms ease-out both;
-}
-
-/* Cảnh sát: đèn xanh đỏ trên nóc xe và trên cả làn. */
-@keyframes blink-a {
-  0%,
-  49% {
-    opacity: 1;
-  }
-  50%,
-  100% {
-    opacity: 0.15;
-  }
-}
-
-@keyframes blink-b {
-  0%,
-  49% {
-    opacity: 0.15;
-  }
-  50%,
-  100% {
-    opacity: 1;
-  }
-}
-
-.siren-red {
-  background: #ff4d4d;
-  box-shadow: 0 0 24px 6px #ff4d4d;
-  animation: blink-a 500ms infinite;
-}
-
-.siren-blue {
-  background: #4d7cff;
-  box-shadow: 0 0 24px 6px #4d7cff;
-  animation: blink-b 500ms infinite;
-}
-
-.siren-rays {
-  animation: blink-a 400ms infinite;
-}
-
-@keyframes lane-siren {
-  0%,
-  49% {
-    background: rgb(255 77 77 / 0.16);
-  }
-  50%,
-  100% {
-    background: rgb(77 124 255 / 0.2);
-  }
-}
-
-.lane-siren {
-  animation: lane-siren 500ms infinite;
-}
-
-/* Làn có thể bị cướp xăng: viền nhấp nháy, sáng lên khi rê chuột. */
-@keyframes target-pulse {
-  0%,
-  100% {
-    box-shadow: inset 0 0 0 4px var(--ring);
-  }
-  50% {
-    box-shadow: inset 0 0 0 10px var(--ring);
-  }
-}
-
-.steal-target {
-  animation: target-pulse 900ms ease-in-out infinite;
-}
-
-.steal-target:hover,
-.steal-target:focus-visible {
-  background: rgb(182 156 255 / 0.22);
-}
-
-/* Cột bơm: nhấc lên khi rê chuột, mờ khi chưa tới lúc chọn. */
-.pump {
-  transition:
-    transform 160ms ease-out,
-    opacity 200ms ease-out;
-}
-
-.pump:not(:disabled):hover,
-.pump:focus-visible {
-  transform: translateY(-8px);
-}
-
-.pump:focus-visible .pump-shell {
-  outline: 4px solid var(--color-vang);
-  outline-offset: 6px;
-}
-
-.pump:disabled {
-  opacity: 0.45;
-}
-
-/* Băng báo lượt: chạy vào, dừng lại, chạy ra. */
-@keyframes turn-pass {
-  0% {
-    opacity: 0;
-    transform: translateX(-60px);
-  }
-  14%,
-  80% {
-    opacity: 1;
-    transform: none;
-  }
-  100% {
-    opacity: 0;
-    transform: translateX(60px);
-  }
-}
-
-.turn-pass {
-  animation: turn-pass 1700ms cubic-bezier(0.2, 0.7, 0.2, 1) both;
-}
 
 @keyframes panel-in {
   from {
@@ -399,30 +182,19 @@ body {
   animation: panel-in 380ms cubic-bezier(0.2, 0.7, 0.2, 1) both;
 }
 
-/* Đồng hồ trả lời: thanh xăng cạn dần; thời lượng đặt trên phần tử. */
-@keyframes drain {
-  from {
-    transform: scaleX(1);
-  }
-  to {
-    transform: scaleX(0);
-  }
-}
-
-.timer-drain {
-  animation-name: drain;
-  animation-timing-function: linear;
-  animation-fill-mode: forwards;
-}
-
-/* Bình ???: thẻ lật lại để lộ sự kiện. */
+/* Vòng lật thẻ: thẻ úp (card-back.png) lật lại để lộ mặt trước. */
 .flip-card {
   perspective: 2400px;
+  transition: transform 160ms ease-out;
+}
+
+.flip-card:not(:disabled):hover {
+  transform: translateY(-8px) rotate(-1.5deg);
 }
 
 .flip-inner {
   transform-style: preserve-3d;
-  animation: flip-reveal 700ms cubic-bezier(0.3, 0.7, 0.2, 1) 300ms both;
+  animation: flip-reveal 700ms cubic-bezier(0.3, 0.7, 0.2, 1) both;
 }
 
 .flip-face {
@@ -442,85 +214,37 @@ body {
   }
 }
 
-@keyframes drip {
-  0% {
-    opacity: 0;
-    transform: translateY(-8px);
+/* Ô đích: phát sáng nhẹ, rộ lên khi có nhân vật đứng trên ô. */
+@keyframes finish-glow {
+  0%,
+  100% {
+    box-shadow: 0 0 18px 2px rgb(227 180 75 / 0.35);
   }
-  30% {
-    opacity: 1;
+  50% {
+    box-shadow: 0 0 34px 8px rgb(227 180 75 / 0.6);
+  }
+}
+
+.finish-glow {
+  animation: finish-glow 2400ms ease-in-out infinite;
+}
+
+@keyframes finish-arrive {
+  0% {
+    transform: scale(1.06);
+  }
+  40% {
+    transform: scale(1.16);
   }
   100% {
-    opacity: 0;
-    transform: translateY(14px);
+    transform: scale(1.06);
   }
 }
 
-.drip {
-  animation: drip 900ms ease-in infinite;
-}
-
-/* Đèn xuất phát: ba đèn đỏ sáng lần lượt (--on-at), rồi cùng chuyển xanh. */
-.start-light {
-  background: #2b1518;
+.finish-arrive {
   animation:
-    light-red 120ms linear var(--on-at) forwards,
-    light-green 120ms linear 2900ms forwards;
-}
-
-@keyframes light-red {
-  to {
-    background: #ff3b30;
-    box-shadow: 0 0 48px 10px rgb(255 59 48 / 0.6);
-  }
-}
-
-@keyframes light-green {
-  to {
-    background: #34d17a;
-    box-shadow: 0 0 48px 10px rgb(52 209 122 / 0.6);
-  }
-}
-
-.start-go {
-  opacity: 0;
-  animation: go-in 300ms cubic-bezier(0.2, 0.7, 0.2, 1) 2900ms forwards;
-}
-
-@keyframes go-in {
-  from {
-    opacity: 0;
-    transform: scale(0.6);
-  }
-  to {
-    opacity: 1;
-    transform: none;
-  }
-}
-
-.start-overlay {
-  animation: fade-out 400ms ease-in 3300ms forwards;
-}
-
-@keyframes fade-out {
-  to {
-    opacity: 0;
-  }
-}
-
-@keyframes confetti-fall {
-  from {
-    transform: translate3d(0, -80px, 0) rotate(0deg);
-  }
-  to {
-    transform: translate3d(var(--drift), 1200px, 0) rotate(var(--spin));
-  }
-}
-
-.confetti {
-  animation-name: confetti-fall;
-  animation-timing-function: linear;
-  animation-fill-mode: both;
+    finish-glow 2400ms ease-in-out infinite,
+    finish-arrive 700ms cubic-bezier(0.2, 0.7, 0.2, 1) both;
 }
 
 @keyframes wave {
@@ -529,16 +253,17 @@ body {
     transform: skewY(0deg);
   }
   50% {
-    transform: skewY(-4deg);
+    transform: skewY(-6deg);
   }
 }
 
 .flag-wave {
+  display: inline-block;
   transform-origin: left center;
   animation: wave 900ms ease-in-out infinite;
 }
 
-/* Xúc xắc lăn: lộn hai vòng, nảy lên rồi dừng ở mặt vừa gieo được. */
+/* Xúc xắc lăn: lộn hai vòng, nảy lên rồi dừng ở mặt vừa đổ được. */
 @keyframes die-tumble {
   0% {
     transform: rotate(0deg) scale(0.85);
@@ -561,23 +286,28 @@ body {
 }
 
 .die-tumble {
+  transform-origin: center;
   animation: die-tumble 900ms cubic-bezier(0.25, 0.8, 0.3, 1) both;
 }
 
-@media (prefers-reduced-motion: reduce) {
-  .car-slot {
-    transition-duration: 0ms !important;
+@keyframes confetti-fall {
+  from {
+    transform: translate3d(0, -80px, 0) rotate(0deg);
   }
+  to {
+    transform: translate3d(var(--drift), 1200px, 0) rotate(var(--spin));
+  }
+}
 
-  .car-driving .car-wheel,
-  .car-puff,
-  .car-flame,
-  .anim-shake,
-  .anim-float,
-  .siren-rays,
-  .lane-siren,
-  .steal-target,
-  .drip,
+.confetti {
+  animation-name: confetti-fall;
+  animation-timing-function: linear;
+  animation-fill-mode: both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .finish-glow,
+  .finish-arrive,
   .flag-wave,
   .die-tumble {
     animation: none;
@@ -591,10 +321,5 @@ body {
   .flip-inner {
     animation-duration: 1ms;
     animation-delay: 0ms;
-  }
-
-  .turn-pass {
-    animation-name: fade-in;
-    animation-duration: 300ms;
   }
 }

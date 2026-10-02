@@ -1,703 +1,462 @@
 /*
- * Luật chơi "Đường đua tiếp nhiên liệu".
+ * Luật chơi "Đường đua đại đoàn kết" — race board game kiểu Cờ Tỷ Phú.
  *
  * Mọi hàm ở đây là hàm thuần: nhận trạng thái ván chơi, trả về trạng thái
- * mới, không đụng tới giao diện. Thao tác không hợp lệ ở thời điểm gọi
- * (bấm đáp án lần hai, hết giờ sau khi đã trả lời...) trả lại nguyên trạng
- * thái cũ, nên giao diện không cần tự chặn bấm đúp.
+ * mới, không đụng tới giao diện. Năm đội đi lần lượt Đội 1 → 5 → Đội 1...
  *
- * Trước khi đua: dice (các đội gieo xúc xắc chọn thứ tự) → startRace.
- * Một lượt: choose → question → answered → moving → (lượt sau | finished)
- *     hoặc: choose → event → [question → answered | steal] → moving → ...
+ * MC điều khiển nhịp chơi — phần mềm không bao giờ tự chuyển đội:
+ *   not-started ──[MC: BẮT ĐẦU]──▶ question (Đội 1)
+ *   question → chọn A/B/C/D
+ *     SAI  → turn-complete (đứng yên, không đổ, không lật thẻ)
+ *     ĐÚNG → waiting-roll ──[🎲]──▶ rolling → moving (từng ô)
+ *            → ô 🎁: card-selection → card-result → (target-selection) → moving
+ *            → turn-complete
+ *   turn-complete ──[MC: TIẾP TỤC → ĐỘI n]──▶ question của đội kế tiếp
+ *   Đội nào chạm FINISH (xúc xắc, thẻ hay đổi vị trí) thì game-over ngay.
+ *
+ * `startGame` và `continueToNextTeam` là hai nơi DUY NHẤT rút câu hỏi mới /
+ * đổi đội; cả hai chỉ được gọi từ nút bấm của MC.
+ *
+ * Vị trí không bao giờ "teleport" trước mắt người xem: mọi thay đổi vị trí
+ * được gom vào pha "moving" để giao diện animate từng ô, rồi mới áp dụng
+ * pha thật sự tiếp theo (`next`).
  */
 
-export type Level = "easy" | "medium" | "hard";
-export type PumpId = "e5" | "ron95" | "mystery";
-export type MysteryEvent = "hard" | "nitro" | "steal" | "flat" | "police";
+import { FINISH_POSITION, tileAt } from "../../content/game-board.ts";
+import { cardById, drawThreeCards, type CardId } from "../../content/game-cards.ts";
+import {
+  QUESTION_POOL,
+  questionById,
+  type GameQuestion,
+  type OptionId,
+} from "../../content/game-questions.ts";
+import { TEAM_DEFS } from "../../content/game-teams.ts";
 
-export type Question = {
-  id: string;
-  level: Level;
-  question: string;
-  /** Đúng bốn đáp án, giữ nguyên thứ tự khi hiển thị. */
-  answers: string[];
-  /** Vị trí đáp án đúng trong `answers` (0–3). */
-  correct: number;
-  /** Một hai câu giải thích, hiện sau khi trả lời. */
-  explain: string;
-  /** Nguồn để nhóm đối chiếu, ví dụ "Slide 8" hoặc "Kiến thức chung". */
-  source: string;
-  /**
-   * Giữ nguyên thứ tự đáp án khi hỏi (đáp án là số, năm, thứ tự...).
-   * Mặc định, mỗi lần rút câu thì bốn đáp án được xáo lại vị trí.
-   */
-  keepOrder?: boolean;
-};
+export type TeamId = string;
 
 export type Team = {
-  name: string;
-  /** Số ô đã đi (0 = vạch xuất phát, trackLength = vạch đích). */
+  id: TeamId;
   position: number;
-  correct: number;
-  /** Tổng số lít xăng đã nhận; nổ lốp hay bị cướp chỉ làm xe lùi. */
-  fuel: number;
+  previousPosition: number;
+  correctAnswers: number;
+  /** Thứ tự (toàn cục) lần gần nhất đội đổi vị trí — đội tới trước xếp trên. */
+  reachedPositionAt: number;
 };
 
-export type Move = {
-  kind: "fuel" | "miss" | "nitro" | "flat" | "police" | "steal";
-  /** Đội đang chơi lượt này. */
-  actor: number;
-  /** Số ô mỗi đội thực sự tiến (+) hoặc lùi (−), đã chặn trong đường đua. */
-  shifts: { team: number; cells: number }[];
-};
+/** Một bước dời quân trên bàn cờ, để giao diện animate từng ô. */
+export type BoardMove = { teamId: TeamId; from: number; to: number };
+
+/** Lượt vừa xong diễn ra thế nào — để màn "turn-complete" kể lại cho khán giả. */
+export type TurnOutcome =
+  | { kind: "wrong"; questionId: string; picked: OptionId }
+  | { kind: "moved"; dice: number; cardId?: CardId; targetId?: TeamId };
 
 export type Phase =
-  /** Gieo xúc xắc chọn thứ tự xuất phát, trước khi đua. */
-  | { kind: "dice" }
-  | { kind: "choose" }
+  | { kind: "not-started" }
+  | { kind: "question"; questionId: string }
+  /** Đã trả lời ĐÚNG câu `questionId`; chờ bấm 🎲. */
+  | { kind: "waiting-roll"; questionId: string; picked: OptionId }
+  | { kind: "rolling"; value: number }
   | {
-      kind: "question";
-      pump: PumpId;
-      questionId: string;
-      /** Ô thứ i (A, B, C, D) hiện đáp án gốc options[i] của câu hỏi. */
-      options: number[];
+      kind: "moving";
+      moves: BoardMove[];
+      next: Phase;
+      /** Nước đi do xúc xắc hay do thẻ — để giao diện chú thích cho khán giả. */
+      cause: "dice" | "card";
     }
+  | { kind: "card-selection"; cards: CardId[] }
+  | { kind: "card-result"; cards: CardId[]; cardId: CardId; cardIndex: number }
+  | { kind: "target-selection"; cardId: CardId; candidates: TeamId[] }
+  /** Hết lượt: DỪNG HẲN, chờ MC bấm "TIẾP TỤC → ĐỘI n". */
+  | { kind: "turn-complete"; outcome: TurnOutcome }
   | {
-      kind: "answered";
-      pump: PumpId;
-      questionId: string;
-      options: number[];
-      /** Ô đã chọn (0 = A...); null: hết giờ mà chưa chọn. */
-      picked: number | null;
-      correct: boolean;
-    }
-  | {
-      kind: "event";
-      event: MysteryEvent;
-      /** Câu khó đã rút sẵn (chỉ với sự kiện "hard") và cách xếp đáp án. */
-      questionId: string | null;
-      options: number[];
-    }
-  | { kind: "steal" }
-  | { kind: "moving"; move: Move }
-  /** winner null: MC kết thúc sớm, xếp hạng theo quãng đường. */
-  | { kind: "finished"; winner: number | null };
-
-export type GameOptions = {
-  teamNames: string[];
-  trackLength: number;
-  /** null: không giới hạn thời gian trả lời. */
-  answerSeconds: number | null;
-};
+      kind: "game-over";
+      winnerId: TeamId;
+      ranking: TeamId[];
+      /** "questions-exhausted": đã dùng hết pool câu hỏi mà chưa ai về đích. */
+      reason: "finish" | "questions-exhausted";
+    };
 
 export type GameState = {
-  trackLength: number;
-  answerSeconds: number | null;
   teams: Team[];
-  /** Đội đang tới lượt. */
-  current: number;
-  /** Số lượt đã chơi xong. */
-  turn: number;
+  currentTeamIndex: number;
   phase: Phase;
-  /** Các lần gieo xúc xắc của từng đội (gieo lại khi trùng số). */
-  rolls: number[][];
-  /** Thứ tự lượt chơi theo kết quả gieo; rỗng khi chưa chốt. */
-  order: number[];
-  /** Câu hỏi chưa dùng của từng mức, đã xáo sẵn; rút từ đầu mảng. */
-  pools: Record<Level, string[]>;
-  lastAsked: Partial<Record<Level, string>>;
+  /** Mọi câu đã từng xuất hiện trong ván — không bao giờ được hỏi lại. */
+  usedQuestionIds: string[];
+  diceValue: number | null;
+  moveSeq: number;
+  /** Dùng nội bộ trong một bước xử lý; luôn rỗng giữa hai hành động. */
+  pendingMoves: BoardMove[];
 };
 
-/** Hàm sinh số ngẫu nhiên trong [0, 1), như Math.random. */
 export type Rng = () => number;
 
-export const MIN_TEAMS = 2;
-export const MAX_TEAMS = 6;
+/* -------------------------------------------------------------------- */
+/* Khởi tạo & truy vấn                                                    */
+/* -------------------------------------------------------------------- */
 
-/** Số lít (cũng là số ô được tiến) khi trả lời đúng ở mỗi cây xăng. */
-export const PUMP_LITERS: Record<PumpId, number> = {
-  e5: 1,
-  ron95: 2,
-  mystery: 3,
-};
-
-const PUMP_LEVEL: Record<PumpId, Level> = {
-  e5: "easy",
-  ron95: "medium",
-  mystery: "hard",
-};
-
-/**
- * Thế của đội đang chơi so với các đội khác, dùng để cân bằng ngầm bình ???:
- * bỏ xa các đội khác từ BALANCE_GAP ô thì "leading", đứng cuối và kém đội
- * đầu từ BALANCE_GAP ô thì "trailing", còn lại "even".
- */
-export type Standing = "leading" | "even" | "trailing";
-export const BALANCE_GAP = 2;
-
-/**
- * Bình ???: tỉ lệ (phần trăm) của từng sự kiện theo thế của đội. Người chơi
- * không thấy bảng này; nó giữ cho các đội không bị bỏ quá xa nhau.
- */
-export const MYSTERY_ODDS: Record<
-  Standing,
-  readonly (readonly [MysteryEvent, number])[]
-> = {
-  even: [
-    ["hard", 50],
-    ["nitro", 15],
-    ["steal", 15],
-    ["flat", 10],
-    ["police", 10],
-  ],
-  leading: [
-    ["hard", 50],
-    ["nitro", 5],
-    ["steal", 5],
-    ["flat", 20],
-    ["police", 20],
-  ],
-  trailing: [
-    ["hard", 50],
-    ["nitro", 25],
-    ["steal", 25],
-    ["flat", 0],
-    ["police", 0],
-  ],
-};
-
-const MYSTERY_EVENTS: MysteryEvent[] = [
-  "hard",
-  "nitro",
-  "steal",
-  "flat",
-  "police",
-];
-
-export const NITRO_CELLS = 2;
-
-const LEVELS: Level[] = ["easy", "medium", "hard"];
-
-/**
- * Tạo ván mới. `recent`: mã các câu đã hỏi ở những ván trước; mỗi mức sẽ
- * hỏi trước các câu chưa hỏi (xáo ngẫu nhiên), các câu đã hỏi dồn xuống cuối.
- */
-export function createGame(
-  options: GameOptions,
-  bank: Question[],
-  rng: Rng,
-  recent: string[] = [],
-): GameState {
-  const count = options.teamNames.length;
-  if (count < MIN_TEAMS || count > MAX_TEAMS) {
-    throw new Error(`Cần từ 2 đến 6 đội, nhận được ${count}.`);
-  }
-  for (const level of LEVELS) {
-    if (!bank.some((item) => item.level === level)) {
-      throw new Error(`Ngân hàng câu hỏi chưa có câu nào ở mức "${level}".`);
-    }
-  }
+/** Ván mới: năm đội ở KHỞI HÀNH, chưa có câu hỏi nào — chờ MC bấm BẮT ĐẦU. */
+export function createGame(): GameState {
   return {
-    trackLength: options.trackLength,
-    answerSeconds: options.answerSeconds,
-    teams: options.teamNames.map((name, i) => ({
-      name: name.trim() || `Đội ${i + 1}`,
+    teams: TEAM_DEFS.map((def) => ({
+      id: def.id,
       position: 0,
-      correct: 0,
-      fuel: 0,
+      previousPosition: 0,
+      correctAnswers: 0,
+      reachedPositionAt: 0,
     })),
-    current: 0,
-    turn: 0,
-    phase: { kind: "dice" },
-    rolls: options.teamNames.map(() => []),
-    order: [],
-    pools: {
-      easy: freshFirst(idsOf(bank, "easy"), recent, rng),
-      medium: freshFirst(idsOf(bank, "medium"), recent, rng),
-      hard: freshFirst(idsOf(bank, "hard"), recent, rng),
-    },
-    lastAsked: {},
+    currentTeamIndex: 0,
+    phase: { kind: "not-started" },
+    usedQuestionIds: [],
+    diceValue: null,
+    moveSeq: 0,
+    pendingMoves: [],
   };
 }
 
+export function currentTeam(state: GameState): Team {
+  return state.teams[state.currentTeamIndex];
+}
+
+/** Đội sẽ chơi sau khi MC bấm "TIẾP TỤC". */
+export function nextTeam(state: GameState): Team {
+  return state.teams[(state.currentTeamIndex + 1) % state.teams.length];
+}
+
+export function teamOf(state: GameState, id: TeamId): Team {
+  const team = state.teams.find((item) => item.id === id);
+  if (!team) throw new Error(`Không tìm thấy đội "${id}"`);
+  return team;
+}
+
+export function currentQuestion(state: GameState): GameQuestion | undefined {
+  const phase = state.phase;
+  if (phase.kind === "question" || phase.kind === "waiting-roll") return questionById(phase.questionId);
+  if (phase.kind === "turn-complete" && phase.outcome.kind === "wrong") {
+    return questionById(phase.outcome.questionId);
+  }
+  return undefined;
+}
+
+/** Nút 🎲 chỉ bật khi đội hiện tại vừa trả lời đúng và chưa đổ. */
+export function canRollDice(state: GameState): boolean {
+  return state.phase.kind === "waiting-roll";
+}
+
 /**
- * Các đội đang phải gieo xúc xắc: đội chưa gieo, hoặc đội đang trùng số
- * (qua mọi lần gieo) với một đội khác.
+ * Thứ tự xếp hạng: ô cao hơn đứng trên; bằng ô thì xét số câu đúng, rồi
+ * đội tới vị trí đó sớm hơn, cuối cùng là số thứ tự đội (luôn ra một thứ
+ * tự duy nhất).
  */
-export function teamsToRoll(state: GameState): number[] {
-  if (state.phase.kind !== "dice") return [];
-  const rolls = state.rolls;
-  return rolls.flatMap((mine, i) =>
-    rolls.some((other, j) => j !== i && startsWith(other, mine)) ? [i] : [],
+export function ranking(state: GameState): TeamId[] {
+  return [...state.teams]
+    .sort(
+      (a, b) =>
+        b.position - a.position ||
+        b.correctAnswers - a.correctAnswers ||
+        a.reachedPositionAt - b.reachedPositionAt ||
+        state.teams.indexOf(a) - state.teams.indexOf(b),
+    )
+    .map((team) => team.id);
+}
+
+/* -------------------------------------------------------------------- */
+/* Nhịp lượt — chỉ MC mới chuyển đội                                      */
+/* -------------------------------------------------------------------- */
+
+/** MC bấm "BẮT ĐẦU TRÒ CHƠI": Đội 1 nhận câu hỏi đầu tiên. */
+export function startGame(state: GameState, rng: Rng): GameState {
+  if (state.phase.kind !== "not-started") return state;
+  return askQuestion({ ...state, currentTeamIndex: 0 }, rng);
+}
+
+/**
+ * MC bấm "TIẾP TỤC → ĐỘI n": nơi DUY NHẤT chuyển sang đội kế tiếp, và đội
+ * đó nhận ngay một câu hỏi mới.
+ */
+export function continueToNextTeam(state: GameState, rng: Rng): GameState {
+  if (state.phase.kind !== "turn-complete") return state;
+  return askQuestion(
+    { ...state, currentTeamIndex: (state.currentTeamIndex + 1) % state.teams.length, diceValue: null },
+    rng,
   );
 }
 
-/**
- * Một đội gieo xúc xắc (1–6). Khi không còn đội nào phải gieo, thứ tự xuất
- * phát được chốt: số lớn đi trước, trùng thì so tiếp lần gieo lại.
- */
-export function rollDie(state: GameState, team: number, rng: Rng): GameState {
-  if (!teamsToRoll(state).includes(team)) return state;
-  const value = Math.min(6, Math.floor(rng() * 6) + 1);
-  const rolls = state.rolls.map((sequence, i) =>
-    i === team ? [...sequence, value] : sequence,
-  );
-  const next = { ...state, rolls };
-  if (teamsToRoll(next).length > 0) return next;
-  const order = rolls
-    .map((_, i) => i)
-    .sort((a, b) => compareRolls(rolls[b], rolls[a]));
-  return { ...next, order };
+/** Đội hiện tại nhận một câu chưa từng xuất hiện; hết pool thì kết thúc ván. */
+function askQuestion(state: GameState, rng: Rng): GameState {
+  const drawn = drawQuestion(state, rng);
+  if (!drawn) {
+    // Không bao giờ lặp câu: hết pool mà chưa ai về đích thì dừng ván và
+    // xếp hạng theo vị trí hiện tại.
+    return finishGame(state, ranking(state)[0], "questions-exhausted");
+  }
+  return { ...drawn.state, phase: { kind: "question", questionId: drawn.questionId } };
 }
 
-/** Đã chốt thứ tự xuất phát: đội đầu tiên vào lượt. */
-export function startRace(state: GameState): GameState {
-  if (state.phase.kind !== "dice") return state;
-  if (state.order.length !== state.teams.length) return state;
-  return { ...state, current: state.order[0], phase: { kind: "choose" } };
+/** Hết lượt: đứng lại ở "turn-complete" — KHÔNG đổi đội, không rút câu hỏi. */
+function completeTurn(state: GameState, outcome: TurnOutcome): GameState {
+  return setPhase(state, { kind: "turn-complete", outcome });
 }
 
-/** Đội đang chơi bấm vào một cây xăng. */
-export function choosePump(
-  state: GameState,
-  pump: PumpId,
-  bank: Question[],
-  rng: Rng,
-): GameState {
-  if (state.phase.kind !== "choose") return state;
+/* -------------------------------------------------------------------- */
+/* Di chuyển                                                              */
+/* -------------------------------------------------------------------- */
 
-  if (pump !== "mystery") {
-    const { questionId, ...drawn } = draw(state, PUMP_LEVEL[pump], bank, rng);
-    const options = arrange(bank, questionId, rng);
-    return {
-      ...state,
-      ...drawn,
-      phase: { kind: "question", pump, questionId, options },
-    };
-  }
-
-  const event = drawEvent(state, rng);
-  if (event !== "hard") {
-    return {
-      ...state,
-      phase: { kind: "event", event, questionId: null, options: [] },
-    };
-  }
-  const { questionId, ...drawn } = draw(state, "hard", bank, rng);
-  const options = arrange(bank, questionId, rng);
+/** Dời một đội `delta` ô (âm là lùi), chặn trong [START, FINISH]. */
+function moveTeam(state: GameState, teamId: TeamId, delta: number): GameState {
+  const team = teamOf(state, teamId);
+  const to = Math.min(Math.max(team.position + delta, 0), FINISH_POSITION);
+  if (to === team.position) return state;
+  const moveSeq = state.moveSeq + 1;
   return {
     ...state,
-    ...drawn,
-    phase: { kind: "event", event, questionId, options },
+    moveSeq,
+    teams: state.teams.map((t) =>
+      t.id === teamId
+        ? { ...t, previousPosition: t.position, position: to, reachedPositionAt: moveSeq }
+        : t,
+    ),
+    pendingMoves: [...state.pendingMoves, { teamId, from: team.position, to }],
   };
 }
 
-/** Chọn ô đáp án (0 = A...); `null` nghĩa là hết giờ. */
-export function answer(
-  state: GameState,
-  picked: number | null,
-  bank: Question[],
-): GameState {
-  const phase = state.phase;
-  if (phase.kind !== "question") return state;
-  const question = bank.find((item) => item.id === phase.questionId);
-  const original = picked === null ? undefined : phase.options[picked];
+/**
+ * Hai đội đổi ô đứng cho nhau. Chỉ đổi position / previousPosition /
+ * reachedPositionAt — số câu đúng, màu, nhân vật và lượt chơi giữ nguyên.
+ * Cả hai quân cờ cùng được animate qua pha "moving".
+ */
+function swapTeams(state: GameState, aId: TeamId, bId: TeamId): GameState {
+  const a = teamOf(state, aId);
+  const b = teamOf(state, bId);
+  if (a.position === b.position) return state;
+  const moveSeq = state.moveSeq + 1;
+  const target: Record<TeamId, number> = { [aId]: b.position, [bId]: a.position };
+  return {
+    ...state,
+    moveSeq,
+    teams: state.teams.map((t) =>
+      t.id in target
+        ? { ...t, previousPosition: t.position, position: target[t.id], reachedPositionAt: moveSeq }
+        : t,
+    ),
+    pendingMoves: [
+      ...state.pendingMoves,
+      { teamId: aId, from: a.position, to: b.position },
+      { teamId: bId, from: b.position, to: a.position },
+    ],
+  };
+}
+
+/**
+ * Kết thúc một thẻ: xét trạng thái MỚI — đội nào đang đứng ở FINISH thì về
+ * đích (ưu tiên đội vừa dời quân), game-over đúng một lần; không thì hết lượt.
+ */
+function finishOrCompleteTurn(state: GameState, mover: TeamId, outcome: TurnOutcome): GameState {
+  const atFinish = state.teams.filter((t) => t.position >= FINISH_POSITION).map((t) => t.id);
+  if (atFinish.length === 0) return completeTurn(state, outcome);
+  return finishGame(state, atFinish.includes(mover) ? mover : atFinish[0], "finish");
+}
+
+/**
+ * Chuyển sang pha kế tiếp. Nếu bước vừa rồi làm đổi vị trí, bọc trong pha
+ * "moving" để giao diện animate trước; `next` áp dụng ngay sau đó.
+ */
+function setPhase(state: GameState, next: Phase): GameState {
+  if (state.pendingMoves.length === 0) return { ...state, phase: next };
   return {
     ...state,
     phase: {
-      kind: "answered",
-      pump: phase.pump,
-      questionId: phase.questionId,
-      options: phase.options,
-      picked,
-      correct: original !== undefined && original === question?.correct,
+      kind: "moving",
+      moves: state.pendingMoves,
+      next,
+      cause: state.phase.kind === "rolling" ? "dice" : "card",
     },
+    pendingMoves: [],
   };
 }
 
 /**
- * Bấm "Tiếp tục": đổ xăng theo kết quả trả lời, hoặc thực hiện sự kiện của
- * bình ??? (câu khó thì mở câu hỏi, cướp xăng thì chờ chọn đội).
+ * Hoạt ảnh di chuyển vừa chạy xong trên giao diện: áp dụng pha tiếp theo
+ * (vòng lật thẻ, turn-complete hoặc game-over) — không bao giờ đổi đội.
  */
-export function proceed(state: GameState): GameState {
-  const phase = state.phase;
-  const actor = state.current;
-
-  if (phase.kind === "answered") {
-    if (!phase.correct) return applyMove(state, "miss", []);
-    const liters = PUMP_LITERS[phase.pump];
-    return applyMove(state, "fuel", [
-      { team: actor, cells: liters, fuel: liters, correct: 1 },
-    ]);
-  }
-
-  if (phase.kind !== "event") return state;
-  switch (phase.event) {
-    case "hard":
-      return phase.questionId
-        ? {
-            ...state,
-            phase: {
-              kind: "question",
-              pump: "mystery",
-              questionId: phase.questionId,
-              options: phase.options,
-            },
-          }
-        : state;
-    case "nitro":
-      return applyMove(state, "nitro", [
-        { team: actor, cells: NITRO_CELLS, fuel: NITRO_CELLS },
-      ]);
-    case "flat":
-      return applyMove(state, "flat", [{ team: actor, cells: -1 }]);
-    case "police":
-      return applyMove(state, "police", []);
-    case "steal":
-      return { ...state, phase: { kind: "steal" } };
-  }
-}
-
-/** Các đội có thể bị cướp xăng: đội khác, đã rời vạch xuất phát. */
-export function stealTargets(state: GameState): number[] {
-  return state.teams.flatMap((team, i) =>
-    i !== state.current && team.position > 0 ? [i] : [],
-  );
-}
-
-/** Cướp xăng: đội `target` lùi 1 ô, đội đang chơi tiến 1 ô và nhận 1 lít. */
-export function steal(state: GameState, target: number): GameState {
-  if (state.phase.kind !== "steal") return state;
-  if (!stealTargets(state).includes(target)) return state;
-  return applyMove(state, "steal", [
-    { team: target, cells: -1 },
-    { team: state.current, cells: 1, fuel: 1 },
-  ]);
-}
-
-/** Xe chạy xong: về đích thì thắng, không thì tới lượt đội kế tiếp. */
-export function arrive(state: GameState): GameState {
+export function settleMove(state: GameState): GameState {
   if (state.phase.kind !== "moving") return state;
-  if (state.teams[state.current].position >= state.trackLength) {
-    return { ...state, phase: { kind: "finished", winner: state.current } };
-  }
-  return {
-    ...state,
-    current: nextTeam(state),
-    turn: state.turn + 1,
-    phase: { kind: "choose" },
-  };
+  return { ...state, phase: state.phase.next };
 }
 
-/** Đội chơi sau đội đang tới lượt, theo thứ tự xuất phát. */
-export function nextTeam(state: GameState): number {
-  const order = state.order;
-  if (order.length !== state.teams.length) {
-    return (state.current + 1) % state.teams.length;
-  }
-  return order[(order.indexOf(state.current) + 1) % order.length];
+/** Đội `winnerId` vừa chạm đích: dừng mọi lượt và chốt bảng xếp hạng. */
+function finishGame(state: GameState, winnerId: TeamId, reason: "finish" | "questions-exhausted"): GameState {
+  const others = ranking(state).filter((id) => id !== winnerId);
+  return setPhase(state, { kind: "game-over", winnerId, ranking: [winnerId, ...others], reason });
 }
 
-/** MC dừng cuộc đua; các đội xếp hạng theo quãng đường đã đi. */
-export function endEarly(state: GameState): GameState {
-  if (state.phase.kind === "finished" || state.phase.kind === "dice") {
-    return state;
-  }
-  if (state.phase.kind === "moving") {
-    const settled = arrive(state);
-    if (settled.phase.kind === "finished") return settled;
-  }
-  return { ...state, phase: { kind: "finished", winner: null } };
-}
-
-/** Mở lại ván đã lưu: bước xe đang chạy dở được hoàn tất ngay. */
-export function resume(state: GameState): GameState {
-  return state.phase.kind === "moving" ? arrive(state) : state;
-}
-
-/** Vòng hiện tại, bắt đầu từ 1. Mỗi vòng mọi đội chơi một lượt. */
-export function roundOf(state: GameState): number {
-  return Math.floor(state.turn / state.teams.length) + 1;
-}
+/* -------------------------------------------------------------------- */
+/* Câu hỏi                                                                */
+/* -------------------------------------------------------------------- */
 
 /**
- * Bảng xếp hạng: nhiều ô hơn đứng trên; bằng ô thì xét số câu đúng, rồi số
- * lít xăng. Các đội bằng nhau hoàn toàn thì đồng hạng.
+ * Lấy ngẫu nhiên một câu CHƯA TỪNG xuất hiện trong ván từ pool chung. Câu
+ * được đánh dấu đã dùng ngay khi rút; hết câu thì trả về null.
  */
-export function ranking(state: GameState): { team: number; rank: number }[] {
-  const teams = state.teams;
-  const order = teams
-    .map((_, i) => i)
-    .sort((a, b) => compareTeams(teams[a], teams[b]) || a - b);
-  return order.map((team) => ({
-    team,
-    rank:
-      1 +
-      order.filter((other) => compareTeams(teams[other], teams[team]) < 0)
-        .length,
-  }));
-}
-
-/** Kiểm tra dữ liệu đọc lại từ bộ nhớ trình duyệt có đúng là một ván chơi. */
-export function isGameState(value: unknown): value is GameState {
-  if (!isRecord(value)) return false;
-  const { trackLength, answerSeconds, teams, current, turn, phase, pools } =
-    value;
-  return (
-    isCount(trackLength) &&
-    trackLength > 0 &&
-    (answerSeconds === null || isCount(answerSeconds)) &&
-    Array.isArray(teams) &&
-    teams.length >= MIN_TEAMS &&
-    teams.length <= MAX_TEAMS &&
-    teams.every(isTeam) &&
-    isCount(current) &&
-    current < teams.length &&
-    isCount(turn) &&
-    isPhase(phase) &&
-    isRolls(value.rolls, teams.length) &&
-    isOrder(value.order, teams.length) &&
-    isRecord(pools) &&
-    LEVELS.every((level) => isStringArray(pools[level])) &&
-    isRecord(value.lastAsked)
-  );
-}
-
-/**
- * Thời lượng ước tính (phút) của một ván: đội dẫn đầu đi trung bình khoảng
- * 1,6 ô mỗi lượt, mỗi lượt mất khoảng 30 giây.
- */
-export function estimateMinutes(teams: number, trackLength: number): number {
-  const rounds = Math.ceil(trackLength / 1.6);
-  return Math.max(1, Math.round((rounds * teams * 30) / 60));
-}
-
-/* ------------------------------------------------------------------ */
-
-type Change = { team: number; cells: number; fuel?: number; correct?: number };
-
-function applyMove(
+export function drawQuestion(
   state: GameState,
-  kind: Move["kind"],
-  changes: Change[],
-): GameState {
-  const teams = state.teams.map((team) => ({ ...team }));
-  const shifts: Move["shifts"] = [];
-  for (const change of changes) {
-    const team = teams[change.team];
-    const target = Math.min(
-      Math.max(team.position + change.cells, 0),
-      state.trackLength,
-    );
-    if (target !== team.position) {
-      shifts.push({ team: change.team, cells: target - team.position });
-    }
-    team.position = target;
-    team.fuel += change.fuel ?? 0;
-    team.correct += change.correct ?? 0;
-  }
-  return {
-    ...state,
-    teams,
-    phase: { kind: "moving", move: { kind, actor: state.current, shifts } },
-  };
-}
-
-/** Thế của một đội so với các đội còn lại (xem Standing). */
-export function standingOf(state: GameState, team: number): Standing {
-  const mine = state.teams[team].position;
-  const others = state.teams
-    .filter((_, i) => i !== team)
-    .map((other) => other.position);
-  const best = Math.max(...others);
-  if (mine - best >= BALANCE_GAP) return "leading";
-  if (mine <= Math.min(...others) && best - mine >= BALANCE_GAP) {
-    return "trailing";
-  }
-  return "even";
-}
-
-function drawEvent(state: GameState, rng: Rng): MysteryEvent {
-  const canSteal = stealTargets(state).length > 0;
-  const canFlat = state.teams[state.current].position > 0;
-  const odds = MYSTERY_ODDS[standingOf(state, state.current)];
-  const allowed = odds.filter(
-    ([event, weight]) =>
-      weight > 0 &&
-      (event !== "steal" || canSteal) &&
-      (event !== "flat" || canFlat),
-  );
-  const total = allowed.reduce((sum, [, weight]) => sum + weight, 0);
-  let roll = rng() * total;
-  for (const [event, weight] of allowed) {
-    if (roll < weight) return event;
-    roll -= weight;
-  }
-  return allowed[allowed.length - 1][0];
-}
-
-/** Rút câu kế tiếp của một mức; hết câu thì xáo lại cả mức. */
-function draw(state: GameState, level: Level, bank: Question[], rng: Rng) {
-  const ids = idsOf(bank, level);
-  let pool = state.pools[level].filter((id) => ids.includes(id));
-  if (pool.length === 0) {
-    pool = shuffle(ids, rng);
-    // Không hỏi lại ngay câu vừa hỏi ở lượt trước.
-    if (pool.length > 1 && pool[0] === state.lastAsked[level]) {
-      pool.push(pool.shift() as string);
-    }
-  }
-  const [questionId, ...rest] = pool;
+  rng: Rng,
+): { state: GameState; questionId: string } | null {
+  const used = new Set(state.usedQuestionIds);
+  const available = QUESTION_POOL.filter((q) => !used.has(q.id));
+  if (available.length === 0) return null;
+  const questionId = available[Math.min(available.length - 1, Math.floor(rng() * available.length))].id;
   return {
     questionId,
-    pools: { ...state.pools, [level]: rest },
-    lastAsked: { ...state.lastAsked, [level]: questionId },
+    state: { ...state, usedQuestionIds: [...state.usedQuestionIds, questionId] },
   };
 }
 
-/** Cách xếp bốn đáp án của câu vừa rút: xáo, trừ khi câu giữ thứ tự. */
-function arrange(bank: Question[], questionId: string, rng: Rng): number[] {
-  const question = bank.find((item) => item.id === questionId);
-  const slots = Array.from(
-    { length: question?.answers.length ?? 4 },
-    (_, i) => i,
-  );
-  return question?.keepOrder ? slots : shuffle(slots, rng);
-}
-
-/** Xáo các câu chưa hỏi lên đầu, các câu đã hỏi ở ván trước xuống cuối. */
-function freshFirst(ids: string[], recent: string[], rng: Rng): string[] {
-  const fresh = ids.filter((id) => !recent.includes(id));
-  const seen = ids.filter((id) => recent.includes(id));
-  return [...shuffle(fresh, rng), ...shuffle(seen, rng)];
-}
-
-function idsOf(bank: Question[], level: Level): string[] {
-  return bank.filter((item) => item.level === level).map((item) => item.id);
-}
-
-function shuffle<T>(items: T[], rng: Rng): T[] {
-  const result = [...items];
-  for (let i = result.length - 1; i > 0; i--) {
-    const j = Math.min(i, Math.floor(rng() * (i + 1)));
-    [result[i], result[j]] = [result[j], result[i]];
+/**
+ * Người chơi bấm A/B/C/D; hệ thống tự chấm. Đúng → chờ đổ xúc xắc. Sai →
+ * đứng yên, hết lượt ngay (vẫn hiện đáp án đúng) và chờ MC bấm TIẾP TỤC.
+ */
+export function answerQuestion(state: GameState, picked: OptionId): GameState {
+  if (state.phase.kind !== "question") return state;
+  const questionId = state.phase.questionId;
+  const question = questionById(questionId);
+  if (!question) return state;
+  if (picked !== question.correctAnswer) {
+    return completeTurn(state, { kind: "wrong", questionId, picked });
   }
-  return result;
+  const teamId = currentTeam(state).id;
+  return {
+    ...state,
+    teams: state.teams.map((t) => (t.id === teamId ? { ...t, correctAnswers: t.correctAnswers + 1 } : t)),
+    phase: { kind: "waiting-roll", questionId, picked },
+  };
 }
 
-function startsWith(sequence: number[], prefix: number[]): boolean {
+/* -------------------------------------------------------------------- */
+/* Xúc xắc                                                                */
+/* -------------------------------------------------------------------- */
+
+/** Đổ một viên D6. Chỉ hợp lệ sau khi trả lời đúng — không thể đổ hai lần. */
+export function rollDice(state: GameState, rng: Rng): GameState {
+  if (!canRollDice(state)) return state;
+  const value = Math.min(6, Math.floor(rng() * 6) + 1);
+  return { ...state, diceValue: value, phase: { kind: "rolling", value } };
+}
+
+/** Xúc xắc dừng lại: quân đi đúng số bước, đáp ô 🎁 thì lật thẻ. */
+export function settleRoll(state: GameState, rng: Rng): GameState {
+  if (state.phase.kind !== "rolling") return state;
+  const dice = state.phase.value;
+  const team = currentTeam(state);
+  const moved = moveTeam(state, team.id, dice);
+  const landed = teamOf(moved, team.id).position;
+
+  if (landed >= FINISH_POSITION) return finishGame(moved, team.id, "finish");
+  if (!tileAt(landed).hasGift) return completeTurn(moved, { kind: "moved", dice });
+
+  const someoneAhead = moved.teams.some((t) => t.id !== team.id && t.position > landed);
+  const cards = drawThreeCards(rng, someoneAhead ? [] : ["pullback"]);
+  return setPhase(moved, { kind: "card-selection", cards });
+}
+
+/* -------------------------------------------------------------------- */
+/* Vòng lật thẻ                                                           */
+/* -------------------------------------------------------------------- */
+
+/** Chọn đúng một trong ba thẻ úp. */
+export function pickCard(state: GameState, cardIndex: number): GameState {
+  if (state.phase.kind !== "card-selection") return state;
+  const cardId = state.phase.cards[cardIndex];
+  if (!cardId) return state;
+  return {
+    ...state,
+    phase: { kind: "card-result", cards: state.phase.cards, cardId, cardIndex },
+  };
+}
+
+/** Áp dụng thẻ vừa lật. Thẻ không bao giờ kích hoạt thêm câu hỏi hay thẻ. */
+export function applyCard(state: GameState): GameState {
+  if (state.phase.kind !== "card-result") return state;
+  const card = cardById(state.phase.cardId);
+  const me = currentTeam(state);
+  const dice = state.diceValue ?? 0;
+
+  if (card.category === "attack") {
+    const candidates = targetsFor(state, card.id);
+    if (candidates.length === 0) return completeTurn(state, { kind: "moved", dice, cardId: card.id });
+    // Đổi chỗ với đội dẫn đầu: chỉ một đội dẫn đầu thì đổi luôn, đồng hạng
+    // đầu thì cho chọn một trong các đội đó.
+    if (card.swap === "leader" && candidates.length === 1) {
+      const targetId = candidates[0];
+      return finishOrCompleteTurn(swapTeams(state, me.id, targetId), me.id, {
+        kind: "moved",
+        dice,
+        cardId: card.id,
+        targetId,
+      });
+    }
+    return { ...state, phase: { kind: "target-selection", cardId: card.id, candidates } };
+  }
+
+  return finishOrCompleteTurn(moveTeam(state, me.id, card.cells), me.id, { kind: "moved", dice, cardId: card.id });
+}
+
+/**
+ * Các đội có thể bị nhắm bởi thẻ tấn công (không bao giờ có chính mình).
+ * "Đổi chỗ với đội dẫn đầu": các đội đứng cao nhất trong số đội còn lại —
+ * nếu chính mình đang dẫn đầu thì đó là đội đứng thứ hai.
+ */
+function targetsFor(state: GameState, cardId: CardId): TeamId[] {
+  const card = cardById(cardId);
+  const me = currentTeam(state);
+  const others = state.teams.filter((t) => t.id !== me.id);
+  if (card.swap === "leader") {
+    const top = Math.max(...others.map((t) => t.position));
+    return others.filter((t) => t.position === top).map((t) => t.id);
+  }
+  return others.filter((t) => !card.targetAheadOnly || t.position > me.position).map((t) => t.id);
+}
+
+/** Chọn đội bị tấn công / để đổi vị trí (chỉ một đội, không có phòng thủ). */
+export function chooseTarget(state: GameState, targetId: TeamId): GameState {
+  if (state.phase.kind !== "target-selection") return state;
+  if (!state.phase.candidates.includes(targetId)) return state;
+  const card = cardById(state.phase.cardId);
+  const outcome: TurnOutcome = { kind: "moved", dice: state.diceValue ?? 0, cardId: card.id, targetId };
+  if (card.swap) return finishOrCompleteTurn(swapTeams(state, currentTeam(state).id, targetId), targetId, outcome);
+  return completeTurn(moveTeam(state, targetId, card.cells), outcome);
+}
+
+/* -------------------------------------------------------------------- */
+/* Kiểm tra dữ liệu đọc lại từ localStorage                               */
+/* -------------------------------------------------------------------- */
+
+export function isGameState(value: unknown): value is GameState {
+  if (!isRecord(value)) return false;
+  const phase = value.phase;
   return (
-    prefix.length <= sequence.length &&
-    prefix.every((value, k) => sequence[k] === value)
+    Array.isArray(value.teams) &&
+    value.teams.length === TEAM_DEFS.length &&
+    value.teams.every(isTeam) &&
+    typeof value.currentTeamIndex === "number" &&
+    isRecord(phase) &&
+    typeof phase.kind === "string" &&
+    Array.isArray(value.usedQuestionIds) &&
+    typeof value.moveSeq === "number" &&
+    Array.isArray(value.pendingMoves)
   );
-}
-
-/** So hai dãy gieo xúc xắc theo từng lần gieo; dương nếu `a` cao hơn. */
-function compareRolls(a: number[], b: number[]): number {
-  for (let k = 0; k < Math.min(a.length, b.length); k++) {
-    if (a[k] !== b[k]) return a[k] - b[k];
-  }
-  return a.length - b.length;
-}
-
-function compareTeams(a: Team, b: Team): number {
-  return b.position - a.position || b.correct - a.correct || b.fuel - a.fuel;
 }
 
 function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === "object" && value !== null && !Array.isArray(value);
 }
 
-function isCount(value: unknown): value is number {
-  return typeof value === "number" && Number.isInteger(value) && value >= 0;
-}
-
-function isStringArray(value: unknown): value is string[] {
-  return Array.isArray(value) && value.every((item) => typeof item === "string");
-}
-
 function isTeam(value: unknown): value is Team {
   return (
     isRecord(value) &&
-    typeof value.name === "string" &&
-    isCount(value.position) &&
-    isCount(value.correct) &&
-    isCount(value.fuel)
+    typeof value.id === "string" &&
+    typeof value.position === "number" &&
+    typeof value.correctAnswers === "number" &&
+    typeof value.reachedPositionAt === "number"
   );
-}
-
-function isRolls(value: unknown, teams: number): value is number[][] {
-  return (
-    Array.isArray(value) &&
-    value.length === teams &&
-    value.every(
-      (sequence) =>
-        Array.isArray(sequence) &&
-        sequence.every(
-          (face) => Number.isInteger(face) && face >= 1 && face <= 6,
-        ),
-    )
-  );
-}
-
-/** Thứ tự lượt: rỗng (chưa chốt) hoặc đủ mọi đội, mỗi đội một lần. */
-function isOrder(value: unknown, teams: number): value is number[] {
-  if (!Array.isArray(value)) return false;
-  return value.length === 0 || (value.length === teams && isPermutation(value));
-}
-
-/** Một hoán vị của 0, 1, ..., n − 1 (n = độ dài mảng). */
-function isPermutation(value: unknown): value is number[] {
-  return (
-    Array.isArray(value) &&
-    value.length > 0 &&
-    new Set(value).size === value.length &&
-    value.every((item) => isCount(item) && item < value.length)
-  );
-}
-
-function isPhase(value: unknown): value is Phase {
-  if (!isRecord(value)) return false;
-  switch (value.kind) {
-    case "dice":
-    case "choose":
-    case "steal":
-      return true;
-    case "question":
-      return (
-        isPump(value.pump) &&
-        typeof value.questionId === "string" &&
-        isPermutation(value.options)
-      );
-    case "answered":
-      return (
-        isPump(value.pump) &&
-        typeof value.questionId === "string" &&
-        isPermutation(value.options) &&
-        (value.picked === null || isCount(value.picked)) &&
-        typeof value.correct === "boolean"
-      );
-    case "event":
-      return (
-        MYSTERY_EVENTS.includes(value.event as MysteryEvent) &&
-        (value.questionId === null
-          ? Array.isArray(value.options) && value.options.length === 0
-          : typeof value.questionId === "string" &&
-            isPermutation(value.options))
-      );
-    case "moving":
-      return (
-        isRecord(value.move) &&
-        isCount(value.move.actor) &&
-        Array.isArray(value.move.shifts)
-      );
-    case "finished":
-      return value.winner === null || isCount(value.winner);
-    default:
-      return false;
-  }
-}
-
-function isPump(value: unknown): value is PumpId {
-  return value === "e5" || value === "ron95" || value === "mystery";
 }

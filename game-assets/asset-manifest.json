@@ -1,0 +1,30 @@
+{
+  "cardBack": "cards/card-back.png",
+  "teams": {
+    "team-1": {
+      "displayName": "Đội 1",
+      "idle": "teams/team-1/idle.png",
+      "move": "teams/team-1/move.png"
+    },
+    "team-2": {
+      "displayName": "Đội 2",
+      "idle": "teams/team-2/idle.png",
+      "move": "teams/team-2/move.png"
+    },
+    "team-3": {
+      "displayName": "Đội 3",
+      "idle": "teams/team-3/idle.png",
+      "move": "teams/team-3/move.png"
+    },
+    "team-4": {
+      "displayName": "Đội 4",
+      "idle": "teams/team-4/idle.png",
+      "move": "teams/team-4/move.png"
+    },
+    "team-5": {
+      "displayName": "Đội 5",
+      "idle": "teams/team-5/idle.png",
+      "move": "teams/team-5/move.png"
+    }
+  }
+}
