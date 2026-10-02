@@ -1,8 +1,10 @@
 "use client";
 
 import { ArrowDown, FlowBox, SumRow } from "@/components/art/flow";
+import { Photo, PhotoCaption } from "@/components/art/photo";
 import { useSlideStep } from "@/components/deck/step-context";
 import { stagger } from "@/components/motion";
+import { PHOTOS, type DeckPhoto } from "@/content/photos";
 import { keepWords } from "@/content/typography";
 import { SlideFrame } from "./frame";
 
@@ -90,6 +92,8 @@ type Meaning = {
   heading: string;
   term: string;
   traits: string[];
+  /** Ảnh đặt cạnh danh sách đặc trưng. */
+  photo?: DeckPhoto;
 };
 
 const NATION: Meaning = {
@@ -102,6 +106,9 @@ const ETHNIE: Meaning = {
   heading: "Dân tộc – tộc người",
   term: "Ethnies",
   traits: ["Ngôn ngữ", "Văn hóa", "Ý thức tự giác tộc người"],
+  // Tộc người là cộng đồng con người cụ thể: chân dung đặt ngay cạnh ba
+  // đặc trưng ngôn ngữ, văn hóa, ý thức tự giác.
+  photo: PHOTOS.highland,
 };
 
 /*
@@ -147,24 +154,34 @@ function MeaningColumn({
       <p className="mt-1 text-lead text-cham-soft italic">{meaning.term}</p>
       <div
         key={shown ? "shown" : "hidden"}
-        className={shown ? "anim-swap" : "invisible"}
+        className={`mt-6 ${shown ? "anim-swap" : "invisible"} ${meaning.photo ? "grid grid-cols-[1fr_300px] gap-10" : ""}`}
       >
-        <p className="mt-6 text-body font-semibold text-son">
-          {meaning.traits.length} đặc trưng
-        </p>
-        <ol className="mt-3 border-t-2 border-cham-line">
-          {meaning.traits.map((trait, i) => (
-            <li
-              key={trait}
-              className="flex items-baseline gap-6 border-b-2 border-cham-line py-2.5"
-            >
-              <span className="w-8 text-label text-cham-soft tabular-nums">
-                {i + 1}
-              </span>
-              <span className="text-sub font-semibold">{keepWords(trait)}</span>
-            </li>
-          ))}
-        </ol>
+        <div>
+          <p className="text-body font-semibold text-son">
+            {meaning.traits.length} đặc trưng
+          </p>
+          <ol className="mt-3 border-t-2 border-cham-line">
+            {meaning.traits.map((trait, i) => (
+              <li
+                key={trait}
+                className="flex items-baseline gap-6 border-b-2 border-cham-line py-2.5"
+              >
+                <span className="w-8 shrink-0 text-label text-cham-soft tabular-nums">
+                  {i + 1}
+                </span>
+                <span className="text-sub font-semibold">
+                  {keepWords(trait)}
+                </span>
+              </li>
+            ))}
+          </ol>
+        </div>
+        {meaning.photo ? (
+          <figure className="flex flex-col">
+            <Photo photo={meaning.photo} className="min-h-90 flex-1" />
+            <PhotoCaption photo={meaning.photo} className="mt-3" />
+          </figure>
+        ) : null}
       </div>
     </section>
   );

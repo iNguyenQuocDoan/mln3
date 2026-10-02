@@ -14,11 +14,10 @@ export function NotesBody({ step }: { step: DeckStep }) {
   ) : null;
   return (
     <div className="space-y-4">
-      {step.hintFirst ? hint : null}
       {step.notes?.map((paragraph) => (
         <p key={paragraph}>{paragraph}</p>
       ))}
-      {step.hintFirst ? null : hint}
+      {hint}
       {step.handoff ? (
         <p className="border-l-6 border-vang bg-on-cham/10 py-3 pl-5">
           <span className="font-semibold text-vang">Câu chuyển người: </span>

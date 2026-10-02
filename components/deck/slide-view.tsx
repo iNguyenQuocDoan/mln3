@@ -28,7 +28,7 @@ export function SlideBody({
 
 /**
  * Chân slide nội dung: thanh tiến độ mảnh, mục đang trình bày và số màn
- * hình (ví dụ 12 / 29). Nhỏ và nhạt để không tranh chỗ với nội dung.
+ * hình (ví dụ 12 / 27). Nhỏ và nhạt để không tranh chỗ với nội dung.
  */
 export function SlideFooter({
   section,

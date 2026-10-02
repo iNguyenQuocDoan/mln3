@@ -13,6 +13,7 @@ import { useDeckController } from "./controller";
 import { SpeakerNotes } from "./notes";
 import { SlideBody } from "./slide-view";
 import { screenNumber, screenTotal, type DeckSlide } from "./types";
+import { useWarmDeckPhotos } from "./use-warm-photos";
 
 export type { DeckSlide } from "./types";
 
@@ -32,6 +33,7 @@ export function Deck({ slides }: { slides: DeckSlide[] }) {
   const { index, slide, step, stepCount, setStep, next, prev } =
     useDeckController(slides);
   const scale = useStageScale();
+  useWarmDeckPhotos();
   const [idle, setIdle] = useState(true);
   const [notesOpen, setNotesOpen] = useState(false);
   const touchStart = useRef<{ x: number; y: number } | null>(null);
@@ -108,6 +110,12 @@ export function Deck({ slides }: { slides: DeckSlide[] }) {
         }
       }}
     >
+      {slide.backdrop ? (
+        <div key={`${slide.id}-backdrop`} className="fade-in absolute inset-0">
+          {slide.backdrop}
+        </div>
+      ) : null}
+
       <div className="stage" style={stageStyle}>
         <section
           key={slide.id}

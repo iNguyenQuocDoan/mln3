@@ -2,9 +2,13 @@ import type { ReactNode } from "react";
 import type { DeckSlide, DeckStep } from "@/components/deck/types";
 import { AgendaSlide } from "@/components/slides/agenda";
 import { ClosingSlide } from "@/components/slides/closing";
-import { CoverSlide } from "@/components/slides/cover";
+import { CoverBackdrop, CoverSlide } from "@/components/slides/cover";
 import { PartDivider } from "@/components/slides/divider";
-import { FeaturesSteps } from "@/components/slides/features-steps";
+import {
+  CultureSlide,
+  DiversitySlide,
+  FeaturesSteps,
+} from "@/components/slides/features-steps";
 import { GameIntroSlide } from "@/components/slides/game-intro";
 import { FormationSlide, MeaningsSlide } from "@/components/slides/part-1";
 import { TrendsSlide } from "@/components/slides/part-2";
@@ -16,12 +20,11 @@ import {
 import { PolicySteps } from "@/components/slides/policy-steps";
 import {
   EqualitySlide,
-  ProgramSummarySlide,
   SelfDeterminationSlide,
   WorkersUnionSlide,
 } from "@/components/slides/program";
-import { SummarySlide } from "@/components/slides/summary";
 import { getPart } from "./parts";
+import { PHOTOS, type DeckPhoto } from "./photos";
 import { HINTS, SCRIPT } from "./script";
 
 /** Đoạn thứ `paragraph` (từ 0) trong lời slide `slide` của bản Word. */
@@ -34,18 +37,28 @@ function sayAll(slide: number) {
   return SCRIPT[slide].speech;
 }
 
-function divider(part: number): DeckSlide {
+/** Tách một đoạn lời làm hai, tại câu bắt đầu bằng `marker`. */
+function splitAt(text: string, marker: string): [string, string] {
+  const at = text.indexOf(marker);
+  if (at < 0) throw new Error(`Không thấy "${marker}" trong lời thuyết trình`);
+  return [text.slice(0, at).trim(), text.slice(at)];
+}
+
+/* Slide 9, đoạn 2: câu về bản sắc văn hóa, rồi câu điểm lại sáu đặc điểm. */
+const [CULTURE_SPEECH, FEATURES_RECAP] = splitAt(say(9, 1), "Như vậy");
+
+function divider(part: number, photo?: DeckPhoto): DeckSlide {
   return {
     id: `phan-${part}`,
     kind: "divider",
     tone: "dark",
     part,
     steps: [{ title: `Phần ${part}: ${getPart(part).title}` }],
-    content: <PartDivider part={part} />,
+    content: <PartDivider part={part} photo={photo} />,
   };
 }
 
-/** Slide nội dung thuộc mục `section` (1–8); mỗi phần tử của `steps` là một màn hình. */
+/** Slide nội dung thuộc mục `section` (1–7); mỗi phần tử của `steps` là một màn hình. */
 function content(
   id: string,
   section: number,
@@ -67,6 +80,7 @@ export const slides: DeckSlide[] = [
     tone: "light",
     steps: [{ title: "Dân tộc trong thời kỳ quá độ lên chủ nghĩa xã hội" }],
     content: <CoverSlide />,
+    backdrop: <CoverBackdrop />,
   },
   {
     id: "noi-dung",
@@ -115,13 +129,9 @@ export const slides: DeckSlide[] = [
     4,
     [
       {
-        title: "Cương lĩnh dân tộc: 02 — Quyền tự quyết là gì",
+        title: "Cương lĩnh dân tộc: 02 — Quyền tự quyết",
         notes: sayAll(6),
-        hint: HINTS.selfDeterminationMeaning,
-      },
-      {
-        title: "Cương lĩnh dân tộc: 02 — Hai nhánh của quyền tự quyết",
-        hint: HINTS.selfDeterminationBranches,
+        hint: HINTS.selfDetermination,
       },
     ],
     <SelfDeterminationSlide />,
@@ -129,36 +139,46 @@ export const slides: DeckSlide[] = [
   content(
     "lien-hiep",
     4,
-    [{ title: "Cương lĩnh dân tộc: 03 — Liên hiệp", hint: HINTS.workersUnion }],
-    <WorkersUnionSlide />,
-  ),
-  content(
-    "cuong-linh",
-    4,
     [
       {
-        title: "Cương lĩnh dân tộc: tóm tắt ba nội dung",
-        hint: HINTS.programSummary,
+        title: "Cương lĩnh dân tộc: 03 — Liên hiệp",
+        hint: HINTS.workersUnion,
         handoff: SCRIPT[6].handoff,
       },
     ],
-    <ProgramSummarySlide />,
+    <WorkersUnionSlide />,
   ),
 
-  divider(3),
+  // Mở đầu phần về các dân tộc ở Việt Nam bằng một con người cụ thể.
+  divider(3, PHOTOS.man),
   content(
     "dac-diem",
     5,
     [
       { title: "Sáu đặc điểm dân tộc Việt Nam", notes: [say(7, 0)] },
       { title: "Dân cư & địa bàn", notes: [say(7, 1), say(8, 0)] },
+      { title: "Phát triển & đoàn kết", notes: [say(8, 1), say(9, 0)] },
+    ],
+    <FeaturesSteps />,
+  ),
+  content(
+    "ban-sac-van-hoa",
+    5,
+    [{ title: "06 — Bản sắc văn hóa riêng", notes: [CULTURE_SPEECH] }],
+    <CultureSlide />,
+  ),
+  content(
+    "da-dang-thong-nhat",
+    5,
+    [
       {
-        title: "Phát triển & văn hóa",
-        notes: [say(8, 1), ...sayAll(9)],
+        title: "Đa dạng về bản sắc, thống nhất trong cộng đồng quốc gia",
+        notes: [FEATURES_RECAP],
+        hint: HINTS.diversityUnity,
         handoff: SCRIPT[9].handoff,
       },
     ],
-    <FeaturesSteps />,
+    <DiversitySlide />,
   ),
   content(
     "van-de-chien-luoc",
@@ -198,24 +218,11 @@ export const slides: DeckSlide[] = [
       { title: "Chính sách dân tộc: xã hội", notes: [say(14, 1)] },
       {
         title: "Chính sách dân tộc: an ninh – quốc phòng",
-        notes: [say(15, 0)],
+        // Slide 15 bản Word gồm cả lời kết của bài.
+        notes: sayAll(15),
       },
     ],
     <PolicySteps />,
-  ),
-  content(
-    "tong-ket",
-    8,
-    [
-      { title: "Tổng kết: dãy số 2, 2, 3, 6, 5, 5", hint: HINTS.recapNumbers },
-      {
-        title: "Tổng kết: ý nghĩa từng con số",
-        hint: HINTS.recapList,
-        hintFirst: true,
-        notes: [say(15, 1)],
-      },
-    ],
-    <SummarySlide />,
   ),
 
   {

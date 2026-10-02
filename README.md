@@ -37,9 +37,9 @@ tiếp, toàn màn hình, ghi chú, người trình bày); để yên khoảng 2
 thanh và con trỏ tự ẩn. Trên màn hình cảm ứng có thể vuốt trái/phải.
 
 Chân mỗi slide nội dung có thanh tiến độ mảnh, mục đang trình bày (ví dụ
-`04 Cương lĩnh dân tộc Mác – Lênin`) và số màn hình (ví dụ `12 / 29`).
-Một số slide gồm nhiều màn hình (hai nghĩa của dân tộc, quyền tự quyết,
-sáu đặc điểm, chính sách, tổng kết): bấm "tiếp" chỉ đổi phần nội dung,
+`04 Cương lĩnh dân tộc Mác – Lênin`) và số màn hình (ví dụ `12 / 27`).
+Một số slide gồm nhiều màn hình (hai nghĩa của dân tộc, sáu đặc điểm,
+chính sách): bấm "tiếp" chỉ đổi phần nội dung,
 bố cục giữ nguyên.
 
 Ghi chú (phím N) nằm đè lên phần dưới màn hình, không làm slide co lại.
@@ -150,7 +150,7 @@ thứ tự thì các số tăng dần.
 | --- | --- |
 | Tên nhóm, giảng viên (hiện ở slide bìa) | `content/parts.ts` → `DECK_INFO` |
 | Tên người trình bày | `content/parts.ts` → `MEMBERS[].presenter` |
-| Tên tám mục, mục nào thuộc phần nào, ai trình bày | `content/parts.ts` → `SECTIONS` |
+| Tên bảy mục, mục nào thuộc phần nào, ai trình bày | `content/parts.ts` → `SECTIONS` |
 | Lời thuyết trình theo bản Word | `content/script.ts` → `SCRIPT` |
 | Gợi ý lời cho màn hình mới | `content/script.ts` → `HINTS` |
 | Thứ tự màn hình, đoạn lời gắn với màn hình nào | `content/slides.tsx` |
@@ -168,33 +168,45 @@ toàn diện** trước **ưu tiên đầu tư**. Muốn đổi thứ tự thì 
 
 ## Cấu trúc bài
 
-29 màn hình. Số màn hình ở chân slide đếm cả bìa, mục lục và slide chuyển
+27 màn hình. Số màn hình ở chân slide đếm cả bìa, mục lục và slide chuyển
 phần.
 
 | Màn hình | Nội dung | Lời theo bản Word | Thành viên |
 | --- | --- | --- | --- |
-| 1–2 | Bìa, Nội dung (tám mục) | slide 1 (lời chào) | 1 |
+| 1–2 | Bìa, Nội dung (bảy mục) | slide 1 (lời chào) | 1 |
 | 3 | Phần 1 | — | — |
 | 4 | 01 Sự hình thành dân tộc | slide 1 | 1 |
 | 5–6 | 02 Hai nghĩa của dân tộc (so sánh, hai bước) | slide 2, 3 | 1 |
 | 7 | Phần 2 | — | — |
 | 8 | 03 Hai xu hướng khách quan | slide 4 | 2 |
-| 9–13 | 04 Cương lĩnh: bình đẳng, quyền tự quyết (2 màn), liên hiệp, tóm tắt | slide 5, 6 | 2 |
-| 14 | Phần 3 | — | — |
-| 15–17 | 05 Sáu đặc điểm: tổng quan, dân cư & địa bàn, phát triển & văn hóa | slide 7, 8, 9 | 3 |
+| 9–11 | 04 Cương lĩnh: bình đẳng, quyền tự quyết, liên hiệp | slide 5, 6 | 2 |
+| 12 | Phần 3 | — | — |
+| 13–17 | 05 Sáu đặc điểm: tổng quan, dân cư & địa bàn, phát triển & đoàn kết, bản sắc văn hóa riêng, đa dạng – thống nhất | slide 7, 8, 9 | 3 |
 | 18–20 | 06 Quan điểm của Đảng, Nhà nước (năm quan điểm) | slide 10, 11, 12 | 4 |
-| 21–25 | 07 Chính sách dân tộc (mỗi lĩnh vực một màn) | slide 13, 14, 15 | 5 |
-| 26–27 | 08 Tổng kết: 2 → 2 → 3 → 6 → 5 → 5 | slide 15 (lời kết) | 5 |
-| 28 | Trò chơi (mở trang `/tro-choi`) | — | — |
-| 29 | Cảm ơn | — | — |
+| 21–25 | 07 Chính sách dân tộc (mỗi lĩnh vực một màn; màn cuối kèm lời kết của bài) | slide 13, 14, 15 | 5 |
+| 26 | Trò chơi (mở trang `/tro-choi`) | — | — |
+| 27 | Cảm ơn | — | — |
 
 Thiết kế dùng font Be Vietnam Pro (tự lưu trong `app/fonts/`), bảng màu
-chàm và son. Bản đồ Việt Nam vẽ từ dữ liệu Natural Earth (phạm vi công
-cộng), có quần đảo Hoàng Sa và Trường Sa.
+chàm và son.
 
-Ảnh trang phục truyền thống ở màn "Phát triển & văn hóa":
-["A colorful discovery"](https://commons.wikimedia.org/wiki/File:A_colorful_discovery.jpg),
-tác giả AlbMem, giấy phép
-[CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0), qua
-Wikimedia Commons (đã thu nhỏ còn 1200 × 800). Nguồn ảnh ghi ngay dưới ảnh
-trên slide.
+## Ảnh
+
+Ảnh nằm trong `content/photos/`, khai báo ở `content/photos.ts` (mô tả ảnh,
+điểm cần giữ khi cắt khung, chú thích và nguồn). Dưới mỗi ảnh có tên dân
+tộc và nguồn; bấm vào tên nguồn sẽ mở bài gốc trong tab mới.
+
+| Màn hình | Ảnh | Nguồn |
+| --- | --- | --- |
+| 1, nền slide bìa | Bản đồ Việt Nam trên nền trống đồng (`ban-do-trong-dong.webp`) | nhóm cung cấp |
+| 6, cạnh ba đặc trưng của tộc người | Người Dao Chàm (`phu-nu-vung-cao.jpg`) | [vietnam.travel – trang phục truyền thống](https://vietnam.travel/vi/things-to-do/traditional-ethnic-costumes-vietnam) |
+| 12, mở đầu Phần 3 | Người H'Mông Đen (`nam-trang-phuc-truyen-thong.jpg`) | như trên |
+| 16, bên trái | Thêu hoa văn trên trang phục truyền thống (`doi-tay-theu.jpg`) | [vietnam.travel – Sa Pa](https://www.vietnam.travel/vi/things-to-do/sapa-sustainable-travellers) |
+| 16, bên phải | Người Chăm biểu diễn nhạc cụ truyền thống (`nhac-cu-truyen-thong.jpg`) | [vietnam.travel – trang phục truyền thống](https://vietnam.travel/vi/things-to-do/traditional-ethnic-costumes-vietnam) |
+| 17, Đa dạng về bản sắc – thống nhất | Người Dao Đỏ (`phu-nu-khan-do.jpg`) | như trên |
+
+Hai phần lý luận (hai xu hướng, Cương lĩnh dân tộc) không dùng ảnh người.
+Ảnh người gốc chỉ 870 × 580 nên khung ảnh được giữ ở mức không phóng quá
+khoảng 1,05 lần khi chiếu 1920 × 1080. Muốn ảnh nét hơn trên màn 2K thì
+thay bằng ảnh gốc lớn hơn, giữ nguyên tên tệp. Bài tải sẵn mọi ảnh ngay khi
+mở, nên tới slide nào ảnh cũng đã có.

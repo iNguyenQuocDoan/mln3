@@ -12,6 +12,7 @@ import {
   screenTotal,
   type DeckSlide,
 } from "./types";
+import { useWarmDeckPhotos } from "./use-warm-photos";
 
 /*
  * Màn hình người trình bày: mở trên laptop (phím P ở màn hình trình chiếu).
@@ -24,6 +25,7 @@ export function Presenter({ slides }: { slides: DeckSlide[] }) {
     useDeckController(slides);
   const current = slide.steps[step];
   const total = screenTotal(slides);
+  useWarmDeckPhotos();
   const position = { number: screenNumber(slides, index, step), total };
   const section = slide.section ? getSection(slide.section) : undefined;
   const presenter = section ? getMember(section.member).presenter : "";
@@ -124,6 +126,9 @@ function ScaledSlide({
       ref={box}
       className={`no-motion relative aspect-video w-full overflow-hidden rounded-sm ${slide.tone === "dark" ? "bg-cham" : "bg-paper"} text-cham ring-2 ring-on-cham-soft/30`}
     >
+      {slide.backdrop ? (
+        <div className="absolute inset-0">{slide.backdrop}</div>
+      ) : null}
       {width ? (
         <div
           className="absolute top-0 left-0 origin-top-left"

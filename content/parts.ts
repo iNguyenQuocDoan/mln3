@@ -42,14 +42,14 @@ export const MEMBERS: Member[] = [
 ];
 
 export type Section = {
-  /** Số mục (1–8), hiện ở mục lục và chân slide. */
+  /** Số mục (1–7), hiện ở mục lục và chân slide. */
   number: number;
   title: string;
   part: Part["number"];
   member: Member["number"];
 };
 
-/** Tám mục nội dung của bài, theo thứ tự trình bày. */
+/** Bảy mục nội dung của bài, theo thứ tự trình bày. */
 export const SECTIONS: Section[] = [
   { number: 1, title: "Sự hình thành dân tộc", part: 1, member: 1 },
   { number: 2, title: "Hai nghĩa của dân tộc", part: 1, member: 1 },
@@ -63,7 +63,6 @@ export const SECTIONS: Section[] = [
     member: 4,
   },
   { number: 7, title: "Chính sách dân tộc", part: 3, member: 5 },
-  { number: 8, title: "Tổng kết", part: 3, member: 5 },
 ];
 
 export function getPart(number: number): Part {

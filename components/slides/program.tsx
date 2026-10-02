@@ -1,14 +1,11 @@
-"use client";
-
-import { ArrowDown, FlowBox, Joiner, SumRow } from "@/components/art/flow";
-import { useSlideStep } from "@/components/deck/step-context";
+import { FlowBox, Joiner, SumRow } from "@/components/art/flow";
 import { stagger } from "@/components/motion";
 import { keepWords } from "@/content/typography";
 import { NumberedTitle, SlideFrame } from "./frame";
 
 /*
  * 04. Cương lĩnh dân tộc của chủ nghĩa Mác – Lênin: mỗi nội dung một màn
- * hình (quyền tự quyết hai màn hình), sau đó một màn hình tóm tắt.
+ * hình.
  */
 
 export const PROGRAM = [
@@ -91,10 +88,13 @@ export function EqualitySlide() {
   );
 }
 
-/* ---------- Nội dung thứ hai: quyền tự quyết (hai màn hình) ---------- */
+/* ---------- Nội dung thứ hai: quyền tự quyết ---------- */
 
+/*
+ * Một màn hình: định nghĩa (hai ý được tô son), sơ đồ hai nhánh của quyền
+ * tự quyết, và điều cần nhớ: tự quyết không chỉ có tách ra.
+ */
 export function SelfDeterminationSlide() {
-  const { step } = useSlideStep();
   const item = PROGRAM[1];
   return (
     <SlideFrame
@@ -103,20 +103,10 @@ export function SelfDeterminationSlide() {
       subtitle={item.statement}
       className="flex flex-col"
     >
-      {step === 0 ? (
-        <SelfDeterminationMeaning />
-      ) : (
-        <SelfDeterminationBranches />
-      )}
-    </SlideFrame>
-  );
-}
-
-/** Màn hình 1: quyền tự quyết là gì. */
-function SelfDeterminationMeaning() {
-  return (
-    <div key="meaning" className="anim-swap flex flex-1 flex-col">
-      <p className="max-w-400 text-sub font-semibold text-pretty">
+      <p
+        className="anim-rise max-w-400 text-sub font-semibold text-pretty"
+        style={stagger(0)}
+      >
         {keepWords("Quyền tự quyết là quyền một dân tộc ")}
         <span className="text-son">{keepWords("tự quyết định vận mệnh")}</span>
         {keepWords(" của mình và ")}
@@ -127,48 +117,20 @@ function SelfDeterminationMeaning() {
       </p>
 
       <div
-        className="flex flex-1 items-center justify-center"
-        role="img"
-        aria-label="Tự quyết bằng tự quyết định vận mệnh cộng tự lựa chọn con đường phát triển"
+        className="anim-rise mx-auto mt-8 flex w-320 flex-col items-center"
+        style={stagger(1)}
       >
-        <div className="flex items-stretch">
-          <FlowBox
-            tone="solid"
-            weight="font-extrabold"
-            className="w-80 text-sub"
-          >
-            {keepWords("TỰ QUYẾT")}
-          </FlowBox>
-          <Joiner className="text-keyword text-son">=</Joiner>
-          <FlowBox className="w-110 text-sub">
-            {keepWords("Tự quyết định vận mệnh")}
-          </FlowBox>
-          <Joiner className="text-keyword text-cham-soft">+</Joiner>
-          <FlowBox className="w-130 text-sub">
-            {keepWords("Tự lựa chọn con đường phát triển")}
-          </FlowBox>
-        </div>
-      </div>
-    </div>
-  );
-}
-
-/** Màn hình 2: hai nhánh của quyền tự quyết và điều cần nhớ. */
-function SelfDeterminationBranches() {
-  return (
-    <div key="branches" className="anim-swap flex flex-1 flex-col">
-      <div className="mx-auto flex w-320 flex-col items-center">
         <FlowBox
           tone="solid"
           weight="font-extrabold"
-          className="w-120 text-sub"
+          className="w-120 text-lead"
         >
           {keepWords("QUYỀN TỰ QUYẾT")}
         </FlowBox>
         {/* Nhánh đôi: từ giữa ô trên xuống tâm hai ô dưới. */}
-        <svg viewBox="0 0 1280 84" className="w-320" aria-hidden="true">
+        <svg viewBox="0 0 1280 64" className="w-320" aria-hidden="true">
           <path
-            d="M640 0V30M300 30H980M300 30V78M980 30V78M286 62l14 16 14-16M966 62l14 16 14-16"
+            d="M640 0V22M300 22H980M300 22V58M980 22V58M286 42l14 16 14-16M966 42l14 16 14-16"
             fill="none"
             stroke="var(--color-cham-soft)"
             strokeWidth="4"
@@ -190,7 +152,10 @@ function SelfDeterminationBranches() {
         </div>
       </div>
 
-      <div className="mt-auto flex items-center gap-10 border-l-8 border-son bg-cham-tint px-10 py-5">
+      <div
+        className="anim-rise mt-auto flex items-center gap-10 border-l-8 border-son bg-cham-tint px-10 py-5"
+        style={stagger(2)}
+      >
         <p className="shrink-0 text-sub font-extrabold">
           {keepWords("Tự quyết")} <span className="text-son">≠</span>{" "}
           {keepWords("chỉ có tách ra")}
@@ -202,7 +167,7 @@ function SelfDeterminationBranches() {
           )}
         </p>
       </div>
-    </div>
+    </SlideFrame>
   );
 }
 
@@ -271,40 +236,6 @@ export function WorkersUnionSlide() {
           </FlowBox>
         </div>
       </div>
-    </SlideFrame>
-  );
-}
-
-/* ---------- Tóm tắt ba nội dung ---------- */
-
-export function ProgramSummarySlide() {
-  return (
-    <SlideFrame
-      title="Cương lĩnh dân tộc của chủ nghĩa Mác – Lênin"
-      className="flex flex-col justify-center"
-    >
-      <ol className="flex flex-col">
-        {PROGRAM.map((item, i) => (
-          <li
-            key={item.keyword}
-            className="anim-rise flex flex-col"
-            style={stagger(i)}
-          >
-            {i > 0 ? <ArrowDown length={52} className="w-120" /> : null}
-            <div className="grid grid-cols-[480px_1fr] items-center gap-14">
-              <FlowBox weight="font-extrabold" className="h-28 text-banner">
-                {keepWords(item.keyword.replace("QUYỀN ", ""))}
-              </FlowBox>
-              <p className="text-lead text-cham-soft">
-                <span className="mr-4 font-bold text-son tabular-nums">
-                  {item.number}
-                </span>
-                {keepWords(item.statement)}
-              </p>
-            </div>
-          </li>
-        ))}
-      </ol>
     </SlideFrame>
   );
 }

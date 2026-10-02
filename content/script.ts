@@ -132,15 +132,10 @@ export const SCRIPT: Record<number, SlideScript> = {
  * sửa hoặc thay bằng lời của mình.
  */
 export const HINTS = {
-  selfDeterminationMeaning:
-    "Đọc định nghĩa trên màn hình, nhấn hai ý: tự quyết định vận mệnh và tự lựa chọn con đường phát triển.",
-  selfDeterminationBranches:
-    "Quyền tự quyết có hai nhánh: quyền tách ra để thành lập quốc gia dân tộc độc lập, và quyền tự nguyện liên hiệp với dân tộc khác trên cơ sở bình đẳng. Vì vậy tự quyết không chỉ có tách ra, mà là tự quyết định vận mệnh và tự lựa chọn con đường phát triển.",
+  selfDetermination:
+    "Đọc định nghĩa trên màn hình, nhấn hai ý: tự quyết định vận mệnh và tự lựa chọn con đường phát triển. Quyền tự quyết có hai nhánh: quyền tách ra để thành lập quốc gia dân tộc độc lập, và quyền tự nguyện liên hiệp với dân tộc khác trên cơ sở bình đẳng. Vì vậy tự quyết không chỉ có tách ra.",
   workersUnion:
     "Nội dung thứ ba của cương lĩnh là liên hiệp công nhân tất cả các dân tộc. Nội dung này nhấn mạnh sự đoàn kết và liên hiệp giữa công nhân thuộc các dân tộc khác nhau.",
-  programSummary:
-    "Tóm lại, cương lĩnh dân tộc gồm ba nội dung: các dân tộc hoàn toàn bình đẳng, các dân tộc được quyền tự quyết, và liên hiệp công nhân tất cả các dân tộc.",
-  recapNumbers: "Cả bài có thể nhớ bằng dãy số 2, 2, 3, 6, 5, 5.",
-  recapList:
-    "Đọc lần lượt từng dòng: hai nghĩa của dân tộc, hai xu hướng khách quan, ba nội dung Cương lĩnh dân tộc, sáu đặc điểm dân tộc Việt Nam, năm quan điểm lớn, năm lĩnh vực chính sách.",
+  diversityUnity:
+    "Chốt lại phần đặc điểm: các dân tộc đa dạng về bản sắc nhưng thống nhất trong cộng đồng quốc gia.",
 };

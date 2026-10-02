@@ -4,8 +4,8 @@ import { keepWords } from "@/content/typography";
 import { SlideFrame } from "./frame";
 
 /*
- * Mục lục: tám mục của bài, chia theo ba phần. Cột trái là phần 1 và 2
- * (mỗi phần hai mục), cột phải là phần 3 (bốn mục).
+ * Mục lục: bảy mục của bài, chia theo ba phần. Cột trái là phần 1 và 2
+ * (mỗi phần hai mục), cột phải là phần 3 (ba mục).
  */
 const COLUMNS: Part["number"][][] = [[1, 2], [3]];
 

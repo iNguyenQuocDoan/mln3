@@ -1,19 +1,19 @@
 "use client";
 
-import Image from "next/image";
-import { preload } from "react-dom";
-import { VietnamMap } from "@/components/art/vietnam-map";
+import { Photo, PhotoCaption } from "@/components/art/photo";
 import { useSlideStep } from "@/components/deck/step-context";
 import { stagger } from "@/components/motion";
-import photo from "@/content/photos/trang-phuc-ba-be.jpg";
+import { PHOTOS, type DeckPhoto } from "@/content/photos";
 import { keepWords } from "@/content/typography";
-import { SlideFrame } from "./frame";
+import { NumberedTitle, SlideFrame } from "./frame";
 
 /*
- * 05. Sáu đặc điểm dân tộc Việt Nam, ba màn hình: tổng quan sáu đặc điểm,
- * rồi hai nhóm mỗi nhóm ba đặc điểm. Cột trái là hình minh họa: bản đồ
- * (đứng yên giữa màn 1 và 2, vì hai màn này nói về dân cư và địa bàn),
- * sang màn 3 (văn hóa) đổi thành ảnh trang phục truyền thống.
+ * 05. Sáu đặc điểm dân tộc Việt Nam, năm màn hình:
+ * 1–3 (slide FeaturesSteps): tổng quan, dân cư & địa bàn, phát triển &
+ *     đoàn kết; chỉ có chữ, bố cục giữ nguyên giữa ba màn.
+ * 4 (CultureSlide): 06 Bản sắc văn hóa riêng, hai ảnh thêu và nhạc cụ.
+ * 5 (DiversitySlide): đa dạng về bản sắc, thống nhất trong cộng đồng
+ *   quốc gia; ảnh chân dung là hình chính.
  */
 type Feature = {
   number: string;
@@ -62,88 +62,66 @@ const FEATURES: Feature[] = [
   },
 ];
 
-const GROUPS = [
+const STEPS = [
+  { title: "Sáu đặc điểm dân tộc Việt Nam", features: FEATURES },
   { title: "Dân cư & địa bàn", features: FEATURES.slice(0, 3) },
-  { title: "Phát triển & văn hóa", features: FEATURES.slice(3) },
+  { title: "Phát triển & đoàn kết", features: FEATURES.slice(3, 5) },
 ];
-
-const TITLES = ["Sáu đặc điểm dân tộc Việt Nam", ...GROUPS.map((g) => g.title)];
 
 export function FeaturesSteps() {
   const { step } = useSlideStep();
-  const culture = step === 2;
-  // Tải ảnh ngay khi vào slide, để sang màn 3 là ảnh đã sẵn sàng.
-  preload(photo.src, { as: "image" });
+  const current = STEPS[step] ?? STEPS[0];
 
   return (
     <SlideFrame
-      title={TITLES[step] ?? TITLES[0]}
-      className="flex flex-col"
+      title={current.title}
+      className="flex flex-col justify-center"
       swapTitle
     >
-      <div className="grid min-h-0 flex-1 grid-cols-[600px_1fr] gap-20">
-        <div className="flex min-h-0 items-center justify-center">
-          {culture ? (
-            <CulturePhoto />
-          ) : (
-            <VietnamMap className="anim-fade h-full max-h-180" labelSize={40} />
-          )}
-        </div>
-
-        <div
-          key={step}
-          className="anim-swap flex min-h-0 flex-col justify-center"
-        >
-          {step === 0 ? <Overview /> : <FeatureList group={GROUPS[step - 1]} />}
-        </div>
+      <div key={step} className="anim-swap">
+        {step === 0 ? (
+          <Overview />
+        ) : (
+          <FeatureList features={current.features} />
+        )}
       </div>
-
-      {culture ? (
-        <p className="anim-swap mt-8 border-l-8 border-son bg-cham-tint px-10 py-5 text-sub leading-[1.35] font-extrabold uppercase">
-          {keepWords("Đa dạng về bản sắc")}
-          <br />
-          <span className="font-semibold text-son normal-case">nhưng </span>
-          {keepWords("thống nhất trong cộng đồng quốc gia")}
-        </p>
-      ) : null}
     </SlideFrame>
   );
 }
 
-/** Màn tổng quan: sáu từ khóa, chia sẵn theo hai nhóm của hai màn sau. */
+/** Màn tổng quan: sáu từ khóa, hai cột. */
 function Overview() {
   return (
-    <div className="grid grid-cols-2 gap-x-16">
-      {GROUPS.map((group, g) => (
-        <section key={group.title} className="anim-rise" style={stagger(g)}>
-          <p className="text-label font-semibold text-cham-soft">
-            {keepWords(group.title)}
-          </p>
-          <ol className="mt-3 border-t-2 border-cham-line">
-            {group.features.map((feature) => (
-              <li
-                key={feature.number}
-                className="flex items-baseline gap-6 border-b-2 border-cham-line py-5"
-              >
-                <span className="w-24 text-banner leading-none font-extrabold text-son tabular-nums">
-                  {feature.number}
-                </span>
-                <span className="text-banner leading-none font-bold">
-                  {keepWords(feature.keyword)}
-                </span>
-              </li>
-            ))}
-          </ol>
-        </section>
+    <div className="grid grid-cols-2 gap-x-14">
+      {[FEATURES.slice(0, 3), FEATURES.slice(3)].map((column, c) => (
+        <ol
+          key={column[0].number}
+          className="anim-rise border-t-2 border-cham-line"
+          style={stagger(c)}
+        >
+          {column.map((feature) => (
+            <li
+              key={feature.number}
+              className="flex items-baseline gap-6 border-b-2 border-cham-line py-6"
+            >
+              <span className="w-24 text-banner leading-none font-extrabold text-son tabular-nums">
+                {feature.number}
+              </span>
+              <span className="text-banner leading-none font-bold">
+                {keepWords(feature.keyword)}
+              </span>
+            </li>
+          ))}
+        </ol>
       ))}
     </div>
   );
 }
 
-function FeatureList({ group }: { group: (typeof GROUPS)[number] }) {
+function FeatureList({ features }: { features: Feature[] }) {
   return (
-    <ol className="flex flex-col gap-10">
-      {group.features.map((feature, i) => (
+    <ol className="flex flex-col gap-12">
+      {features.map((feature, i) => (
         <li
           key={feature.number}
           className="anim-rise grid grid-cols-[120px_1fr] items-baseline"
@@ -164,25 +142,66 @@ function FeatureList({ group }: { group: (typeof GROUPS)[number] }) {
   );
 }
 
-/** Ảnh thật minh họa "bản sắc văn hóa riêng", kèm chú thích và nguồn ảnh. */
-function CulturePhoto() {
+/* ---------- 06 Bản sắc văn hóa riêng ---------- */
+
+const CULTURE = FEATURES[5];
+
+export function CultureSlide() {
   return (
-    <figure className="anim-swap w-full">
-      <Image
-        src={photo}
-        alt="Ba phụ nữ dân tộc thiểu số mặc trang phục truyền thống nhiều màu, ngồi trước hiên nhà gỗ"
-        // Ảnh đã nén sẵn (1200px, ~165KB): dùng nguyên tệp, tải ngay.
-        unoptimized
-        loading="eager"
-        className="h-auto w-full"
-      />
-      <figcaption className="mt-3 text-label text-cham-soft">
-        <span className="text-cham">
-          {keepWords("Trang phục truyền thống ở hồ Ba Bể (Bắc Kạn)")}
-        </span>
-        <br />
-        Ảnh: AlbMem, CC BY-SA 4.0, Wikimedia Commons
-      </figcaption>
+    <SlideFrame
+      kicker="Sáu đặc điểm dân tộc Việt Nam"
+      title={
+        <NumberedTitle number={CULTURE.number}>{CULTURE.title}</NumberedTitle>
+      }
+      className="flex flex-col"
+    >
+      <p
+        className="anim-rise max-w-380 text-sub font-semibold text-pretty"
+        style={stagger(0)}
+      >
+        {keepWords(CULTURE.text)}
+      </p>
+      <div
+        className="anim-rise mt-10 grid grid-cols-2 gap-12"
+        style={stagger(1)}
+      >
+        <Figure photo={PHOTOS.embroidery} />
+        <Figure photo={PHOTOS.music} />
+      </div>
+    </SlideFrame>
+  );
+}
+
+function Figure({ photo }: { photo: DeckPhoto }) {
+  return (
+    <figure>
+      <Photo photo={photo} className="h-110 w-full" />
+      <PhotoCaption photo={photo} className="mt-3" />
     </figure>
+  );
+}
+
+/* ---------- Đa dạng về bản sắc, thống nhất trong cộng đồng quốc gia ---------- */
+
+export function DiversitySlide() {
+  return (
+    <div className="absolute inset-0 grid grid-cols-[740px_1fr] items-center gap-20 px-32 pt-20 pb-36">
+      <figure className="anim-fade">
+        <Photo photo={PHOTOS.redScarf} className="h-150 w-full" />
+        <PhotoCaption photo={PHOTOS.redScarf} className="mt-3" />
+      </figure>
+      <div className="anim-rise" style={stagger(1)}>
+        <p className="text-label font-semibold text-son">
+          Sáu đặc điểm dân tộc Việt Nam
+        </p>
+        <h2 className="mt-6 text-title leading-[1.2] font-extrabold uppercase">
+          {keepWords("Đa dạng về bản sắc")}
+        </h2>
+        <p className="my-6 text-lead font-semibold text-cham-soft">nhưng</p>
+        <p className="text-title leading-[1.2] font-extrabold text-son uppercase">
+          {keepWords("Thống nhất trong cộng đồng quốc gia")}
+        </p>
+      </div>
+    </div>
   );
 }

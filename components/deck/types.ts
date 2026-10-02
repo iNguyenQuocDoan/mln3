@@ -11,8 +11,6 @@ export type DeckStep = {
   notes?: string[];
   /** Gợi ý lời nói cho màn hình mới (không có trong bản Word). */
   hint?: string;
-  /** Hiện gợi ý trước lời theo bản Word (mặc định hiện sau). */
-  hintFirst?: boolean;
   /** Câu chuyển người ở màn hình cuối của mỗi thành viên. */
   handoff?: string;
 };
@@ -23,7 +21,7 @@ export type DeckSlide = {
   tone: "light" | "dark";
   /** Phần (1–3) mà slide mở đầu (với slide chuyển phần). */
   part?: number;
-  /** Mục nội dung (1–8) của slide nội dung, hiện ở chân slide. */
+  /** Mục nội dung (1–7) của slide nội dung, hiện ở chân slide. */
   section?: number;
   /**
    * Các màn hình của slide. Slide nhiều màn hình giữ nguyên bố cục, chỉ đổi
@@ -31,6 +29,11 @@ export type DeckSlide = {
    */
   steps: DeckStep[];
   content: ReactNode;
+  /**
+   * Nền phủ kín cả màn hình, kể cả phần ngoài khung 16:9 khi cửa sổ khác
+   * tỉ lệ (ví dụ ảnh bìa). Nằm dưới nội dung slide.
+   */
+  backdrop?: ReactNode;
 };
 
 export function stepCountOf(slide: DeckSlide) {
