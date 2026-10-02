@@ -41,7 +41,7 @@ export function FormationSlide() {
         </div>
         <p className="mt-10 text-body leading-[1.45] text-pretty">
           {keepWords(
-            "Dân tộc xuất hiện khi phương thức sản xuất tư bản chủ nghĩa được xác lập và thay thế phương thức sản xuất phong kiến.",
+            "",
           )}
         </p>
       </section>
@@ -78,7 +78,7 @@ export function FormationSlide() {
         </div>
         <p className="mt-10 text-body leading-[1.45] text-pretty">
           {keepWords(
-            "Văn hóa và tâm lý dân tộc đã phát triển tương đối chín muồi, trong khi cộng đồng kinh tế còn kém phát triển và phân tán.",
+            "",
           )}
         </p>
       </section>

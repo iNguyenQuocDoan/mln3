@@ -28,6 +28,7 @@ import {
   type TurnOutcome,
 } from "./engine";
 import { BOARD_SIZE, GameBoard } from "./game-board";
+import { IntroScreen } from "./intro-screen";
 import { MCControls } from "./mc-controls";
 import { ConfirmDialog, MenuButton } from "./mc-menu";
 import { buildSteps, LAND_PAUSE_MS, ROLL_MS, TILE_STEP_MS } from "./motion";
@@ -65,6 +66,9 @@ export function BoardGame() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [confirmReset, setConfirmReset] = useState(false);
   const [winnerDismissed, setWinnerDismissed] = useState(false);
+  /** Trang giới thiệu/luật chơi trước bàn cờ — màn hình thuần UI, không đụng
+   *  tới GameState; chỉ có ý nghĩa khi ván CHƯA bắt đầu (xem `view` dưới đây). */
+  const [introChoice, setIntroChoice] = useState<"intro" | "game">("intro");
   /** Tiến trình hoạt ảnh của pha "moving" đang chạy; chỉ cập nhật trong
    *  callback của setInterval. Vị trí hiển thị được suy ra lúc render. */
   const [anim, setAnim] = useState<{ phase: GameState["phase"]; step: number } | null>(null);
@@ -75,6 +79,11 @@ export function BoardGame() {
   useEffect(() => {
     ensureGame();
   }, []);
+
+  // Trang giới thiệu chỉ có ý nghĩa trước khi ván bắt đầu: một ván đang dở
+  // hoặc đã kết thúc (đọc lại từ bộ nhớ trình duyệt) luôn vào thẳng bàn cờ,
+  // bất kể `introChoice` — tính trong lúc render, không cần effect riêng.
+  const view: "intro" | "game" = game.phase.kind === "not-started" ? introChoice : "game";
 
   // Nạp sẵn SFX khi mở route; rời route thì dừng mọi hiệu ứng đang kêu.
   useEffect(() => {
@@ -193,6 +202,7 @@ export function BoardGame() {
     setWinnerDismissed(false);
     setConfirmReset(false);
     setMenuOpen(false);
+    setIntroChoice("game");
   }
 
   const stageStyle: CSSProperties = {
@@ -203,7 +213,16 @@ export function BoardGame() {
   return (
     <main className="fixed inset-0 overflow-hidden bg-cham text-on-cham select-none">
       <div className="stage" style={stageStyle}>
-        <div className="absolute" style={{ left: (1920 - BOARD_SIZE) / 2, top: (1080 - BOARD_SIZE) / 2 }}>
+        {view === "intro" ? <IntroScreen onEnter={() => setIntroChoice("game")} /> : null}
+
+        <div
+          className="absolute"
+          style={{
+            left: (1920 - BOARD_SIZE) / 2,
+            top: (1080 - BOARD_SIZE) / 2,
+            visibility: view === "game" ? "visible" : "hidden",
+          }}
+        >
           <GameBoard
             game={game}
             positions={positions}
@@ -218,15 +237,18 @@ export function BoardGame() {
               winnerDismissed={winnerDismissed}
               onReopenWinner={() => setWinnerDismissed(false)}
               onPlayAgain={newGame}
+              onShowIntro={() => setIntroChoice("intro")}
             />
           </GameBoard>
         </div>
 
-        <div className="absolute top-7 right-12 z-50">
-          <MenuButton open={menuOpen} onClick={() => setMenuOpen((open) => !open)} />
-        </div>
+        {view === "game" ? (
+          <div className="absolute top-7 right-12 z-50">
+            <MenuButton open={menuOpen} onClick={() => setMenuOpen((open) => !open)} />
+          </div>
+        ) : null}
 
-        {game.phase.kind === "game-over" && !winnerDismissed ? (
+        {view === "game" && game.phase.kind === "game-over" && !winnerDismissed ? (
           <WinnerScreen
             game={game}
             winnerId={game.phase.winnerId}
@@ -247,7 +269,7 @@ export function BoardGame() {
           onToggleSfx={() => updateSettings({ sound: !settings.sound })}
         />
 
-        {menuOpen ? (
+        {menuOpen && view === "game" ? (
           <MCControls
             soundOn={settings.sound}
             canUndo={hasUndo()}
@@ -283,6 +305,7 @@ function CenterArea({
   winnerDismissed,
   onReopenWinner,
   onPlayAgain,
+  onShowIntro,
 }: {
   game: GameState;
   /** Quân cờ vừa đi hết số bước, đang dừng ở ô đích của nước đi. */
@@ -290,6 +313,8 @@ function CenterArea({
   winnerDismissed: boolean;
   onReopenWinner: () => void;
   onPlayAgain: () => void;
+  /** "← Xem lại luật chơi": chỉ hợp lệ trước khi bấm BẮT ĐẦU (game chưa chạy). */
+  onShowIntro: () => void;
 }) {
   const phase = game.phase;
   const def = teamDef(currentTeam(game).id);
@@ -312,6 +337,13 @@ function CenterArea({
           className={`${BIG_BUTTON} bg-son text-paper hover:bg-[#a51217]`}
         >
           ▶ BẮT ĐẦU TRÒ CHƠI
+        </button>
+        <button
+          type="button"
+          onClick={onShowIntro}
+          className="cursor-pointer text-label font-bold text-on-cham-soft underline-offset-4 hover:text-on-cham hover:underline"
+        >
+          ← Xem lại luật chơi
         </button>
       </Hub>
     );
