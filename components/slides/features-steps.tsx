@@ -10,7 +10,8 @@ import { NumberedTitle, SlideFrame } from "./frame";
 /*
  * 05. Sáu đặc điểm dân tộc Việt Nam, năm màn hình:
  * 1–3 (slide FeaturesSteps): tổng quan, dân cư & địa bàn, phát triển &
- *     đoàn kết; chỉ có chữ, bố cục giữ nguyên giữa ba màn.
+ *     đoàn kết. Màn dân cư & địa bàn có bản đồ dân tộc cao hết slide bên
+ *     phải; màn phát triển & đoàn kết có ảnh ngang cạnh hai đặc điểm.
  * 4 (CultureSlide): 06 Bản sắc văn hóa riêng, hai ảnh thêu và nhạc cụ.
  * 5 (DiversitySlide): đa dạng về bản sắc, thống nhất trong cộng đồng
  *   quốc gia; ảnh chân dung là hình chính.
@@ -62,10 +63,27 @@ const FEATURES: Feature[] = [
   },
 ];
 
-const STEPS = [
+type Step = {
+  title: string;
+  features: Feature[];
+  /** Bản đồ dọc, cao hết slide. */
+  map?: DeckPhoto;
+  /** Ảnh ngang đặt cạnh danh sách đặc điểm. */
+  photo?: DeckPhoto;
+};
+
+const STEPS: Step[] = [
   { title: "Sáu đặc điểm dân tộc Việt Nam", features: FEATURES },
-  { title: "Dân cư & địa bàn", features: FEATURES.slice(0, 3) },
-  { title: "Phát triển & đoàn kết", features: FEATURES.slice(3, 5) },
+  {
+    title: "Dân cư & địa bàn",
+    features: FEATURES.slice(0, 3),
+    map: PHOTOS.ethnicMap,
+  },
+  {
+    title: "Phát triển & đoàn kết",
+    features: FEATURES.slice(3, 5),
+    photo: PHOTOS.unityFestival,
+  },
 ];
 
 export function FeaturesSteps() {
@@ -81,10 +99,25 @@ export function FeaturesSteps() {
       <div key={step} className="anim-swap">
         {step === 0 ? (
           <Overview />
+        ) : current.map ? (
+          // Chừa bên phải cho bản đồ (rộng 604px, cách chữ 64px).
+          <div className="max-w-249">
+            <FeatureList features={current.features} />
+          </div>
+        ) : current.photo ? (
+          // Ảnh lớn bên phải, cao gần hết vùng nội dung.
+          <div className="grid grid-cols-[1fr_860px] items-center gap-16">
+            <FeatureList features={current.features} />
+            <figure className="anim-fade" style={stagger(1)}>
+              <Photo photo={current.photo} className="h-140 w-full" />
+              <PhotoCaption photo={current.photo} className="mt-3" />
+            </figure>
+          </div>
         ) : (
           <FeatureList features={current.features} />
         )}
       </div>
+      {current.map ? <MapFigure photo={current.map} /> : null}
     </SlideFrame>
   );
 }
@@ -139,6 +172,28 @@ function FeatureList({ features }: { features: Feature[] }) {
         </li>
       ))}
     </ol>
+  );
+}
+
+/**
+ * Bản đồ dọc, giữ nguyên cả trang Atlat (không cắt) để thấy đủ các vùng
+ * và hai quần đảo. Bản đồ cao từ mép trên slide xuống sát chân slide nên
+ * đặt theo khung slide, nằm ngoài khối chuyển bước (khối đó có transform).
+ * Viền mảnh tách nền trắng của bản đồ khỏi nền slide.
+ */
+function MapFigure({ photo }: { photo: DeckPhoto }) {
+  return (
+    <figure
+      className="anim-fade absolute top-20 right-32 w-151"
+      style={stagger(1)}
+    >
+      <Photo
+        photo={photo}
+        fit="contain"
+        className="h-192 w-full border-2 border-cham-line"
+      />
+      <PhotoCaption photo={photo} className="mt-3 text-pretty" />
+    </figure>
   );
 }
 

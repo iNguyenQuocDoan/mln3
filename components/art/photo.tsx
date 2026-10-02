@@ -28,7 +28,11 @@ export function Photo({
         unoptimized
         loading="eager"
         className={fit === "cover" ? "object-cover" : "object-contain"}
-        style={{ objectPosition: photo.focus }}
+        style={{
+          objectPosition: photo.focus,
+          transform: photo.zoom ? `scale(${photo.zoom})` : undefined,
+          transformOrigin: photo.focus,
+        }}
       />
     </div>
   );

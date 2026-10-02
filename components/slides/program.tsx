@@ -1,11 +1,13 @@
 import { FlowBox, Joiner, SumRow } from "@/components/art/flow";
+import { Photo, PhotoCaption } from "@/components/art/photo";
 import { stagger } from "@/components/motion";
+import { PHOTOS, type DeckPhoto } from "@/content/photos";
 import { keepWords } from "@/content/typography";
 import { NumberedTitle, SlideFrame } from "./frame";
 
 /*
  * 04. Cương lĩnh dân tộc của chủ nghĩa Mác – Lênin: mỗi nội dung một màn
- * hình.
+ * hình. Nội dung và sơ đồ bên trái, ảnh minh họa lớn bên phải.
  */
 
 export const PROGRAM = [
@@ -32,6 +34,16 @@ const KICKERS = [
   "Cương lĩnh dân tộc · Nội dung thứ ba",
 ];
 
+/** Ảnh lớn bên phải, cao kín vùng nội dung. */
+function SidePhoto({ photo }: { photo: DeckPhoto }) {
+  return (
+    <figure className="anim-fade" style={stagger(2)}>
+      <Photo photo={photo} className="h-135 w-full" />
+      <PhotoCaption photo={photo} className="mt-3" />
+    </figure>
+  );
+}
+
 /** Câu ý chính, cỡ tiêu đề phụ. */
 function Statement({ children }: { children: string }) {
   return (
@@ -52,38 +64,41 @@ export function EqualitySlide() {
       kicker={KICKERS[0]}
       title={<NumberedTitle number={item.number}>{item.keyword}</NumberedTitle>}
       subtitle={item.statement}
-      className="flex flex-col"
+      className="grid grid-cols-[1fr_680px] gap-16"
     >
-      <div className="anim-rise" style={stagger(0)}>
-        <Statement>
-          Không có dân tộc nào được đặt ở vị trí cao hơn hoặc thấp hơn dân tộc
-          khác.
-        </Statement>
-      </div>
-
-      {/* Ba ô bằng nhau đứng trên cùng một đường nền. */}
-      <div
-        className="anim-rise flex flex-1 flex-col items-center justify-center"
-        style={stagger(1)}
-        role="img"
-        aria-label="Dân tộc A bằng dân tộc B bằng dân tộc C"
-      >
-        <div className="flex items-end">
-          {PEOPLES.map((people, i) => (
-            <div key={people} className="flex items-end">
-              {i > 0 ? (
-                <Joiner padding="px-8" className="h-36 text-keyword text-son">
-                  =
-                </Joiner>
-              ) : null}
-              <FlowBox className="h-36 w-90 text-sub">
-                {keepWords(people)}
-              </FlowBox>
-            </div>
-          ))}
+      <div className="flex flex-col">
+        <div className="anim-rise" style={stagger(0)}>
+          <Statement>
+            Không có dân tộc nào được đặt ở vị trí cao hơn hoặc thấp hơn dân tộc
+            khác.
+          </Statement>
         </div>
-        <div className="h-2 w-full max-w-360 bg-cham" />
+
+        {/* Ba ô bằng nhau đứng trên cùng một đường nền. */}
+        <div
+          className="anim-rise flex flex-1 flex-col items-center justify-center"
+          style={stagger(1)}
+          role="img"
+          aria-label="Dân tộc A bằng dân tộc B bằng dân tộc C"
+        >
+          <div className="flex items-end">
+            {PEOPLES.map((people, i) => (
+              <div key={people} className="flex items-end">
+                {i > 0 ? (
+                  <Joiner padding="px-4" className="h-28 text-keyword text-son">
+                    =
+                  </Joiner>
+                ) : null}
+                <FlowBox padding="px-4 py-4" className="h-28 w-56 text-lead">
+                  {keepWords(people)}
+                </FlowBox>
+              </div>
+            ))}
+          </div>
+          <div className="h-2 w-full bg-cham" />
+        </div>
       </div>
+      <SidePhoto photo={PHOTOS.delegates} />
     </SlideFrame>
   );
 }
@@ -101,72 +116,78 @@ export function SelfDeterminationSlide() {
       kicker={KICKERS[1]}
       title={<NumberedTitle number={item.number}>{item.keyword}</NumberedTitle>}
       subtitle={item.statement}
-      className="flex flex-col"
+      className="grid grid-cols-[1fr_560px] gap-12"
     >
-      <p
-        className="anim-rise max-w-400 text-sub font-semibold text-pretty"
-        style={stagger(0)}
-      >
-        {keepWords("Quyền tự quyết là quyền một dân tộc ")}
-        <span className="text-son">{keepWords("tự quyết định vận mệnh")}</span>
-        {keepWords(" của mình và ")}
-        <span className="text-son">
-          {keepWords("lựa chọn con đường phát triển")}
-        </span>
-        {keepWords(" của mình.")}
-      </p>
-
-      <div
-        className="anim-rise mx-auto mt-8 flex w-320 flex-col items-center"
-        style={stagger(1)}
-      >
-        <FlowBox
-          tone="solid"
-          weight="font-extrabold"
-          className="w-120 text-lead"
+      <div className="flex flex-col">
+        <p
+          className="anim-rise text-lead leading-[1.3] font-semibold text-pretty"
+          style={stagger(0)}
         >
-          {keepWords("QUYỀN TỰ QUYẾT")}
-        </FlowBox>
-        {/* Nhánh đôi: từ giữa ô trên xuống tâm hai ô dưới. */}
-        <svg viewBox="0 0 1280 64" className="w-320" aria-hidden="true">
-          <path
-            d="M640 0V22M300 22H980M300 22V58M980 22V58M286 42l14 16 14-16M966 42l14 16 14-16"
-            fill="none"
-            stroke="var(--color-cham-soft)"
-            strokeWidth="4"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          />
-        </svg>
-        <div className="grid w-full grid-cols-2 gap-x-20">
-          <Branch
-            tone="accent"
-            label="TÁCH RA ĐỘC LẬP"
-            text="Có quyền tách ra để thành lập quốc gia dân tộc độc lập."
-          />
-          <Branch
-            tone="strong"
-            label="TỰ NGUYỆN LIÊN HIỆP"
-            text="Có quyền tự nguyện liên hiệp với dân tộc khác trên cơ sở bình đẳng."
-          />
+          {keepWords("Quyền tự quyết là quyền một dân tộc ")}
+          <span className="text-son">
+            {keepWords("tự quyết định vận mệnh")}
+          </span>
+          {keepWords(" của mình và ")}
+          <span className="text-son">
+            {keepWords("lựa chọn con đường phát triển")}
+          </span>
+          {keepWords(" của mình.")}
+        </p>
+
+        <div
+          className="anim-rise mt-6 flex w-full flex-col items-center"
+          style={stagger(1)}
+        >
+          <FlowBox
+            tone="solid"
+            weight="font-extrabold"
+            padding="px-8 py-3"
+            className="w-120 text-lead"
+          >
+            {keepWords("QUYỀN TỰ QUYẾT")}
+          </FlowBox>
+          {/* Nhánh đôi: từ giữa ô trên xuống tâm hai ô dưới. */}
+          <svg viewBox="0 0 1280 64" className="w-full" aria-hidden="true">
+            <path
+              d="M640 0V22M300 22H980M300 22V58M980 22V58M286 42l14 16 14-16M966 42l14 16 14-16"
+              fill="none"
+              stroke="var(--color-cham-soft)"
+              strokeWidth="4"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            />
+          </svg>
+          <div className="grid w-full grid-cols-2 gap-x-10">
+            <Branch
+              tone="accent"
+              label="TÁCH RA ĐỘC LẬP"
+              text="Có quyền tách ra để thành lập quốc gia dân tộc độc lập."
+            />
+            <Branch
+              tone="strong"
+              label="TỰ NGUYỆN LIÊN HIỆP"
+              text="Có quyền tự nguyện liên hiệp với dân tộc khác trên cơ sở bình đẳng."
+            />
+          </div>
+        </div>
+
+        <div
+          className="anim-rise mt-auto flex flex-col border-l-8 border-son bg-cham-tint px-6 py-3"
+          style={stagger(2)}
+        >
+          <p className="text-lead font-extrabold">
+            {keepWords("Tự quyết")} <span className="text-son">≠</span>{" "}
+            {keepWords("chỉ có tách ra")}
+          </p>
+          <p className="text-body text-pretty text-cham-soft">
+            <span className="font-semibold text-cham">Mà là: </span>
+            {keepWords(
+              "tự quyết định vận mệnh + tự lựa chọn con đường phát triển",
+            )}
+          </p>
         </div>
       </div>
-
-      <div
-        className="anim-rise mt-auto flex items-center gap-10 border-l-8 border-son bg-cham-tint px-10 py-5"
-        style={stagger(2)}
-      >
-        <p className="shrink-0 text-sub font-extrabold">
-          {keepWords("Tự quyết")} <span className="text-son">≠</span>{" "}
-          {keepWords("chỉ có tách ra")}
-        </p>
-        <p className="text-body text-pretty text-cham-soft">
-          <span className="font-semibold text-cham">Mà là: </span>
-          {keepWords(
-            "tự quyết định vận mệnh + tự lựa chọn con đường phát triển",
-          )}
-        </p>
-      </div>
+      <SidePhoto photo={PHOTOS.election1946} />
     </SlideFrame>
   );
 }
@@ -186,6 +207,7 @@ function Branch({
         tone={tone}
         border="border-4"
         weight="font-bold"
+        padding="px-4 py-4"
         className="w-full text-lead"
       >
         {keepWords(label)}
@@ -206,36 +228,39 @@ export function WorkersUnionSlide() {
       kicker={KICKERS[2]}
       title={<NumberedTitle number={item.number}>{item.keyword}</NumberedTitle>}
       subtitle={item.statement}
-      className="flex flex-col"
+      className="grid grid-cols-[1fr_640px] gap-16"
     >
-      <div className="anim-rise" style={stagger(0)}>
-        <Statement>
-          Nhấn mạnh sự đoàn kết và liên hiệp giữa công nhân thuộc các dân tộc
-          khác nhau.
-        </Statement>
-      </div>
+      <div className="flex flex-col">
+        <div className="anim-rise" style={stagger(0)}>
+          <Statement>
+            Nhấn mạnh sự đoàn kết và liên hiệp giữa công nhân thuộc các dân tộc
+            khác nhau.
+          </Statement>
+        </div>
 
-      <div
-        className="anim-rise flex flex-1 items-center justify-center"
-        style={stagger(1)}
-      >
-        <div className="flex w-330 flex-col">
-          <SumRow
-            arrowLength={56}
-            boxClassName="text-lead leading-tight"
-            items={["A", "B", "C"].map((letter) => ({
-              label: keepWords(`Công nhân dân tộc ${letter}`),
-            }))}
-          />
-          <FlowBox
-            tone="solid"
-            weight="font-extrabold"
-            className="mx-auto w-120 text-sub"
-          >
-            {keepWords("LIÊN HIỆP")}
-          </FlowBox>
+        <div
+          className="anim-rise flex flex-1 items-center justify-center"
+          style={stagger(1)}
+        >
+          <div className="flex w-full flex-col">
+            <SumRow
+              arrowLength={56}
+              boxClassName="text-lead leading-tight"
+              items={["A", "B", "C"].map((letter) => ({
+                label: keepWords(`Công nhân dân tộc ${letter}`),
+              }))}
+            />
+            <FlowBox
+              tone="solid"
+              weight="font-extrabold"
+              className="mx-auto w-120 text-sub"
+            >
+              {keepWords("LIÊN HIỆP")}
+            </FlowBox>
+          </div>
         </div>
       </div>
+      <SidePhoto photo={PHOTOS.mayDay} />
     </SlideFrame>
   );
 }

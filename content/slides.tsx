@@ -90,7 +90,7 @@ export const slides: DeckSlide[] = [
     content: <AgendaSlide />,
   },
 
-  divider(1),
+  divider(1, PHOTOS.tayNung),
   content(
     "hinh-thanh",
     1,
