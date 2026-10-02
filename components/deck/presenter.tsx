@@ -64,11 +64,16 @@ export function Presenter({ slides }: { slides: DeckSlide[] }) {
 
       <aside className="flex min-h-0 flex-col">
         <header className="border-b-2 border-on-cham-soft/30 pb-5">
-          <p className="text-label text-on-cham-soft">
-            Màn {pad2(position.number)} / {pad2(total)}
-            {section
-              ? ` · Mục ${pad2(section.number)} · Thành viên ${section.member}${presenter ? ` (${presenter})` : ""}`
-              : ""}
+          <p className="flex flex-wrap gap-x-6 text-label text-on-cham-soft">
+            <span>
+              Màn {pad2(position.number)} / {pad2(total)}
+            </span>
+            {section ? (
+              <span>
+                Mục {pad2(section.number)}, thành viên {section.member}
+                {presenter ? ` (${presenter})` : ""}
+              </span>
+            ) : null}
           </p>
           <h1 className="mt-2 text-lead font-bold text-balance">
             {current.title}
@@ -92,7 +97,7 @@ export function Presenter({ slides }: { slides: DeckSlide[] }) {
 }
 
 function describe(slides: DeckSlide[], position: DeckPosition | null) {
-  if (!position) return "—";
+  if (!position) return "";
   return slides[position.index].steps[position.step].title;
 }
 

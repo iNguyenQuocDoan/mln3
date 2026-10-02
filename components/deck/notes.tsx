@@ -3,21 +3,14 @@
 import { pad2 } from "@/content/parts";
 import type { DeckStep, ScreenPosition } from "./types";
 
-/** Lời thuyết trình của một màn hình: đoạn theo bản Word, gợi ý, câu chuyển người. */
+/** Lời thuyết trình của một màn hình: các đoạn lời nói, rồi câu chuyển người. */
 export function NotesBody({ step }: { step: DeckStep }) {
-  const empty = !step.notes?.length && !step.hint && !step.handoff;
-  const hint = step.hint ? (
-    <p className="border-l-4 border-on-cham-soft/50 pl-4 text-on-cham-soft">
-      <span className="font-semibold text-on-cham">Gợi ý</span>{" "}
-      <span className="italic">(chưa có trong bản Word)</span>: {step.hint}
-    </p>
-  ) : null;
+  const empty = !step.notes?.length && !step.handoff;
   return (
     <div className="space-y-4">
       {step.notes?.map((paragraph) => (
         <p key={paragraph}>{paragraph}</p>
       ))}
-      {hint}
       {step.handoff ? (
         <p className="border-l-6 border-vang bg-on-cham/10 py-3 pl-5">
           <span className="font-semibold text-vang">Câu chuyển người: </span>

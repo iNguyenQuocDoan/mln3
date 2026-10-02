@@ -10,6 +10,7 @@
     "test": "node --experimental-strip-types --disable-warning=ExperimentalWarning --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --test --test-reporter=spec \"components/**/*.test.ts\" \"content/**/*.test.ts\""
   },
   "dependencies": {
+    "@3d-dice/dice-box": "^1.1.4",
     "next": "16.3.7",
     "react": "19.2.8",
     "react-dom": "19.2.8"

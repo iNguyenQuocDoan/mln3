@@ -35,7 +35,7 @@ function PartGroup({ number }: { number: Part["number"] }) {
   return (
     <section>
       <p className="text-label font-semibold text-cham-soft">
-        Phần {number} · {part ? keepWords(part.title) : null}
+        Phần {number}: {part ? keepWords(part.title) : null}
       </p>
       <ol className="mt-3 border-t-2 border-cham-line">
         {sectionsOfPart(number).map((section) => (

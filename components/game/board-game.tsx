@@ -1,52 +1,54 @@
 "use client";
 
-import { useEffect, useEffectEvent, useRef, useState, type CSSProperties, type ReactNode } from "react";
+import { useEffect, useEffectEvent, useRef, useState, type CSSProperties } from "react";
+import { BrocadeBand } from "@/components/art/brocade-band";
 import { toggleFullscreen, useStageScale } from "@/components/stage";
-import { tileAt } from "@/content/game-board";
 import { cardById } from "@/content/game-cards";
 import { questionById, validateQuestionBank } from "@/content/game-questions";
-import { TEAM_COUNT } from "@/content/game-teams";
 import { GameBackgroundMusic } from "./background-music";
-import { CardPhase } from "./card-phase";
-import { CompactRanking } from "./compact-ranking";
-import { Dice } from "./dice";
+import { DICE_TRAY_ID, loadDiceBox, rollDice3d } from "./dice-3d";
 import {
   answerQuestion,
   applyCard,
+  beginFirstTurn,
   chooseTarget,
   continueToNextTeam,
   createGame,
   currentTeam,
-  nextTeam,
+  markDiceThrown,
   pickCard,
   rollDice,
+  rollForOrder,
+  setTeamCount,
   settleMove,
   settleRoll,
   startGame,
   type GameState,
   type TeamId,
-  type TurnOutcome,
 } from "./engine";
-import { BOARD_SIZE, GameBoard } from "./game-board";
+import { CENTER_SIZE, GameBoard, STEP } from "./game-board";
+import { GameHistory } from "./game-history";
 import { IntroScreen } from "./intro-screen";
+import { Leaderboard } from "./leaderboard";
 import { MCControls } from "./mc-controls";
 import { ConfirmDialog, MenuButton } from "./mc-menu";
 import { buildSteps, LAND_PAUSE_MS, ROLL_MS, TILE_STEP_MS } from "./motion";
 import { teamDef } from "./palette";
-import { QuestionPanel } from "./question-panel";
 import { preloadSfx, setSfxMuted, sfx, stopAllSfx } from "./game-audio";
+import { QuestionScreen } from "./question-screen";
 import {
-  clearUndoHistory,
+  clearGameHistory,
   ensureGame,
   hasUndo,
-  saveGame,
+  startNewGame,
   undo,
   updateGame,
   updateSettings,
   useGame,
+  useGameHistory,
   useSettings,
 } from "./stores";
-import { TargetSelector } from "./target-selector";
+import { TurnBanner, TurnCard, type TurnActions } from "./turn-panel";
 import { WinnerScreen } from "./winner-screen";
 
 /* Chỉ hai bước chạy tự động, đều nằm GIỮA một lượt và không bao giờ đổi đội:
@@ -54,35 +56,52 @@ import { WinnerScreen } from "./winner-screen";
  * hoàn tác — Undo luôn quay về trước một thao tác của MC. */
 const AUTO = { record: false };
 
-/** Ván hiển thị trước khi đọc xong bộ nhớ trình duyệt (năm đội ở KHỞI HÀNH). */
+/** Ván hiển thị trước khi đọc xong bộ nhớ trình duyệt (bố cục cố định). */
 const BLANK_GAME = createGame();
 
-/** "Đường đua đại đoàn kết": vẽ trên khung 1920x1080, như bộ slide. */
+/** Bàn cờ nằm bên phải khung 1920×1080; cột lượt chơi chiếm phần bên trái. */
+const BOARD_LEFT = 860;
+const BOARD_TOP = 30;
+
+/** Xúc xắc 3D nằm lại trên khay một lúc sau khi dừng để khán giả đọc số. */
+const ARENA_CLOSE_MS = 1700;
+
+/** "Đường đua đại đoàn kết": vẽ trên khung 1920×1080, như bộ slide. */
 export function BoardGame() {
   const scale = useStageScale();
   const stored = useGame();
   const game = stored ?? BLANK_GAME;
   const settings = useSettings();
+  const history = useGameHistory();
   const [menuOpen, setMenuOpen] = useState(false);
-  const [confirmReset, setConfirmReset] = useState(false);
+  const [confirm, setConfirm] = useState<"reset" | "history" | null>(null);
   const [winnerDismissed, setWinnerDismissed] = useState(false);
-  /** Trang giới thiệu/luật chơi trước bàn cờ — màn hình thuần UI, không đụng
-   *  tới GameState; chỉ có ý nghĩa khi ván CHƯA bắt đầu (xem `view` dưới đây). */
+  /** Trang giới thiệu/luật chơi trước bàn cờ — chỉ có ý nghĩa khi ván chưa bắt đầu. */
   const [introChoice, setIntroChoice] = useState<"intro" | "game">("intro");
+  /** Đang chờ xúc xắc 3D lăn xong: khóa nút lắc để không bấm hai lần. */
+  const [busy, setBusy] = useState(false);
+  /** Khay xúc xắc 3D đang mở giữa bàn cờ (thay chỗ bảng xếp hạng một lúc). */
+  const [arena, setArena] = useState<{ color: string; label: string } | null>(null);
   /** Tiến trình hoạt ảnh của pha "moving" đang chạy; chỉ cập nhật trong
    *  callback của setInterval. Vị trí hiển thị được suy ra lúc render. */
-  const [anim, setAnim] = useState<{ phase: GameState["phase"]; step: number } | null>(null);
+  const [anim, setAnim] = useState<{
+    phase: GameState["phase"];
+    step: number;
+  } | null>(null);
   const previousKind = useRef<string | null>(null);
+  const arenaTimer = useRef<number | undefined>(undefined);
 
   // Mở route: có ván đang dở thì giữ, không thì tạo ván "chưa bắt đầu".
-  // Không bao giờ tự bắt đầu — MC bấm "BẮT ĐẦU TRÒ CHƠI".
   useEffect(() => {
     ensureGame();
   }, []);
 
-  // Trang giới thiệu chỉ có ý nghĩa trước khi ván bắt đầu: một ván đang dở
-  // hoặc đã kết thúc (đọc lại từ bộ nhớ trình duyệt) luôn vào thẳng bàn cờ,
-  // bất kể `introChoice` — tính trong lúc render, không cần effect riêng.
+  // Nạp sẵn xúc xắc 3D (lỗi hay máy yếu thì tự dùng xúc xắc 2D).
+  useEffect(() => {
+    void loadDiceBox();
+    return () => window.clearTimeout(arenaTimer.current);
+  }, []);
+
   const view: "intro" | "game" = game.phase.kind === "not-started" ? introChoice : "game";
 
   // Nạp sẵn SFX khi mở route; rời route thì dừng mọi hiệu ứng đang kêu.
@@ -102,17 +121,13 @@ export function BoardGame() {
     else errors.forEach((error) => console.warn(error));
   }, []);
 
-  // Hiệu ứng âm thanh theo diễn biến, mỗi khi đổi sang một pha mới. Âm
-  // thanh chỉ là phản hồi: không có gì ở đây làm thay đổi ván chơi.
-  // (Xúc xắc và lật thẻ kêu ngay lúc bấm; bước chân, ô 🎁 và về đích kêu
-  // theo hoạt ảnh di chuyển bên dưới.)
+  // Hiệu ứng âm thanh theo diễn biến, mỗi khi đổi sang một pha mới.
   useEffect(() => {
     const phase = game.phase;
     const before = previousKind.current;
     previousKind.current = phase.kind;
     if (before === phase.kind) return;
-    if (phase.kind === "waiting-roll") sfx.correct();
-    if (phase.kind === "turn-complete" && phase.outcome.kind === "wrong") sfx.wrong();
+    if (phase.kind === "waiting-roll") (phase.correct ? sfx.correct : sfx.wrong)();
     if (phase.kind === "moving" && phase.cause === "card") {
       const me = currentTeam(game).id;
       const move = phase.moves[0];
@@ -124,17 +139,34 @@ export function BoardGame() {
     if (phase.kind === "game-over" && before !== null) sfx.victory();
   }, [game]);
 
-  // Xúc xắc lăn xong thì quân cờ mới bắt đầu đi.
+  // Xúc xắc dừng thì quân cờ mới bắt đầu đi. Xúc xắc 3D đã lăn xong trên
+  // màn hình nên chỉ chờ một nhịp ngắn; xúc xắc 2D chờ hết hoạt ảnh lăn.
   const rolling = game.phase.kind === "rolling" ? game.phase : null;
   useEffect(() => {
     if (!rolling) return;
-    const timer = window.setTimeout(() => updateGame((s) => settleRoll(s, Math.random), AUTO), ROLL_MS);
+    const timer = window.setTimeout(
+      () => updateGame((s) => settleRoll(s, Math.random), AUTO),
+      rolling.physical ? 350 : ROLL_MS,
+    );
     return () => window.clearTimeout(timer);
   }, [rolling]);
 
-  // Quân cờ đi qua từng ô (ảnh move.png), dừng thì về idle.png, đứng lại một
-  // lúc ở ô vừa đến rồi mới sang pha kế tiếp CỦA CÙNG LƯỢT (lật thẻ hoặc
-  // turn-complete) — không bao giờ chuyển đội.
+  // Tải lại trang giữa lúc xúc xắc 3D đang lăn: lượt lắc đã được ghi lại nên
+  // tự đổ thay (xúc xắc 2D), không cho lắc lại.
+  const stranded =
+    !busy &&
+    (game.phase.kind === "order-roll" || game.phase.kind === "waiting-roll") &&
+    game.phase.thrown === true;
+  useEffect(() => {
+    if (!stranded) return;
+    updateGame(
+      (s) => (s.phase.kind === "order-roll" ? rollForOrder(s, Math.random) : rollDice(s, Math.random)),
+      AUTO,
+    );
+  }, [stranded]);
+
+  // Quân cờ đi qua từng ô, dừng lại một lúc ở ô vừa đến rồi mới sang pha kế
+  // tiếp CỦA CÙNG LƯỢT (mở hộp quà hoặc hết lượt) — không bao giờ chuyển đội.
   const moving = game.phase.kind === "moving" ? game.phase : null;
   useEffect(() => {
     if (!moving) return;
@@ -149,8 +181,6 @@ export function BoardGame() {
       if (moving.cause === "dice") sfx.moveStep();
       if (step >= maxSteps) {
         window.clearInterval(timer);
-        // Vừa dừng chân: về đích hoặc ô 🎁 thì báo bằng âm thanh trước khi
-        // chuyển pha (màn chiến thắng / chọn thẻ hiện sau khoảng dừng).
         if (finishing) sfx.finish();
         else if (next.kind === "card-selection") sfx.gift();
         settle = window.setTimeout(
@@ -183,9 +213,9 @@ export function BoardGame() {
     const key = event.key.toLowerCase();
     if (key === "f") toggleFullscreen();
     if (key === "m") updateSettings({ sound: !settings.sound });
-    if (key === "z") undo();
+    if (key === "z" && !busy) undo();
     if (event.key === "Escape") {
-      setConfirmReset(false);
+      setConfirm(null);
       setMenuOpen(false);
     }
   });
@@ -195,15 +225,103 @@ export function BoardGame() {
     return () => window.removeEventListener("keydown", handler);
   }, []);
 
-  /** Chơi lại: về màn "chưa bắt đầu" (nhạc nền không bị ảnh hưởng). */
+  /**
+   * Ném xúc xắc 3D lên khay giữa bàn cờ rồi đưa số chấm cho `apply` (null nếu
+   * không dùng được 3D — luật chơi sẽ tự đổ và hiện xúc xắc 2D). `apply` chạy
+   * cùng nhịp với lúc mở khóa nút lắc nên màn hình không nháy lại pha cũ.
+   */
+  async function throwDice(
+    count: number,
+    color: string,
+    label: string,
+    apply: (faces: number[] | null) => void,
+  ) {
+    window.clearTimeout(arenaTimer.current);
+    setBusy(true);
+    setArena({ color, label });
+    const faces = await rollDice3d(count, color);
+    apply(faces);
+    setBusy(false);
+    if (faces) arenaTimer.current = window.setTimeout(() => setArena(null), ARENA_CLOSE_MS);
+    else setArena(null);
+  }
+
+  /** Chơi lại: về màn "chưa bắt đầu" với cùng số đội, câu hỏi trộn lại, hộp quà rải lại. */
   function newGame() {
-    saveGame(createGame());
-    clearUndoHistory();
+    startNewGame(game.teams.length);
     setWinnerDismissed(false);
-    setConfirmReset(false);
+    setConfirm(null);
     setMenuOpen(false);
+    setArena(null);
     setIntroChoice("game");
   }
+
+  const actions: TurnActions = {
+    onSetTeamCount: (count) => updateGame((s) => setTeamCount(s, count, Math.random), AUTO),
+    onStart: () => updateGame(startGame),
+    onShowIntro: () => setIntroChoice("intro"),
+    onRollForOrder: async () => {
+      const phase = game.phase;
+      if (busy || phase.kind !== "order-roll" || phase.thrown) return;
+      const teamId = phase.queue[0];
+      if (!teamId) return;
+      const def = teamDef(teamId);
+      const landing = throwDice(1, def.color, `${def.name} lắc chọn thứ tự`, (faces) =>
+        updateGame((s) => rollForOrder(s, Math.random, faces?.[0]), AUTO),
+      );
+      // Ghi ngay là đã lắc (cũng là mốc hoàn tác) trong lúc xúc xắc còn lăn.
+      updateGame(markDiceThrown);
+      await landing;
+    },
+    onBeginFirstTurn: () => updateGame(beginFirstTurn),
+    onPick: (option) => updateGame((s) => answerQuestion(s, option)),
+    onTimeUp: () => updateGame((s) => answerQuestion(s, null)),
+    onRoll: async () => {
+      const phase = game.phase;
+      if (busy || phase.kind !== "waiting-roll" || phase.thrown) return;
+      const def = teamDef(currentTeam(game).id);
+      const landing = throwDice(phase.plan.dice, def.color, `${def.name} đang lắc`, (faces) =>
+        updateGame((s) => rollDice(s, Math.random, faces ?? undefined), AUTO),
+      );
+      updateGame(markDiceThrown);
+      await landing;
+    },
+    onPickCard: (index) => {
+      sfx.cardFlip();
+      updateGame((s) => pickCard(s, index));
+    },
+    onApplyCard: () => updateGame(applyCard),
+    onChooseTarget: (targetId) => {
+      const phase = game.phase;
+      const next = updateGame((s) => chooseTarget(s, targetId));
+      // Không quân nào phải dời (đội bị nhắm đã ở KHỞI HÀNH, hay hai đội
+      // đứng cùng ô): vẫn báo hiệu thẻ vừa dùng.
+      if (next && next.phase.kind !== "moving" && phase.kind === "target-selection") {
+        (cardById(phase.cardId).swap ? sfx.swap : sfx.attack)();
+      }
+    },
+    onContinue: () => updateGame(continueToNextTeam),
+    onPlayAgain: newGame,
+    onShowWinner: () => setWinnerDismissed(false),
+  };
+
+  const phase = game.phase;
+  const activeTeamId =
+    phase.kind === "game-over" ||
+    phase.kind === "not-started" ||
+    phase.kind === "order-roll" ||
+    phase.kind === "order-ready"
+      ? null
+      : currentTeam(game).id;
+
+  // Câu hỏi chiếm trọn màn hình tới khi MC bấm lắc (xúc xắc lăn trên bàn cờ).
+  const asking =
+    phase.kind === "question" || (phase.kind === "waiting-roll" && !busy && !phase.thrown) ? phase : null;
+  // Trước khi vào lượt đầu, mọi đội còn ở Khởi hành: giữa bàn cờ hiện kết quả các ván trước.
+  const showHistory =
+    history.length > 0 &&
+    (phase.kind === "not-started" || phase.kind === "order-roll" || phase.kind === "order-ready");
+  const openQuestion = view === "game" && asking ? questionById(asking.questionId) : undefined;
 
   const stageStyle: CSSProperties = {
     transform: `translate(-50%, -50%) scale(${scale})`,
@@ -211,82 +329,123 @@ export function BoardGame() {
   };
 
   return (
-    <main className="fixed inset-0 overflow-hidden bg-cham text-on-cham select-none">
-      <div className="stage" style={stageStyle}>
+    <main className="fixed inset-0 overflow-hidden bg-dem text-on-cham select-none">
+      <div className="stage bg-dem" style={stageStyle}>
         {view === "intro" ? <IntroScreen onEnter={() => setIntroChoice("game")} /> : null}
 
-        <div
-          className="absolute"
-          style={{
-            left: (1920 - BOARD_SIZE) / 2,
-            top: (1080 - BOARD_SIZE) / 2,
-            visibility: view === "game" ? "visible" : "hidden",
-          }}
-        >
-          <GameBoard
-            game={game}
-            positions={positions}
-            movingTeamIds={movingTeamIds}
-            activeTeamId={
-              game.phase.kind === "game-over" || game.phase.kind === "not-started" ? null : currentTeam(game).id
-            }
-          >
-            <CenterArea
+        <div className="absolute inset-0" style={{ visibility: view === "game" ? "visible" : "hidden" }}>
+          {/* Cột lượt chơi */}
+          <div className="absolute top-10 bottom-10 left-10 flex w-195 flex-col gap-4">
+            <TurnBanner game={game} winnerId={phase.kind === "game-over" ? phase.winnerId : null} />
+            <TurnCard
               game={game}
               landed={landed}
+              busy={busy}
               winnerDismissed={winnerDismissed}
-              onReopenWinner={() => setWinnerDismissed(false)}
-              onPlayAgain={newGame}
-              onShowIntro={() => setIntroChoice("intro")}
+              actions={actions}
             />
-          </GameBoard>
+            <div className="flex h-16 items-center gap-4">
+              <MenuButton open={menuOpen} onClick={() => setMenuOpen((open) => !open)} />
+              <GameBackgroundMusic
+                on={settings.music}
+                volume={settings.musicVolume}
+                winnerShown={phase.kind === "game-over" && !winnerDismissed}
+                sfxOn={settings.sound}
+                onToggle={() => updateSettings({ music: !settings.music })}
+                onVolumeChange={(musicVolume) => updateSettings({ musicVolume })}
+                onToggleSfx={() => updateSettings({ sound: !settings.sound })}
+              />
+            </div>
+          </div>
+
+          {/* Bàn cờ */}
+          <div className="absolute" style={{ left: BOARD_LEFT, top: BOARD_TOP }}>
+            <GameBoard
+              game={game}
+              positions={positions}
+              movingTeamIds={movingTeamIds}
+              activeTeamId={activeTeamId}
+            >
+              {arena ? (
+                <DiceFelt color={arena.color} label={arena.label} />
+              ) : showHistory ? (
+                <GameHistory records={history} limit={7} className="size-full" />
+              ) : (
+                <Leaderboard
+                  game={game}
+                  activeTeamId={activeTeamId}
+                  order={phase.kind === "game-over" ? phase.ranking : undefined}
+                />
+              )}
+            </GameBoard>
+          </div>
+
+          {/* Lớp vẽ xúc xắc 3D, đặt trùng khay giữa bàn cờ. */}
+          <div
+            id={DICE_TRAY_ID}
+            className="pointer-events-none absolute z-40"
+            style={{
+              left: BOARD_LEFT + STEP,
+              top: BOARD_TOP + STEP,
+              width: CENTER_SIZE,
+              height: CENTER_SIZE,
+            }}
+          />
         </div>
 
-        {view === "game" ? (
-          <div className="absolute top-7 right-12 z-50">
-            <MenuButton open={menuOpen} onClick={() => setMenuOpen((open) => !open)} />
-          </div>
+        {openQuestion ? (
+          <QuestionScreen
+            game={game}
+            question={openQuestion}
+            onPick={actions.onPick}
+            onTimeUp={actions.onTimeUp}
+            onRoll={actions.onRoll}
+          />
         ) : null}
 
-        {view === "game" && game.phase.kind === "game-over" && !winnerDismissed ? (
+        {view === "game" && phase.kind === "game-over" && !winnerDismissed ? (
           <WinnerScreen
             game={game}
-            winnerId={game.phase.winnerId}
-            order={game.phase.ranking}
+            winnerId={phase.winnerId}
+            order={phase.ranking}
+            history={history}
             onPlayAgain={newGame}
             onShowRanking={() => setWinnerDismissed(true)}
           />
         ) : null}
 
-        {/* Một nhạc nền duy nhất cho cả route: không gắn với pha / lượt / ván. */}
-        <GameBackgroundMusic
-          on={settings.music}
-          volume={settings.musicVolume}
-          winnerShown={game.phase.kind === "game-over" && !winnerDismissed}
-          sfxOn={settings.sound}
-          onToggle={() => updateSettings({ music: !settings.music })}
-          onVolumeChange={(musicVolume) => updateSettings({ musicVolume })}
-          onToggleSfx={() => updateSettings({ sound: !settings.sound })}
-        />
-
         {menuOpen && view === "game" ? (
           <MCControls
             soundOn={settings.sound}
-            canUndo={hasUndo()}
+            canUndo={hasUndo() && !busy}
             onToggleSound={() => updateSettings({ sound: !settings.sound })}
             onUndo={() => undo()}
-            onReset={() => setConfirmReset(true)}
+            onReset={() => setConfirm("reset")}
+            onClearHistory={() => setConfirm("history")}
             onClose={() => setMenuOpen(false)}
           />
         ) : null}
 
-        {confirmReset ? (
+        {confirm === "reset" ? (
           <ConfirmDialog
             title="Chơi lại từ đầu?"
-            text="Năm đội quay về KHỞI HÀNH, số câu đúng về 0 và toàn bộ câu hỏi được dùng lại từ đầu."
+            text="Các đội quay về Khởi hành, số câu đúng về 0, câu hỏi được trộn lại và hộp quà được rải lại."
             confirmLabel="Chơi lại từ đầu"
-            onCancel={() => setConfirmReset(false)}
+            onCancel={() => setConfirm(null)}
             onConfirm={newGame}
+          />
+        ) : null}
+
+        {confirm === "history" ? (
+          <ConfirmDialog
+            title="Xóa lịch sử các ván?"
+            text="Kết quả các ván đã chơi và danh sách câu đã hỏi sẽ bị xóa. Ván đang chơi vẫn giữ nguyên."
+            confirmLabel="Xóa lịch sử"
+            onCancel={() => setConfirm(null)}
+            onConfirm={() => {
+              clearGameHistory();
+              setConfirm(null);
+            }}
           />
         ) : null}
       </div>
@@ -294,265 +453,22 @@ export function BoardGame() {
   );
 }
 
-const BIG_BUTTON =
-  "cursor-pointer whitespace-nowrap rounded-2xl px-8 py-4 text-lead font-extrabold transition-colors disabled:cursor-not-allowed disabled:opacity-40";
-
-/** Vùng giữa bàn cờ tùy pha: màn chờ bắt đầu, câu hỏi, xúc xắc, thẻ, kết
- *  thúc lượt, chọn mục tiêu, hay bảng xếp hạng cuối ván. */
-function CenterArea({
-  game,
-  landed,
-  winnerDismissed,
-  onReopenWinner,
-  onPlayAgain,
-  onShowIntro,
-}: {
-  game: GameState;
-  /** Quân cờ vừa đi hết số bước, đang dừng ở ô đích của nước đi. */
-  landed: boolean;
-  winnerDismissed: boolean;
-  onReopenWinner: () => void;
-  onPlayAgain: () => void;
-  /** "← Xem lại luật chơi": chỉ hợp lệ trước khi bấm BẮT ĐẦU (game chưa chạy). */
-  onShowIntro: () => void;
-}) {
-  const phase = game.phase;
-  const def = teamDef(currentTeam(game).id);
-  const next = teamDef(nextTeam(game).id);
-  const continueLabel = `TIẾP TỤC → ${next.name.toUpperCase()}`;
-  const onContinue = () => updateGame((s) => continueToNextTeam(s, Math.random));
-
-  if (phase.kind === "not-started") {
-    return (
-      <Hub game={game}>
-        <Title />
-        <p className="text-lead font-extrabold text-vang">{TEAM_COUNT} ĐỘI ĐÃ SẴN SÀNG</p>
-        <p className="text-label text-on-cham-soft text-balance">
-          Trả lời đúng mới được đổ xúc xắc · Đáp ô 🎁 được lật thẻ · Về đích trước là thắng
-        </p>
-        <button
-          type="button"
-          autoFocus
-          onClick={() => updateGame((s) => startGame(s, Math.random))}
-          className={`${BIG_BUTTON} bg-son text-paper hover:bg-[#a51217]`}
-        >
-          ▶ BẮT ĐẦU TRÒ CHƠI
-        </button>
-        <button
-          type="button"
-          onClick={onShowIntro}
-          className="cursor-pointer text-label font-bold text-on-cham-soft underline-offset-4 hover:text-on-cham hover:underline"
-        >
-          ← Xem lại luật chơi
-        </button>
-      </Hub>
-    );
-  }
-
-  const question =
-    phase.kind === "question" || phase.kind === "waiting-roll"
-      ? questionById(phase.questionId)
-      : phase.kind === "turn-complete" && phase.outcome.kind === "wrong"
-        ? questionById(phase.outcome.questionId)
-        : undefined;
-  if (question) {
-    const picked =
-      phase.kind === "waiting-roll"
-        ? phase.picked
-        : phase.kind === "turn-complete" && phase.outcome.kind === "wrong"
-          ? phase.outcome.picked
-          : null;
-    return (
-      <div className="relative z-20">
-        <QuestionPanel
-          key={question.id}
-          question={question}
-          teamName={def.name}
-          teamColor={def.color}
-          teamInk={def.ink}
-          picked={picked}
-          correct={picked === null ? null : phase.kind === "waiting-roll"}
-          continueLabel={continueLabel}
-          onPick={(option) => updateGame((s) => answerQuestion(s, option))}
-          onRoll={() => {
-            sfx.dice();
-            updateGame((s) => rollDice(s, Math.random));
-          }}
-          onContinue={onContinue}
-        />
-      </div>
-    );
-  }
-
-  if (phase.kind === "card-selection" || phase.kind === "card-result") {
-    return (
-      <div className="relative z-20">
-        <CardPhase
-          teamName={def.name}
-          teamColor={def.color}
-          cards={phase.cards}
-          chosenIndex={phase.kind === "card-result" ? phase.cardIndex : null}
-          onPick={(index) => {
-            sfx.cardFlip();
-            updateGame((s) => pickCard(s, index));
-          }}
-          onApply={() => updateGame(applyCard)}
-        />
-      </div>
-    );
-  }
-
-  if (phase.kind === "target-selection") {
-    return (
-      <div className="relative z-20">
-        <TargetSelector
-          cardId={phase.cardId}
-          attackerName={def.name}
-          candidates={phase.candidates}
-          positions={Object.fromEntries(game.teams.map((t) => [t.id, t.position]))}
-          onChoose={(targetId) => {
-            const next = updateGame((s) => chooseTarget(s, targetId));
-            // Không quân nào phải dời (đội bị nhắm đã ở KHỞI HÀNH, hay hai đội
-            // đứng cùng ô): vẫn báo hiệu thẻ vừa dùng.
-            if (next && next.phase.kind !== "moving") (cardById(phase.cardId).swap ? sfx.swap : sfx.attack)();
-          }}
-        />
-      </div>
-    );
-  }
-
-  if (phase.kind === "game-over") {
-    const winner = teamDef(phase.winnerId);
-    return (
-      <div className="flex flex-col items-center gap-5 text-center">
-        <p className="text-heading font-extrabold" style={{ color: winner.color }}>
-          🏆 {winner.name.toUpperCase()} CHIẾN THẮNG
-        </p>
-        {phase.reason === "questions-exhausted" ? (
-          <p className="text-label text-on-cham-soft">Đã dùng hết câu hỏi · xếp hạng theo vị trí</p>
-        ) : null}
-        <CompactRanking game={game} order={phase.ranking} />
-        {winnerDismissed ? (
-          <div className="flex gap-3">
-            <button
-              type="button"
-              onClick={onReopenWinner}
-              className="cursor-pointer rounded-2xl border-2 border-on-cham-soft/40 px-6 py-3 text-label font-bold text-on-cham-soft hover:bg-on-cham/10"
-            >
-              Màn chiến thắng
-            </button>
-            <button
-              type="button"
-              onClick={onPlayAgain}
-              className="cursor-pointer rounded-2xl bg-vang px-6 py-3 text-label font-extrabold text-cham hover:bg-on-cham"
-            >
-              Chơi lại
-            </button>
-          </div>
-        ) : null}
-      </div>
-    );
-  }
-
-  if (phase.kind === "turn-complete") {
-    const tile = tileAt(currentTeam(game).position);
-    return (
-      <Hub game={game}>
-        <TeamBadge label="Lượt vừa xong" name={def.name} color={def.color} ink={def.ink} />
-        <p className="text-lead leading-tight font-extrabold">
-          {def.name.toUpperCase()} ĐÃ HOÀN THÀNH LƯỢT
-        </p>
-        <p className="text-body text-on-cham-soft">
-          Vị trí: <span className="font-extrabold text-on-cham">{tile.name}</span> · ô {tile.id}
-        </p>
-        <p className="min-h-8 text-label font-bold text-vang">{outcomeLine(game, phase.outcome)}</p>
-        <button
-          type="button"
-          autoFocus
-          onClick={onContinue}
-          className={`${BIG_BUTTON} bg-vang text-cham hover:bg-on-cham`}
-        >
-          {continueLabel}
-        </button>
-      </Hub>
-    );
-  }
-
-  // rolling, moving: xúc xắc và chú thích nước đi.
+/** Mặt khay nỉ chàm viền thổ cẩm, nơi xúc xắc 3D lăn. */
+function DiceFelt({ color, label }: { color: string; label: string }) {
   return (
-    <Hub game={game}>
-      <Title />
-      <TeamBadge label="Lượt hiện tại" name={def.name} color={def.color} ink={def.ink} />
-      <Dice value={game.diceValue} rolling={phase.kind === "rolling"} color={def.color} />
-      <p className="min-h-8 text-label font-bold text-on-cham">{statusLine(game, landed)}</p>
-    </Hub>
-  );
-}
-
-/** Bố cục chung của vùng giữa: nội dung chính bên trái, xếp hạng gọn bên phải. */
-function Hub({ game, children }: { game: GameState; children: ReactNode }) {
-  return (
-    <div className="flex w-full items-center justify-between gap-6 px-8">
-      <div className="flex flex-1 flex-col items-center gap-4 text-center">{children}</div>
-      <div className="flex flex-col items-center gap-3">
-        <CompactRanking game={game} />
-        <p className="text-label text-on-cham-soft">🎁 = ô được lật thẻ</p>
-      </div>
+    <div
+      className="fade-in relative flex size-full flex-col overflow-hidden rounded-[28px] ring-4"
+      style={
+        {
+          background: "radial-gradient(120% 90% at 50% 45%, #2a3577 0%, #1c2553 55%, #121836 100%)",
+          "--tw-ring-color": color,
+        } as CSSProperties
+      }
+    >
+      <BrocadeBand id="felt-top" height={36} />
+      <p className="mt-6 text-center text-[30px] font-bold text-on-cham-soft">{label}</p>
+      <div className="flex-1" />
+      <BrocadeBand id="felt-bottom" height={36} />
     </div>
   );
-}
-
-function Title() {
-  return (
-    <p className="text-heading leading-tight font-extrabold">
-      ĐƯỜNG ĐUA
-      <br />
-      ĐẠI ĐOÀN KẾT
-    </p>
-  );
-}
-
-function TeamBadge({ label, name, color, ink }: { label: string; name: string; color: string; ink: string }) {
-  return (
-    <div>
-      <p className="text-label font-bold tracking-wide text-on-cham-soft uppercase">{label}</p>
-      <p className="mt-1 rounded-full px-8 py-1.5 text-heading font-extrabold" style={{ background: color, color: ink }}>
-        {name.toUpperCase()}
-      </p>
-    </div>
-  );
-}
-
-/** Kể lại lượt vừa xong: số xúc xắc, thẻ lật được và đội bị nhắm (nếu có). */
-function outcomeLine(game: GameState, outcome: TurnOutcome): string {
-  if (outcome.kind === "wrong") return "Trả lời sai · đứng yên";
-  const dice = `🎲 ${outcome.dice}`;
-  if (!outcome.cardId) return `${dice} · không có 🎁`;
-  const card = cardById(outcome.cardId);
-  const target = outcome.targetId ? ` → ${teamDef(outcome.targetId).name}` : "";
-  const effect = card.swap ? "đổi vị trí" : `${card.cells > 0 ? "+" : ""}${card.cells} ô`;
-  return `${dice} · 🎁 ${card.icon} ${card.name}${target} (${effect})`;
-}
-
-/** Chú thích ngắn cho khán giả: đang đổ, đi mấy bước, tới ô nào, có 🎁 không. */
-function statusLine(game: GameState, landed: boolean): string {
-  const phase = game.phase;
-  const actor = teamDef(currentTeam(game).id).name;
-  if (phase.kind === "rolling") return "Đang đổ xúc xắc…";
-  if (phase.kind !== "moving") return "";
-  const move = phase.moves[0];
-  const tile = tileAt(move.to);
-  if (phase.moves.length === 2) {
-    const [a, b] = phase.moves.map((m) => teamDef(m.teamId).name);
-    return `🔄 ${a} ↔ ${b}: đổi vị trí`;
-  }
-  if (phase.cause === "dice") {
-    if (!landed) return `${actor} đi ${game.diceValue} bước…`;
-    if (tile.type === "finish") return `🏁 ${actor} về ĐÍCH ĐẾN!`;
-    return tile.hasGift ? `📍 ${tile.name} · 🎁 được lật thẻ!` : `📍 ${tile.name} · không có 🎁`;
-  }
-  const delta = move.to - move.from;
-  const mover = teamDef(move.teamId).name;
-  if (move.teamId !== currentTeam(game).id) return `${actor} tấn công ${mover}: lùi ${-delta} ô`;
-  return `${mover} ${delta > 0 ? "tiến" : "lùi"} ${Math.abs(delta)} ô nhờ thẻ`;
 }

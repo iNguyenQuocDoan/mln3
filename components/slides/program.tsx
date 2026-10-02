@@ -29,9 +29,9 @@ export const PROGRAM = [
 ];
 
 const KICKERS = [
-  "Cương lĩnh dân tộc · Nội dung thứ nhất",
-  "Cương lĩnh dân tộc · Nội dung thứ hai",
-  "Cương lĩnh dân tộc · Nội dung thứ ba",
+  "Nội dung thứ nhất của Cương lĩnh dân tộc",
+  "Nội dung thứ hai của Cương lĩnh dân tộc",
+  "Nội dung thứ ba của Cương lĩnh dân tộc",
 ];
 
 /** Ảnh lớn bên phải, cao kín vùng nội dung. */
@@ -176,13 +176,14 @@ export function SelfDeterminationSlide() {
           style={stagger(2)}
         >
           <p className="text-lead font-extrabold">
-            {keepWords("Tự quyết")} <span className="text-son">≠</span>{" "}
-            {keepWords("chỉ có tách ra")}
+            {keepWords("Tự quyết")}{" "}
+            <span className="text-son">{keepWords("không chỉ có")}</span>{" "}
+            {keepWords("tách ra")}
           </p>
           <p className="text-body text-pretty text-cham-soft">
             <span className="font-semibold text-cham">Mà là: </span>
             {keepWords(
-              "tự quyết định vận mệnh + tự lựa chọn con đường phát triển",
+              "tự quyết định vận mệnh và tự lựa chọn con đường phát triển.",
             )}
           </p>
         </div>

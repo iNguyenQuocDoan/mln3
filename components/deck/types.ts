@@ -7,10 +7,8 @@ export const STAGE_HEIGHT = 1080;
 export type DeckStep = {
   /** Tên màn hình, dùng cho trình đọc màn hình và màn hình người trình bày. */
   title: string;
-  /** Lời thuyết trình theo bản Word, mỗi phần tử một đoạn. */
+  /** Lời thuyết trình (content/script.ts), mỗi phần tử một đoạn. */
   notes?: string[];
-  /** Gợi ý lời nói cho màn hình mới (không có trong bản Word). */
-  hint?: string;
   /** Câu chuyển người ở màn hình cuối của mỗi thành viên. */
   handoff?: string;
 };

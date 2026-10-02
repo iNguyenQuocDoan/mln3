@@ -73,7 +73,6 @@ export function playSfx(name: SfxName) {
 
 /** Các hành động chính → hiệu ứng tương ứng (xem SOUND EVENT MAP). */
 export const sfx = {
-  dice: () => playSfx("diceRoll"),
   moveStep: () => playSfx("moveStep"),
   forward: () => playSfx("moveForward"),
   backward: () => playSfx("moveBackward"),
@@ -85,7 +84,36 @@ export const sfx = {
   gift: () => playSfx("gift"),
   finish: () => playSfx("finish"),
   victory: () => playSfx("victory"),
+  /** Tiếng tích tắc mấy giây cuối khi trả lời; `last`: giây cuối cùng, kêu cao hơn. */
+  tick: (last = false) => playTick(last),
 };
+
+/* ---------------- Tiếng tích tắc của đồng hồ trả lời ---------------- */
+
+let tickContext: AudioContext | null = null;
+
+/** Tổng hợp bằng Web Audio nên không cần file; trình duyệt chặn thì bỏ qua. */
+function playTick(last: boolean) {
+  if (muted || typeof window === "undefined" || typeof AudioContext === "undefined") return;
+  try {
+    tickContext ??= new AudioContext();
+    const context = tickContext;
+    if (context.state === "suspended") void context.resume();
+    const now = context.currentTime;
+    const tone = context.createOscillator();
+    const gain = context.createGain();
+    tone.type = "triangle";
+    tone.frequency.value = last ? 1320 : 990;
+    gain.gain.setValueAtTime(0.0001, now);
+    gain.gain.exponentialRampToValueAtTime(0.2 * SFX_MASTER_VOLUME, now + 0.006);
+    gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.12);
+    tone.connect(gain).connect(context.destination);
+    tone.start(now);
+    tone.stop(now + 0.13);
+  } catch {
+    // Không có Web Audio: đồng hồ vẫn chạy, chỉ không kêu.
+  }
+}
 
 /* ---------------- Hạ nhạc nền tạm thời khi có SFX mạnh ---------------- */
 

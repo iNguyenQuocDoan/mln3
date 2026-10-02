@@ -17,7 +17,6 @@ export const GAME_AUDIO = {
     duckFactor: 0.5,
   },
   sfx: {
-    diceRoll: { src: "/assets/game/sounds/dice-roll.mp3", volume: 0.45, duck: false },
     moveStep: { src: "/assets/game/sounds/move-step.mp3", volume: 0.2, duck: false },
     moveForward: { src: "/assets/game/sounds/move-forward.mp3", volume: 0.35, duck: false },
     moveBackward: { src: "/assets/game/sounds/move-backward.mp3", volume: 0.4, duck: false },

@@ -2,7 +2,9 @@
  * "Hành trình xuyên Việt": 28 ô chạy quanh viền một bàn cờ 8×8 (giống Cờ
  * Tỷ Phú), từ KHỞI HÀNH (ô 0) tới ĐÍCH ĐẾN (ô 27). 26 ô giữa là tỉnh/thành
  * theo hướng Bắc → Nam, chỉ là ô di chuyển (câu hỏi không gắn với ô nào).
- * Một số ô có 🎁: đổ xúc xắc đáp xuống đúng ô đó mới được vào vòng lật thẻ.
+ * Hộp quà 🎁 không cố định: mỗi ván rải ngẫu nhiên lên các ô tỉnh/thành
+ * (xem `GameState.gifts`); `hasGift` ở đây chỉ là bố cục mặc định hiển thị
+ * trước khi MC tạo ván. Đổ xúc xắc đáp xuống đúng ô có hộp mới được mở hộp.
  *
  * Logic trò chơi luôn dùng `position: number` (chỉ số trong mảng này).
  */
@@ -24,7 +26,7 @@ export const BOARD_TILES: BoardTile[] = [
     name: "Khởi hành",
     type: "start",
     hasGift: false,
-    subtitle: "Hành trình Đại Đoàn Kết",
+    subtitle: "Hành trình đại đoàn kết",
   },
   province(1, "Hà Nội"),
   province(2, "Ninh Bình"),
@@ -57,11 +59,19 @@ export const BOARD_TILES: BoardTile[] = [
     name: "Đích đến",
     type: "finish",
     hasGift: false,
-    subtitle: "Khối Đại Đoàn Kết Toàn Dân Tộc",
+    subtitle: "Khối đại đoàn kết toàn dân tộc",
   },
 ];
 
 export const FINISH_POSITION = BOARD_TILES.length - 1;
+
+/** Bố cục hộp quà mặc định (trước khi rải ngẫu nhiên cho ván mới). */
+export const DEFAULT_GIFT_TILES = BOARD_TILES.filter((tile) => tile.hasGift).map((tile) => tile.id);
+
+/** Hộp quà chỉ xuất hiện ở các ô này: không sát KHỞI HÀNH, không sát ĐÍCH. */
+export const GIFT_ZONE = BOARD_TILES.filter((tile) => tile.type === "province" && tile.id >= 2 && tile.id <= FINISH_POSITION - 2).map(
+  (tile) => tile.id,
+);
 
 export function tileAt(position: number): BoardTile {
   return BOARD_TILES[Math.min(Math.max(position, 0), FINISH_POSITION)];

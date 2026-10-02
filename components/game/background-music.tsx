@@ -88,18 +88,18 @@ export function GameBackgroundMusic({
   }, [on]);
 
   const toggle =
-    "grid h-11 cursor-pointer place-items-center rounded-full px-2 text-[26px] transition-colors hover:bg-on-cham/10 focus-visible:outline-3 focus-visible:outline-vang";
+    "grid size-12 cursor-pointer place-items-center rounded-full text-on-cham transition-colors hover:bg-on-cham/10 focus-visible:outline-3 focus-visible:outline-vang";
 
   return (
-    <div className="absolute top-9 right-36 z-[60] flex items-center gap-2 rounded-full bg-nhua/80 py-1.5 pr-3 pl-1.5 ring-1 ring-on-cham-soft/30">
+    <div className="flex h-16 items-center gap-2 rounded-full bg-nhua py-1.5 pr-4 pl-2 ring-1 ring-on-cham-soft/25">
       <button
         type="button"
         onClick={onToggle}
         aria-label={on ? "Tắt nhạc nền" : "Bật nhạc nền"}
         title={on ? "Tắt nhạc nền" : "Bật nhạc nền"}
-        className={`${toggle} ${on ? "" : "opacity-40 grayscale"}`}
+        className={`${toggle} ${on ? "" : "opacity-40"}`}
       >
-        🎵
+        <MusicIcon />
       </button>
       <input
         type="range"
@@ -118,10 +118,39 @@ export function GameBackgroundMusic({
         onClick={onToggleSfx}
         aria-label={sfxOn ? "Tắt hiệu ứng âm thanh" : "Bật hiệu ứng âm thanh"}
         title={sfxOn ? "Tắt hiệu ứng âm thanh (M)" : "Bật hiệu ứng âm thanh (M)"}
-        className={toggle}
+        className={`${toggle} ${sfxOn ? "" : "opacity-40"}`}
       >
-        {sfxOn ? "🔊" : "🔇"}
+        <SpeakerIcon muted={!sfxOn} />
       </button>
     </div>
+  );
+}
+
+function MusicIcon() {
+  return (
+    <svg viewBox="0 0 24 24" className="size-7" aria-hidden="true">
+      <path d="M9 18V5l11-2v13" fill="none" stroke="currentColor" strokeWidth="2" strokeLinejoin="round" />
+      <circle cx="6" cy="18" r="3" fill="currentColor" />
+      <circle cx="17" cy="16" r="3" fill="currentColor" />
+    </svg>
+  );
+}
+
+function SpeakerIcon({ muted }: { muted: boolean }) {
+  return (
+    <svg viewBox="0 0 24 24" className="size-7" aria-hidden="true">
+      <path d="M4 9h4l5-4v14l-5-4H4z" fill="currentColor" />
+      {muted ? (
+        <path d="M17 9l5 6M22 9l-5 6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+      ) : (
+        <path
+          d="M17 8.5a5 5 0 0 1 0 7M19.5 6a8.5 8.5 0 0 1 0 12"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="2"
+          strokeLinecap="round"
+        />
+      )}
+    </svg>
   );
 }

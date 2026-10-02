@@ -9,9 +9,9 @@ import { NumberedTitle, SlideFrame } from "./frame";
 
 /*
  * 05. Sáu đặc điểm dân tộc Việt Nam, năm màn hình:
- * 1–3 (slide FeaturesSteps): tổng quan, dân cư & địa bàn, phát triển &
- *     đoàn kết. Màn dân cư & địa bàn có bản đồ dân tộc cao hết slide bên
- *     phải; màn phát triển & đoàn kết có ảnh ngang cạnh hai đặc điểm.
+ * 1–3 (slide FeaturesSteps): tổng quan, dân cư và địa bàn, phát triển
+ *     và đoàn kết. Màn dân cư và địa bàn có bản đồ dân tộc cao hết slide
+ *     bên phải; màn phát triển và đoàn kết có ảnh ngang cạnh hai đặc điểm.
  * 4 (CultureSlide): 06 Bản sắc văn hóa riêng, hai ảnh thêu và nhạc cụ.
  * 5 (DiversitySlide): đa dạng về bản sắc, thống nhất trong cộng đồng
  *   quốc gia; ảnh chân dung là hình chính.
@@ -75,12 +75,12 @@ type Step = {
 const STEPS: Step[] = [
   { title: "Sáu đặc điểm dân tộc Việt Nam", features: FEATURES },
   {
-    title: "Dân cư & địa bàn",
+    title: "Dân cư và địa bàn",
     features: FEATURES.slice(0, 3),
     map: PHOTOS.ethnicMap,
   },
   {
-    title: "Phát triển & đoàn kết",
+    title: "Phát triển và đoàn kết",
     features: FEATURES.slice(3, 5),
     photo: PHOTOS.unityFestival,
   },

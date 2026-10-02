@@ -1,6 +1,6 @@
 /**
- * Năm đội chơi cố định của "Đường đua đại đoàn kết". Tên hiển thị luôn là
- * "Đội 1".."Đội 5" — không hiện tên dân tộc hay bất kỳ nhãn nào khác trên
+ * Các đội chơi của "Đường đua đại đoàn kết" (MC chọn 2–5 đội trước khi bắt
+ * đầu; ván dùng các đội đầu danh sách). Tên hiển thị luôn là "Đội 1".."Đội 5" — không hiện tên dân tộc hay bất kỳ nhãn nào khác trên
  * giao diện chính. Mỗi đội có một nhân vật chibi riêng (ảnh do người dùng
  * cung cấp, đặt tại public/assets/game/teams/team-N/).
  */
@@ -58,5 +58,9 @@ export const TEAM_DEFS: TeamDef[] = [
 ];
 
 export const TEAM_COUNT = TEAM_DEFS.length;
+
+/** Số đội tối thiểu / tối đa trong một ván (tối đa = số nhân vật có sẵn). */
+export const MIN_TEAMS = 2;
+export const MAX_TEAMS = TEAM_DEFS.length;
 
 export const CARD_BACK_SRC = "/assets/game/cards/card-back.png";

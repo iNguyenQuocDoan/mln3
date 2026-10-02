@@ -1,7 +1,8 @@
 import Link from "next/link";
 import { BrocadeBand } from "@/components/art/brocade-band";
 import { TeamAvatar } from "@/components/game/team-piece";
-import { TEAM_DEFS } from "@/content/game-teams";
+import { ANSWER_SECONDS, DICE_WHEN_CORRECT, DICE_WHEN_WRONG } from "@/content/game-balance";
+import { MAX_TEAMS, MIN_TEAMS, TEAM_DEFS } from "@/content/game-teams";
 import { delay, stagger } from "@/components/motion";
 
 /**
@@ -23,8 +24,9 @@ export function GameIntroSlide() {
           đại đoàn kết
         </h2>
         <p className="anim-rise mt-8 text-lead text-on-cham-soft" style={stagger(1)}>
-          Năm đội lần lượt trả lời câu hỏi, đúng mới được đổ xúc xắc và lật thẻ may rủi trên hành
-          trình gồm các ô xuyên Việt — từ KHỞI HÀNH tới KHỐI ĐẠI ĐOÀN KẾT TOÀN DÂN TỘC.
+          Từ {MIN_TEAMS} đến {MAX_TEAMS} đội, mỗi lượt có {ANSWER_SECONDS} giây trả lời một câu hỏi.
+          Đúng được lắc {DICE_WHEN_CORRECT} xúc xắc, sai hoặc hết giờ vẫn được lắc {DICE_WHEN_WRONG}
+          . Hành trình xuyên Việt từ Hà Nội về Cần Thơ, đích đến là khối đại đoàn kết toàn dân tộc.
         </p>
         <ul className="anim-rise mt-12 flex flex-wrap gap-4" style={stagger(2)}>
           {TEAM_DEFS.map((team) => (

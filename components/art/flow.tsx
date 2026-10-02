@@ -84,7 +84,23 @@ export function ArrowDown({
   );
 }
 
-/** Dấu nối giữa các ô: "+", "=", "≠" (font có sẵn các ký tự này). */
+/** Mũi tên chỉ sang phải, nối hai ô trên cùng một hàng. */
+export function ArrowRight({ className = "w-12" }: { className?: string }) {
+  return (
+    <svg viewBox="0 0 48 32" className={className} aria-hidden="true">
+      <path
+        d="M3 16H43M31 4l12 12-12 12"
+        fill="none"
+        stroke={LINE}
+        strokeWidth="4"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </svg>
+  );
+}
+
+/** Dấu nối giữa các ô: "+", "=" (font có sẵn các ký tự này). */
 export function Joiner({
   children,
   padding = "px-4",

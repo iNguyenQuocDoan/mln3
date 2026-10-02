@@ -1,141 +1,201 @@
 /**
- * Tiêu đề và lời thuyết trình của 15 slide, giữ nguyên theo bản Word
- * của nhóm. Lời thuyết trình chỉ hiện ở màn hình người trình bày và
- * ghi chú (phím N), không hiện trên TV.
+ * Lời thuyết trình cho từng màn hình của bài, theo đúng thứ tự bấm (27 màn
+ * hình). Mỗi màn hình giải thích đầy đủ các ý đang chiếu (theo giáo trình
+ * Chủ nghĩa xã hội khoa học, chương Vấn đề dân tộc) và nhắc đúng ảnh trên
+ * màn hình đó. Cùng nội dung với content/kich-ban-thuyet-trinh.md, sửa lời
+ * ở đây thì sửa cả file đó.
  *
- * Bài trên web đã tách thành nhiều màn hình hơn bản Word; content/slides.tsx
- * gắn từng đoạn lời dưới đây vào màn hình tương ứng.
+ * Lời chỉ hiện ở màn hình người trình bày và ghi chú (phím N), không hiện
+ * trên TV. content/slides.tsx gắn từng mục dưới đây vào màn hình của nó.
  */
-export type SlideScript = {
-  title: string;
+export type ScreenScript = {
+  /** Lời nói, mỗi phần tử một đoạn. */
   speech: string[];
-  /** Câu chuyển người ở slide cuối của mỗi thành viên. */
+  /** Câu chuyển người ở màn hình cuối của mỗi thành viên. */
   handoff?: string;
 };
 
-export const SCRIPT: Record<number, SlideScript> = {
-  1: {
-    title: "Sự hình thành dân tộc",
+export const SCRIPT = {
+  /* ---------------- Thành viên 1 ---------------- */
+  cover: {
     speech: [
-      "Em xin chào thầy cô và các bạn. Nhóm em trình bày về dân tộc trong thời kỳ quá độ lên chủ nghĩa xã hội. Bài trình bày gồm ba phần: khái niệm và đặc trưng của dân tộc, quan điểm của chủ nghĩa Mác – Lênin, và dân tộc cùng quan hệ dân tộc ở Việt Nam.",
-      "Trước hết là sự hình thành dân tộc. Theo tài liệu, ở phương Tây, dân tộc xuất hiện khi phương thức sản xuất tư bản chủ nghĩa được xác lập, thay thế phương thức sản xuất phong kiến. Ở phương Đông, tài liệu nhấn mạnh nền tảng văn hóa và tâm lý dân tộc đã phát triển tương đối chín muồi, trong khi cộng đồng kinh tế nhìn chung còn kém phát triển và phân tán.",
+      "Em xin chào thầy cô và các bạn. Hôm nay nhóm em xin trình bày chủ đề: dân tộc trong thời kỳ quá độ lên chủ nghĩa xã hội. Đây là vấn đề vừa có ý nghĩa lý luận, vừa rất gần với thực tiễn nước ta, một quốc gia có 54 dân tộc cùng chung sống.",
     ],
   },
-  2: {
-    title: "Dân tộc theo nghĩa quốc gia dân tộc",
+  agenda: {
     speech: [
-      "Tiếp theo, khái niệm dân tộc được hiểu theo hai nghĩa cơ bản. Với nghĩa thứ nhất, dân tộc được hiểu là quốc gia dân tộc, tức một cộng đồng chính trị – xã hội.",
-      "Tài liệu nêu năm đặc trưng của cộng đồng này: chung phương thức sinh hoạt kinh tế, chung lãnh thổ ổn định, có sự quản lý của một nhà nước dân tộc độc lập, có ngôn ngữ chung của quốc gia và có nét tâm lý thể hiện qua văn hóa dân tộc. Khi trình bày, chúng ta có thể ghi nhớ theo năm ý: kinh tế, lãnh thổ, nhà nước, ngôn ngữ và bản sắc văn hóa.",
+      "Bài trình bày gồm ba phần. Phần một là khái niệm và đặc trưng của dân tộc, gồm sự hình thành dân tộc và hai nghĩa của dân tộc. Phần hai là quan điểm của chủ nghĩa Mác – Lênin về vấn đề dân tộc, gồm hai xu hướng khách quan và Cương lĩnh dân tộc. Phần ba là dân tộc và quan hệ dân tộc ở Việt Nam, gồm sáu đặc điểm dân tộc Việt Nam, quan điểm của Đảng và Nhà nước, và chính sách dân tộc.",
     ],
   },
-  3: {
-    title: "Dân tộc theo nghĩa tộc người",
+  part1: {
     speech: [
-      "Với nghĩa thứ hai, dân tộc được hiểu là tộc người. Tài liệu nêu ba đặc trưng: cộng đồng về ngôn ngữ, cộng đồng về văn hóa và ý thức tự giác tộc người.",
-      "Về ngôn ngữ, tài liệu ghi rõ có thể gồm cả ngôn ngữ nói và ngôn ngữ viết, hoặc chỉ riêng ngôn ngữ nói. Như vậy, khi sử dụng từ dân tộc, chúng ta cần làm rõ đang nói theo nghĩa quốc gia dân tộc hay theo nghĩa tộc người.",
-    ],
-    handoff:
-      "Sau khi làm rõ khái niệm, em xin mời bạn tiếp theo trình bày quan điểm Mác – Lênin về vấn đề dân tộc.",
-  },
-  4: {
-    title: "Hai xu hướng phát triển quan hệ dân tộc",
-    speech: [
-      "Sau phần khái niệm, em xin trình bày quan điểm của chủ nghĩa Mác – Lênin về vấn đề dân tộc. Trước hết, tài liệu đề cập hai xu hướng khách quan trong sự phát triển quan hệ dân tộc.",
-      "Xu hướng thứ nhất là cộng đồng dân cư muốn tách ra để hình thành cộng đồng dân tộc độc lập. Xu hướng thứ hai là các dân tộc muốn liên hiệp lại với nhau. Đây là hai nội dung cần phân biệt rõ khi trình bày phần này: hình thành cộng đồng độc lập và liên hiệp giữa các dân tộc.",
+      "Em xin bắt đầu với phần một: khái niệm và đặc trưng của dân tộc. Ảnh bên phải là một nét văn hóa của dân tộc Tày, Nùng. Trước khi trả lời dân tộc là gì, chúng ta cùng xem dân tộc đã hình thành như thế nào.",
     ],
   },
-  5: {
-    title: "Cương lĩnh dân tộc và nội dung bình đẳng",
+  formation: {
     speech: [
-      "Tiếp theo là Cương lĩnh dân tộc của chủ nghĩa Mác – Lênin. Tài liệu trình bày cương lĩnh thành ba nội dung. Em xin bắt đầu với nội dung thứ nhất: các dân tộc hoàn toàn bình đẳng.",
-      "Khi đưa lên slide, nhóm giữ nguyên cụm từ hoàn toàn bình đẳng để thể hiện đúng nội dung tài liệu. Đây là ý thứ nhất cần ghi nhớ trước khi chuyển sang nội dung về quyền tự quyết.",
+      "Dân tộc là kết quả của một quá trình phát triển lâu dài của xã hội loài người, đi qua các hình thức cộng đồng từ thấp đến cao: thị tộc, bộ lạc, bộ tộc rồi mới đến dân tộc. Nguyên nhân quyết định sự thay đổi đó là sự biến đổi của phương thức sản xuất. Tuy vậy, dân tộc ở phương Tây và ở phương Đông hình thành theo hai con đường khác nhau.",
+      "Ở phương Tây, dân tộc xuất hiện khi phương thức sản xuất tư bản chủ nghĩa được xác lập, thay thế phương thức sản xuất phong kiến. Như sơ đồ bên trái: khi chuyển từ phong kiến sang phương thức sản xuất tư bản chủ nghĩa, kinh tế hàng hóa phát triển, thị trường thống nhất ra đời, gắn các vùng lại với nhau, và dân tộc hình thành.",
+      "Ở phương Đông, con đường lại khác. Dân tộc hình thành trên nền tảng một nền văn hóa và một tâm lý dân tộc đã phát triển tương đối chín muồi, trong khi cộng đồng kinh tế tuy đã đạt một mức độ nhất định nhưng nhìn chung còn kém phát triển và phân tán. Vì vậy trên sơ đồ, ô cộng đồng kinh tế có viền đứt. Việt Nam là một ví dụ: nhu cầu cùng nhau trị thủy và chống giặc ngoại xâm đã gắn kết cộng đồng từ rất sớm, nên dân tộc Việt Nam hình thành từ rất sớm, trước khi có chủ nghĩa tư bản.",
     ],
   },
-  6: {
-    title: "Cương lĩnh dân tộc và quyền tự quyết",
+  nation: {
     speech: [
-      "Nội dung thứ hai trong cương lĩnh là các dân tộc được quyền tự quyết. Như vậy, hai nội dung đọc rõ được trong ảnh tài liệu là: các dân tộc hoàn toàn bình đẳng và các dân tộc được quyền tự quyết.",
+      "Tiếp theo, khái niệm dân tộc được hiểu theo nhiều nghĩa, trong đó có hai nghĩa được dùng phổ biến nhất.",
+      "Nghĩa thứ nhất là quốc gia – dân tộc: một cộng đồng người ổn định làm thành nhân dân một nước, tức một cộng đồng chính trị – xã hội. Cộng đồng này có năm đặc trưng, được tóm lại thành năm từ khóa trên màn hình.",
+      "Một là kinh tế: có chung phương thức sinh hoạt kinh tế. Đây là đặc trưng quan trọng nhất, vì quan hệ kinh tế là sợi dây liên kết các bộ phận, các thành viên của dân tộc. Hai là lãnh thổ: có lãnh thổ chung ổn định, là không gian sinh tồn của dân tộc. Ba là nhà nước: có sự quản lý của một nhà nước dân tộc độc lập. Bốn là ngôn ngữ: có ngôn ngữ chung của quốc gia làm công cụ giao tiếp. Năm là văn hóa: có nét tâm lý biểu hiện qua nền văn hóa, tạo nên bản sắc riêng của dân tộc. Khi nói dân tộc Việt Nam là chúng ta đang dùng nghĩa này.",
+    ],
+  },
+  ethnie: {
+    speech: [
+      "Nghĩa thứ hai là dân tộc – tộc người: một cộng đồng tộc người hình thành trong lịch sử, là một bộ phận của quốc gia. Tộc người có ba đặc trưng.",
+      "Thứ nhất là cộng đồng về ngôn ngữ, gồm cả ngôn ngữ nói và ngôn ngữ viết, hoặc chỉ riêng ngôn ngữ nói. Đây là tiêu chí cơ bản để phân biệt các tộc người. Thứ hai là cộng đồng về văn hóa, gồm văn hóa vật thể và phi vật thể, thể hiện qua phong tục, tập quán, trang phục, lễ hội. Thứ ba là ý thức tự giác tộc người, tức mỗi người tự nhận mình thuộc về tộc người nào, với tên gọi và nguồn gốc của tộc người đó. Đây là tiêu chí quan trọng nhất để phân định một tộc người. Bức ảnh bên cạnh là một phụ nữ người Dao Chàm trong trang phục truyền thống, một nét văn hóa riêng của người Dao.",
+      "Như dòng kết luận cuối màn hình, hai nghĩa này có liên quan nhưng không đồng nhất. Quốc gia – dân tộc bao gồm nhiều tộc người, còn tộc người là bộ phận hợp thành quốc gia – dân tộc. Ví dụ, dân tộc Việt Nam là nghĩa thứ nhất, còn dân tộc Kinh, Tày, Thái, Dao là nghĩa thứ hai.",
     ],
     handoff:
-      "Sau phần quan điểm lý luận, em xin mời bạn tiếp theo trình bày đặc điểm dân tộc ở Việt Nam.",
+      "Em xin hết phần khái niệm. Sau đây em xin mời bạn tiếp theo trình bày quan điểm của chủ nghĩa Mác – Lênin về vấn đề dân tộc.",
   },
-  7: {
-    title: "Đặc điểm dân tộc ở Việt Nam về dân cư",
-    speech: [
-      "Tiếp nối phần lý luận, em trình bày các đặc điểm dân tộc ở Việt Nam. Trước hết là hai đặc điểm về dân cư.",
-      "Đặc điểm thứ nhất là có sự chênh lệch về số dân giữa các tộc người. Đặc điểm thứ hai là các dân tộc cư trú xen kẽ nhau. Khi ghi trên slide, nhóm tách riêng hai ý này để phân biệt rõ đặc điểm về số dân và đặc điểm về cư trú.",
-    ],
-  },
-  8: {
-    title: "Đặc điểm về địa bàn và trình độ phát triển",
-    speech: [
-      "Hai đặc điểm tiếp theo liên quan đến địa bàn phân bố và trình độ phát triển. Tài liệu nêu các dân tộc thiểu số ở Việt Nam phân bố chủ yếu ở những địa bàn có vị trí chiến lược quan trọng.",
-      "Bên cạnh đó, các dân tộc ở Việt Nam có trình độ phát triển không đồng đều. Ở phần này, nhóm giữ nội dung ở mức khái quát như tài liệu, gồm vị trí địa bàn và sự không đồng đều trong phát triển.",
-    ],
-  },
-  9: {
-    title: "Truyền thống đoàn kết và bản sắc văn hóa",
-    speech: [
-      "Hai đặc điểm cuối cùng là truyền thống đoàn kết và bản sắc văn hóa. Các dân tộc Việt Nam có truyền thống đoàn kết, gắn bó lâu đời trong một cộng đồng quốc gia thống nhất.",
-      "Đồng thời, mỗi dân tộc có bản sắc văn hóa riêng, góp phần tạo nên sự phong phú và đa dạng của văn hóa Việt Nam thống nhất. Như vậy, phần đặc điểm đã đề cập sáu nội dung: số dân, cư trú, địa bàn, trình độ phát triển, đoàn kết và văn hóa.",
-    ],
-    handoff:
-      "Từ các đặc điểm vừa trình bày, em xin mời bạn tiếp theo nói về quan điểm của Đảng và Nhà nước.",
-  },
-  10: {
-    title: "Vị trí của vấn đề dân tộc và nguyên tắc quan hệ",
-    speech: [
-      "Từ những đặc điểm vừa trình bày, em chuyển sang quan điểm của Đảng và Nhà nước về vấn đề dân tộc. Tài liệu xác định vấn đề dân tộc và đoàn kết dân tộc là vấn đề chiến lược cơ bản, lâu dài, đồng thời cũng là vấn đề cấp bách.",
-      "Trong quan hệ giữa các dân tộc, tài liệu nhấn mạnh bình đẳng, đoàn kết, tương trợ và giúp nhau cùng phát triển. Đây là những nội dung nhóm giữ lại làm trọng tâm của slide này.",
-    ],
-  },
-  11: {
-    title: "Phát triển toàn diện và ưu tiên đầu tư",
-    speech: [
-      "Quan điểm tiếp theo là phát triển toàn diện trên địa bàn vùng dân tộc và miền núi. Các lĩnh vực được tài liệu nêu gồm chính trị, kinh tế, văn hóa, xã hội và an ninh, quốc phòng.",
-      "Cùng với đó là ưu tiên đầu tư phát triển kinh tế – xã hội vùng dân tộc và miền núi. Vì vậy, nội dung trên slide được chia thành hai ý rõ ràng: phát triển toàn diện các lĩnh vực và ưu tiên đầu tư phát triển kinh tế – xã hội.",
-    ],
-  },
-  12: {
-    title: "Trách nhiệm thực hiện công tác dân tộc",
-    speech: [
-      "Cuối cùng trong phần quan điểm là trách nhiệm thực hiện. Tài liệu xác định công tác dân tộc và thực hiện chính sách dân tộc là nhiệm vụ của toàn Đảng, toàn dân, các cấp, các ngành và toàn bộ hệ thống chính trị.",
-      "Đến đây, phần quan điểm đã làm rõ vị trí của vấn đề dân tộc, các nội dung trong quan hệ giữa các dân tộc, định hướng phát triển và trách nhiệm thực hiện. Tiếp theo, bạn trong nhóm sẽ trình bày các chính sách theo từng lĩnh vực.",
-    ],
-  },
-  13: {
-    title: "Chính sách dân tộc về chính trị và kinh tế",
-    speech: [
-      "Em xin trình bày phần cuối là chính sách dân tộc theo từng lĩnh vực. Trước hết, về chính trị, tài liệu nêu thực hiện bình đẳng, đoàn kết, tôn trọng và giúp nhau cùng phát triển giữa các dân tộc.",
-      "Về kinh tế, nội dung tập trung vào các chủ trương và chính sách phát triển kinh tế – xã hội ở miền núi, vùng đồng bào các dân tộc thiểu số. Trên slide, nhóm trình bày hai lĩnh vực này thành hai ý riêng để dễ theo dõi.",
-    ],
-  },
-  14: {
-    title: "Chính sách dân tộc về văn hóa và xã hội",
-    speech: [
-      "Tiếp theo là chính sách về văn hóa và xã hội. Về văn hóa, tài liệu nêu xây dựng nền văn hóa Việt Nam tiên tiến, đậm đà bản sắc dân tộc.",
-      "Về xã hội, nội dung là thực hiện chính sách xã hội và bảo đảm an sinh xã hội trong vùng đồng bào dân tộc thiểu số. Như vậy, slide này gồm hai trọng tâm: xây dựng văn hóa và bảo đảm an sinh xã hội.",
-    ],
-  },
-  15: {
-    title: "Chính sách về an ninh quốc phòng và tổng kết",
-    speech: [
-      "Lĩnh vực cuối cùng là an ninh và quốc phòng. Tài liệu nêu tăng cường sức mạnh bảo vệ Tổ quốc trên cơ sở bảo đảm ổn định chính trị, thực hiện tốt an ninh chính trị và trật tự an toàn xã hội.",
-      "Nhóm em đã trình bày ba phần chính: khái niệm và đặc trưng của dân tộc, quan điểm Mác – Lênin về vấn đề dân tộc, và dân tộc cùng quan hệ dân tộc ở Việt Nam. Phần chính sách gồm chính trị, kinh tế, văn hóa, xã hội và an ninh, quốc phòng. Nhóm em xin kết thúc bài trình bày và cảm ơn thầy cô cùng các bạn đã lắng nghe.",
-    ],
-  },
-};
 
-/**
- * Gợi ý lời nói cho các màn hình mới (bản Word chưa có lời cho các màn hình
- * này). Viết lại từ chính chữ trên màn hình, không thêm ý mới. Nhóm có thể
- * sửa hoặc thay bằng lời của mình.
- */
-export const HINTS = {
-  selfDetermination:
-    "Đọc định nghĩa trên màn hình, nhấn hai ý: tự quyết định vận mệnh và tự lựa chọn con đường phát triển. Quyền tự quyết có hai nhánh: quyền tách ra để thành lập quốc gia dân tộc độc lập, và quyền tự nguyện liên hiệp với dân tộc khác trên cơ sở bình đẳng. Vì vậy tự quyết không chỉ có tách ra.",
-  workersUnion:
-    "Nội dung thứ ba của cương lĩnh là liên hiệp công nhân tất cả các dân tộc. Nội dung này nhấn mạnh sự đoàn kết và liên hiệp giữa công nhân thuộc các dân tộc khác nhau.",
-  diversityUnity:
-    "Chốt lại phần đặc điểm: các dân tộc đa dạng về bản sắc nhưng thống nhất trong cộng đồng quốc gia.",
-};
+  /* ---------------- Thành viên 2 ---------------- */
+  part2: {
+    speech: [
+      "Em xin trình bày phần hai: quan điểm của chủ nghĩa Mác – Lênin về vấn đề dân tộc. Phần này gồm hai nội dung: hai xu hướng khách quan trong sự phát triển quan hệ dân tộc, và Cương lĩnh dân tộc do Lênin khái quát.",
+    ],
+  },
+  trends: {
+    speech: [
+      "Khi nghiên cứu vấn đề dân tộc trong điều kiện chủ nghĩa tư bản, Lênin đã chỉ ra hai xu hướng khách quan trong sự phát triển quan hệ dân tộc.",
+      "Xu hướng thứ nhất là tách ra: cộng đồng dân cư muốn hình thành cộng đồng dân tộc độc lập. Nguyên nhân là sự thức tỉnh, trưởng thành của ý thức dân tộc, ý thức về quyền sống của mình. Xu hướng này thể hiện rõ trong phong trào đấu tranh giành độc lập của các dân tộc thuộc địa và phụ thuộc. Bức ảnh bên trái là nhân dân ở Ba Đình nghe Tuyên ngôn Độc lập ngày 2 tháng 9 năm 1945, khi dân tộc Việt Nam thoát khỏi ách thực dân và lập nên nhà nước độc lập.",
+      "Xu hướng thứ hai là liên hiệp: các dân tộc có nhu cầu liên hệ và liên hiệp với nhau. Xu hướng này nổi lên khi lực lượng sản xuất, khoa học công nghệ và giao lưu kinh tế, văn hóa phát triển, làm xuất hiện nhu cầu xóa bỏ hàng rào ngăn cách giữa các dân tộc. Ảnh bên phải là lễ thượng cờ ASEAN tại Bộ Ngoại giao năm 2025, ví dụ về sự liên kết giữa các quốc gia trong khu vực.",
+      "Mũi tên hai chiều ở giữa nhắc rằng hai xu hướng này cùng tồn tại và tác động qua lại. Ngày nay, các dân tộc vừa giữ vững độc lập, chủ quyền, vừa mở rộng hợp tác và hội nhập với nhau.",
+    ],
+  },
+  equality: {
+    speech: [
+      "Dựa trên hai xu hướng đó và kinh nghiệm của phong trào cách mạng, Lênin đã khái quát Cương lĩnh dân tộc của chủ nghĩa Mác – Lênin gồm ba nội dung.",
+      "Nội dung thứ nhất: các dân tộc hoàn toàn bình đẳng. Đây là quyền thiêng liêng của các dân tộc, không phân biệt dân tộc lớn hay nhỏ, trình độ phát triển cao hay thấp. Không có dân tộc nào được đặt ở vị trí cao hơn hoặc thấp hơn dân tộc khác, như sơ đồ dân tộc A bằng dân tộc B bằng dân tộc C, cùng đứng trên một mặt bằng.",
+      "Bình đẳng nghĩa là các dân tộc có quyền lợi và nghĩa vụ ngang nhau trên mọi lĩnh vực, không dân tộc nào được giữ đặc quyền, đặc lợi, và không dân tộc nào được áp bức dân tộc khác. Quyền bình đẳng phải được ghi trong pháp luật, nhưng quan trọng hơn là phải được thực hiện trên thực tế. Ảnh bên phải là các nữ đại biểu thuộc nhiều dân tộc tại Đại hội Mặt trận Tổ quốc, cùng tham gia công việc chung của đất nước.",
+    ],
+  },
+  selfDetermination: {
+    speech: [
+      "Nội dung thứ hai: các dân tộc được quyền tự quyết. Quyền tự quyết là quyền của một dân tộc tự quyết định vận mệnh của mình và lựa chọn con đường phát triển của mình, cả về kinh tế, chính trị và xã hội.",
+      "Quyền này có hai nhánh như sơ đồ. Một là quyền tách ra để thành lập quốc gia dân tộc độc lập. Hai là quyền tự nguyện liên hiệp với dân tộc khác trên cơ sở bình đẳng.",
+      "Điều cần nhớ là tự quyết không chỉ có tách ra. Việc thực hiện quyền tự quyết phải xuất phát từ thực tiễn cụ thể và đứng vững trên lập trường của giai cấp công nhân. Quyền tự quyết cũng không có nghĩa là một tộc người thiểu số trong một quốc gia được đòi tách ra lập nước riêng; chúng ta cần cảnh giác khi các thế lực thù địch lợi dụng chiêu bài dân tộc tự quyết để can thiệp vào công việc nội bộ của các nước.",
+      "Ảnh bên phải là cử tri bỏ phiếu trong cuộc Tổng tuyển cử ngày 6 tháng 1 năm 1946, lần đầu tiên nhân dân ta tự bầu ra Quốc hội của mình, một biểu hiện rõ của quyền tự quyết.",
+    ],
+  },
+  workersUnion: {
+    speech: [
+      "Nội dung thứ ba: liên hiệp công nhân tất cả các dân tộc. Nội dung này nhấn mạnh sự đoàn kết và liên hiệp giữa công nhân thuộc các dân tộc khác nhau, như sơ đồ công nhân dân tộc A, B, C cùng hướng về một khối liên hiệp.",
+      "Nội dung này phản ánh sự thống nhất giữa giải phóng dân tộc và giải phóng giai cấp, giữa chủ nghĩa yêu nước và chủ nghĩa quốc tế chân chính. Đoàn kết công nhân các dân tộc là cơ sở để đoàn kết nhân dân lao động các dân tộc trong cuộc đấu tranh vì độc lập dân tộc và tiến bộ xã hội. Vì vậy, đây vừa là nội dung chủ yếu, vừa là giải pháp quan trọng gắn ba nội dung của cương lĩnh thành một thể thống nhất. Ảnh bên phải là người lao động tuần hành Ngày Quốc tế Lao động ở Cuba năm 2019, trên tấm biển có chữ Unidad, nghĩa là đoàn kết.",
+      "Như vậy, Cương lĩnh dân tộc gồm ba nội dung: các dân tộc hoàn toàn bình đẳng, các dân tộc được quyền tự quyết, và liên hiệp công nhân tất cả các dân tộc. Đây là cơ sở lý luận để Đảng ta xây dựng chính sách dân tộc ở Việt Nam.",
+    ],
+    handoff:
+      "Em xin hết phần quan điểm lý luận. Sau đây em xin mời bạn tiếp theo trình bày về dân tộc và quan hệ dân tộc ở Việt Nam.",
+  },
+
+  /* ---------------- Thành viên 3 ---------------- */
+  part3: {
+    speech: [
+      "Em xin trình bày phần ba: dân tộc và quan hệ dân tộc ở Việt Nam. Phần này có ba nội dung: sáu đặc điểm dân tộc Việt Nam, quan điểm của Đảng và Nhà nước, và chính sách dân tộc. Em xin trình bày sáu đặc điểm trước. Ảnh bên phải là một người đàn ông H'Mông Đen trong trang phục truyền thống.",
+    ],
+  },
+  featuresOverview: {
+    speech: [
+      "Việt Nam là một quốc gia đa dân tộc với 54 dân tộc anh em. Dân tộc ở Việt Nam có sáu đặc điểm, ứng với sáu từ khóa trên màn hình: số dân, cư trú, địa bàn, phát triển, đoàn kết và văn hóa. Em xin đi lần lượt từng đặc điểm.",
+    ],
+  },
+  featuresPopulation: {
+    speech: [
+      "Ba đặc điểm đầu liên quan đến dân cư và địa bàn.",
+      "Thứ nhất là chênh lệch số dân: quy mô dân số giữa các tộc người không giống nhau. Theo Tổng điều tra dân số năm 2019, dân tộc Kinh có hơn 82 triệu người, chiếm khoảng 85,3% dân số; 53 dân tộc thiểu số có hơn 14 triệu người, chiếm khoảng 14,7%. Có những dân tộc chỉ vài trăm người, như Ơ Đu khoảng 428 người hay Brâu khoảng 525 người. Dân tộc càng ít người thì càng khó giữ gìn tiếng nói, văn hóa và duy trì giống nòi, nên Nhà nước có chính sách quan tâm đặc biệt.",
+      "Thứ hai là cư trú xen kẽ: nhiều cộng đồng dân tộc cùng sinh sống trên một địa bàn, không dân tộc nào có lãnh thổ riêng. Điều này giúp các dân tộc hiểu nhau, giao lưu và giúp đỡ nhau cùng phát triển, nhưng trong quá trình sinh sống cũng có thể nảy sinh mâu thuẫn mà các thế lực thù địch có thể lợi dụng.",
+      "Thứ ba là địa bàn chiến lược: các dân tộc thiểu số phân bố chủ yếu tại các địa bàn có vị trí chiến lược quan trọng. Dù chỉ chiếm khoảng 14,7% dân số, đồng bào dân tộc thiểu số cư trú trên khoảng ba phần tư diện tích lãnh thổ, nhiều nơi là biên giới, vùng núi, hải đảo, quan trọng cả về kinh tế, an ninh, quốc phòng và môi trường sinh thái. Bản đồ bên phải lấy từ Atlat Địa lí Việt Nam cho thấy sự phân bố của các dân tộc trên cả nước.",
+    ],
+  },
+  featuresUnity: {
+    speech: [
+      "Đặc điểm thứ tư là phát triển không đồng đều: trình độ phát triển giữa các dân tộc có sự khác nhau, cả về kinh tế, văn hóa và xã hội. Ở nhiều vùng dân tộc thiểu số, đời sống và trình độ dân trí còn thấp so với mặt bằng chung. Vì vậy, muốn thực hiện bình đẳng dân tộc thì phải từng bước thu hẹp, tiến tới xóa bỏ khoảng cách phát triển này.",
+      "Đặc điểm thứ năm là đoàn kết lâu đời: các dân tộc gắn bó trong cộng đồng dân tộc – quốc gia thống nhất. Truyền thống này hình thành từ rất sớm, do nhu cầu cùng nhau chinh phục thiên nhiên và chống giặc ngoại xâm. Đoàn kết dân tộc là truyền thống quý báu, là một trong những nguyên nhân quyết định mọi thắng lợi của dân tộc ta trong lịch sử. Ảnh bên phải là Ngày hội Đại đoàn kết ở Nà Cốc, Cao Bằng năm 2025.",
+    ],
+  },
+  culture: {
+    speech: [
+      "Đặc điểm thứ sáu là bản sắc văn hóa riêng: mỗi dân tộc có bản sắc riêng và cùng góp phần tạo nên sự đa dạng của văn hóa Việt Nam. Bản sắc đó thể hiện qua ngôn ngữ, trang phục, nhà ở, lễ hội, âm nhạc, phong tục tập quán. Hai bức ảnh là hai ví dụ: bên trái là thêu hoa văn trên trang phục truyền thống, bên phải là người Chăm biểu diễn nhạc cụ truyền thống bên tháp cổ. Những sắc thái riêng ấy cùng làm nên một nền văn hóa Việt Nam thống nhất trong đa dạng.",
+    ],
+  },
+  diversity: {
+    speech: [
+      "Tóm lại, sáu đặc điểm cho thấy các dân tộc Việt Nam đa dạng về bản sắc nhưng thống nhất trong cộng đồng quốc gia. Sáu đặc điểm đó là: chênh lệch số dân, cư trú xen kẽ, địa bàn chiến lược, phát triển không đồng đều, đoàn kết lâu đời và bản sắc văn hóa riêng. Ảnh bên trái là một phụ nữ người Dao Đỏ.",
+      "Chính từ những đặc điểm này, Đảng và Nhà nước ta luôn coi vấn đề dân tộc là vấn đề chính trị – xã hội rộng lớn và toàn diện, gắn với các mục tiêu của thời kỳ quá độ lên chủ nghĩa xã hội.",
+    ],
+    handoff:
+      "Từ những đặc điểm vừa trình bày, em xin mời bạn tiếp theo trình bày quan điểm của Đảng và Nhà nước về vấn đề dân tộc.",
+  },
+
+  /* ---------------- Thành viên 4 ---------------- */
+  strategic: {
+    speech: [
+      "Em xin trình bày quan điểm của Đảng và Nhà nước Việt Nam về vấn đề dân tộc. Có năm quan điểm.",
+      "Quan điểm thứ nhất: vấn đề dân tộc và đoàn kết dân tộc là vấn đề chiến lược cơ bản, lâu dài, đồng thời cũng là vấn đề cấp bách của cách mạng Việt Nam. Ba từ khóa cần nhớ là cơ bản, lâu dài và cấp bách.",
+      "Cơ bản và lâu dài vì vấn đề dân tộc gắn với sự tồn tại và phát triển của đất nước, phải được giải quyết trong suốt quá trình đi lên chủ nghĩa xã hội. Cấp bách vì đời sống của một bộ phận đồng bào dân tộc thiểu số còn nhiều khó khăn, trong khi các thế lực thù địch vẫn tìm cách lợi dụng vấn đề dân tộc để chia rẽ khối đại đoàn kết. Ảnh bên phải là đồng bào các dân tộc trong trang phục truyền thống diễu hành.",
+    ],
+  },
+  relations: {
+    speech: [
+      "Quan điểm thứ hai nói về quan hệ giữa các dân tộc: các dân tộc trong đại gia đình Việt Nam bình đẳng, đoàn kết, tương trợ và giúp nhau cùng phát triển, cùng phấn đấu thực hiện công nghiệp hóa, hiện đại hóa, xây dựng và bảo vệ Tổ quốc. Đồng thời, phải kiên quyết đấu tranh với mọi âm mưu chia rẽ dân tộc.",
+      "Ảnh bên phải là Ngày hội văn hóa các dân tộc có số dân dưới mười nghìn người, tổ chức năm 2023. Ngày hội cho thấy cả những dân tộc rất ít người cũng được tôn vinh và bình đẳng như mọi dân tộc khác.",
+    ],
+  },
+  directions: {
+    speech: [
+      "Ba quan điểm còn lại là ba hướng thực hiện.",
+      "Quan điểm thứ ba là phát triển toàn diện chính trị, kinh tế, văn hóa, xã hội và an ninh – quốc phòng trên địa bàn vùng dân tộc và miền núi; gắn tăng trưởng kinh tế với giải quyết các vấn đề xã hội; chăm lo đào tạo cán bộ là người dân tộc thiểu số; giữ gìn và phát huy bản sắc văn hóa các dân tộc.",
+      "Quan điểm thứ tư là ưu tiên đầu tư phát triển kinh tế – xã hội vùng dân tộc và miền núi, trước hết là giao thông, cơ sở hạ tầng và xóa đói giảm nghèo, đi đôi với phát huy tinh thần tự lực, tự cường của đồng bào. Ảnh có nhãn quan điểm 4 là một bản làng vùng cao được đầu tư theo Chương trình 1719, tức chương trình mục tiêu quốc gia phát triển kinh tế – xã hội vùng đồng bào dân tộc thiểu số và miền núi, có nhà văn hóa và đường bê tông mới.",
+      "Quan điểm thứ năm: công tác dân tộc và thực hiện chính sách dân tộc là nhiệm vụ của toàn Đảng, toàn dân, các cấp, các ngành và toàn bộ hệ thống chính trị. Ảnh có nhãn quan điểm 5 là buổi gặp mặt học sinh, sinh viên dân tộc thiểu số tiêu biểu.",
+      "Như vậy, năm quan điểm đã làm rõ vị trí của vấn đề dân tộc, quan hệ giữa các dân tộc, hướng phát triển và trách nhiệm thực hiện.",
+    ],
+    handoff:
+      "Em xin mời bạn tiếp theo trình bày phần cuối: chính sách dân tộc.",
+  },
+
+  /* ---------------- Thành viên 5 ---------------- */
+  policyPolitics: {
+    speech: [
+      "Em xin trình bày phần cuối: chính sách dân tộc. Từ năm quan điểm vừa nêu, chính sách dân tộc được cụ thể hóa trên năm lĩnh vực, như danh sách bên trái màn hình.",
+      "Lĩnh vực thứ nhất là chính trị: thực hiện bình đẳng, đoàn kết, tôn trọng và giúp nhau cùng phát triển giữa các dân tộc. Chính sách này nâng cao tính tích cực chính trị của đồng bào các dân tộc, giúp đồng bào hiểu rõ tầm quan trọng của đoàn kết dân tộc và thống nhất mục tiêu chung: độc lập dân tộc và chủ nghĩa xã hội, dân giàu, nước mạnh, dân chủ, công bằng, văn minh. Ảnh bên phải là Nhà Quốc hội ở Hà Nội, nơi đại biểu của các dân tộc cùng quyết định những vấn đề hệ trọng của đất nước.",
+    ],
+  },
+  policyEconomy: {
+    speech: [
+      "Lĩnh vực thứ hai là kinh tế: các chủ trương, chính sách phát triển kinh tế – xã hội miền núi và vùng đồng bào dân tộc thiểu số, nhằm phát huy tiềm năng của từng vùng và từng bước thu hẹp khoảng cách phát triển giữa các vùng, các dân tộc. Chính sách được thực hiện qua các chương trình, dự án phát triển kinh tế ở vùng đồng bào dân tộc thiểu số. Ảnh bên phải là cán bộ biên phòng giúp đồng bào phát triển kinh tế.",
+    ],
+  },
+  policyCulture: {
+    speech: [
+      "Lĩnh vực thứ ba là văn hóa: xây dựng nền văn hóa Việt Nam tiên tiến, đậm đà bản sắc dân tộc. Cụ thể là giữ gìn và phát huy giá trị văn hóa truyền thống của các dân tộc, phát triển ngôn ngữ, xây dựng đời sống văn hóa ở cơ sở, nâng cao trình độ văn hóa cho đồng bào, đồng thời chống việc lợi dụng vấn đề văn hóa để chia rẽ dân tộc. Ảnh bên phải là chương trình nghệ thuật của các dân tộc Tây Nguyên năm 2023.",
+    ],
+  },
+  policySociety: {
+    speech: [
+      "Lĩnh vực thứ tư là xã hội: thực hiện chính sách xã hội và bảo đảm an sinh xã hội trong vùng đồng bào dân tộc thiểu số. Đó là từng bước thực hiện công bằng xã hội qua các chính sách xóa đói giảm nghèo, dân số, y tế, giáo dục, có chú ý đến đặc thù của từng vùng, từng dân tộc. Ảnh bên phải là thanh niên các dân tộc trong lễ kỷ niệm 70 năm Chiến thắng Điện Biên Phủ.",
+    ],
+  },
+  policySecurity: {
+    speech: [
+      "Lĩnh vực cuối cùng là an ninh – quốc phòng: tăng cường sức mạnh bảo vệ Tổ quốc trên cơ sở bảo đảm ổn định chính trị, thực hiện tốt an ninh chính trị và trật tự an toàn xã hội. Vùng đồng bào dân tộc thiểu số phần lớn là biên giới, địa bàn chiến lược, nên cần phối hợp chặt chẽ các lực lượng, tăng cường quan hệ quân dân và xây dựng thế trận quốc phòng toàn dân ở đây. Ảnh bên phải là khu trưng bày của Bộ Quốc phòng năm 2025.",
+      "Tóm lại, nhóm em đã trình bày ba phần: khái niệm và đặc trưng của dân tộc; quan điểm của chủ nghĩa Mác – Lênin về vấn đề dân tộc; và dân tộc, quan hệ dân tộc ở Việt Nam. Chính sách dân tộc của Đảng và Nhà nước mang tính toàn diện, bao trùm năm lĩnh vực chính trị, kinh tế, văn hóa, xã hội và an ninh – quốc phòng, nhằm xây dựng khối đại đoàn kết toàn dân tộc vững chắc.",
+    ],
+  },
+  game: {
+    speech: [
+      "Để ôn lại bài, nhóm em có một trò chơi nhỏ tên là Đường đua đại đoàn kết. Lớp mình chia thành hai đến năm đội. Mỗi lượt, đội chơi có 15 giây để trả lời một câu hỏi trắc nghiệm về nội dung vừa trình bày. Trả lời đúng được lắc hai xúc xắc, sai hoặc hết giờ vẫn được lắc một. Dừng ở ô có hộp quà thì được mở một thẻ bất ngờ. Đội về đích đầu tiên sẽ thắng. Mời các đội vào đường đua.",
+    ],
+  },
+  closing: {
+    speech: [
+      "Bài thuyết trình của nhóm em đến đây là hết. Nhóm em rất mong nhận được góp ý của thầy cô và các bạn. Em xin cảm ơn thầy cô và các bạn đã lắng nghe.",
+    ],
+  },
+} satisfies Record<string, ScreenScript>;

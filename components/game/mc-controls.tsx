@@ -14,6 +14,7 @@ export function MCControls({
   onToggleSound,
   onUndo,
   onReset,
+  onClearHistory,
   onClose,
 }: {
   soundOn: boolean;
@@ -21,6 +22,7 @@ export function MCControls({
   onToggleSound: () => void;
   onUndo: () => void;
   onReset: () => void;
+  onClearHistory: () => void;
   onClose: () => void;
 }) {
   const item =
@@ -37,9 +39,9 @@ export function MCControls({
       />
       <div
         role="menu"
-        className="panel-in absolute top-28 right-12 z-50 w-[380px] rounded-[28px] bg-nhua p-3 ring-2 ring-on-cham-soft/30"
+        className="panel-in absolute bottom-30 left-10 z-50 w-[420px] rounded-[28px] bg-nhua p-3 ring-2 ring-on-cham-soft/30"
       >
-        <p className="px-3 pb-1 text-label font-bold tracking-wide text-on-cham-soft uppercase">MC</p>
+        <p className="px-3 pb-1 text-label font-bold text-on-cham-soft">Người dẫn</p>
         <button
           type="button"
           className={item}
@@ -66,6 +68,9 @@ export function MCControls({
         </button>
         <button type="button" className={item} onClick={onReset}>
           Chơi lại từ đầu
+        </button>
+        <button type="button" className={item} onClick={onClearHistory}>
+          Xóa lịch sử các ván
         </button>
         <DeckLink role="menuitem" className={item}>
           Về bài thuyết trình

@@ -1,5 +1,5 @@
 import { DoubleArrow } from "@/components/art/arrows";
-import { FlowBox, Joiner } from "@/components/art/flow";
+import { ArrowRight, FlowBox, Joiner } from "@/components/art/flow";
 import { Photo, PhotoCaption } from "@/components/art/photo";
 import { stagger } from "@/components/motion";
 import { PHOTOS, type DeckPhoto } from "@/content/photos";
@@ -34,7 +34,9 @@ export function TrendsSlide() {
             <FlowBox padding="px-4 py-3" className="flex-1 text-body">
               {keepWords("Cộng đồng dân cư")}
             </FlowBox>
-            <Joiner>→</Joiner>
+            <Joiner>
+              <ArrowRight />
+            </Joiner>
             <FlowBox
               tone="accent"
               border="border-4"

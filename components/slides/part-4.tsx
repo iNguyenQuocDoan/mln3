@@ -9,7 +9,7 @@ import { SlideFrame } from "./frame";
  * điểm trên ba màn hình. Dòng dẫn đánh số quan điểm để khớp với màn tổng
  * kết ("5 — Năm quan điểm lớn").
  */
-const KICKER = "Quan điểm của Đảng, Nhà nước";
+const KICKER = "của Đảng, Nhà nước";
 
 /* ---------- Quan điểm 1: vấn đề chiến lược ---------- */
 
@@ -22,7 +22,7 @@ const STRATEGY_PHOTO = PHOTOS.parade;
 export function StrategicSlide() {
   return (
     <SlideFrame
-      kicker={`${KICKER} · Quan điểm 1`}
+      kicker={`Quan điểm thứ nhất ${KICKER}`}
       title="Vấn đề dân tộc là vấn đề chiến lược"
       className="flex flex-col justify-center"
     >
@@ -74,7 +74,7 @@ const RELATIONS_PHOTO = PHOTOS.smallGroupsFestival;
 export function RelationsSlide() {
   return (
     <SlideFrame
-      kicker={`${KICKER} · Quan điểm 2`}
+      kicker={`Quan điểm thứ hai ${KICKER}`}
       title="Quan hệ giữa các dân tộc"
       className="grid grid-cols-[1fr_760px] items-center gap-16"
     >
@@ -128,7 +128,7 @@ const DIRECTIONS: {
   {
     number: 3,
     title: "Phát triển toàn diện",
-    body: "Chính trị · Kinh tế · Văn hóa · Xã hội · An ninh – Quốc phòng",
+    body: "Chính trị, kinh tế, văn hóa, xã hội và an ninh – quốc phòng.",
   },
   {
     number: 4,
@@ -148,7 +148,7 @@ export function DirectionsSlide() {
   const withPhoto = DIRECTIONS.filter((direction) => direction.photo);
   return (
     <SlideFrame
-      kicker={`${KICKER} · Quan điểm 3, 4, 5`}
+      kicker={`Quan điểm 3, 4 và 5 ${KICKER}`}
       title="Ba hướng thực hiện"
       className="grid grid-cols-[1fr_1000px] gap-16"
     >
@@ -180,7 +180,7 @@ export function DirectionsSlide() {
               style={stagger(i + 1)}
             >
               <p className="mb-2 text-label font-semibold text-son">
-                Quan điểm {direction.number} · {keepWords(direction.title)}
+                Quan điểm {direction.number}: {keepWords(direction.title)}
               </p>
               <Photo photo={direction.photo} className="h-140 w-full" />
               <PhotoCaption photo={direction.photo} className="mt-3" />

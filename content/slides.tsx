@@ -25,35 +25,26 @@ import {
 } from "@/components/slides/program";
 import { getPart } from "./parts";
 import { PHOTOS, type DeckPhoto } from "./photos";
-import { HINTS, SCRIPT } from "./script";
+import { SCRIPT, type ScreenScript } from "./script";
 
-/** Đoạn thứ `paragraph` (từ 0) trong lời slide `slide` của bản Word. */
-function say(slide: number, paragraph: number) {
-  return SCRIPT[slide].speech[paragraph];
+/** Lời nói và câu chuyển người của một màn hình (content/script.ts). */
+function speak(script: ScreenScript): Pick<DeckStep, "notes" | "handoff"> {
+  return { notes: script.speech, handoff: script.handoff };
 }
 
-/** Cả lời của slide `slide` trong bản Word. */
-function sayAll(slide: number) {
-  return SCRIPT[slide].speech;
-}
-
-/** Tách một đoạn lời làm hai, tại câu bắt đầu bằng `marker`. */
-function splitAt(text: string, marker: string): [string, string] {
-  const at = text.indexOf(marker);
-  if (at < 0) throw new Error(`Không thấy "${marker}" trong lời thuyết trình`);
-  return [text.slice(0, at).trim(), text.slice(at)];
-}
-
-/* Slide 9, đoạn 2: câu về bản sắc văn hóa, rồi câu điểm lại sáu đặc điểm. */
-const [CULTURE_SPEECH, FEATURES_RECAP] = splitAt(say(9, 1), "Như vậy");
-
-function divider(part: number, photo?: DeckPhoto): DeckSlide {
+function divider(
+  part: number,
+  script: ScreenScript,
+  photo?: DeckPhoto,
+): DeckSlide {
   return {
     id: `phan-${part}`,
     kind: "divider",
     tone: "dark",
     part,
-    steps: [{ title: `Phần ${part}: ${getPart(part).title}` }],
+    steps: [
+      { title: `Phần ${part}: ${getPart(part).title}`, ...speak(script) },
+    ],
     content: <PartDivider part={part} photo={photo} />,
   };
 }
@@ -70,15 +61,20 @@ function content(
 
 /*
  * Thứ tự màn hình của cả bài. id dùng làm địa chỉ #id trên URL.
- * Lời thuyết trình lấy nguyên văn từ bản Word (content/script.ts) và gắn
- * vào màn hình đang nói tới; màn hình mới chưa có lời thì có gợi ý (HINTS).
+ * Mỗi màn hình mang lời nói của chính nó (content/script.ts), cùng thứ tự
+ * với kịch bản content/kich-ban-thuyet-trinh.md.
  */
 export const slides: DeckSlide[] = [
   {
     id: "bia",
     kind: "cover",
     tone: "light",
-    steps: [{ title: "Dân tộc trong thời kỳ quá độ lên chủ nghĩa xã hội" }],
+    steps: [
+      {
+        title: "Dân tộc trong thời kỳ quá độ lên chủ nghĩa xã hội",
+        ...speak(SCRIPT.cover),
+      },
+    ],
     content: <CoverSlide />,
     backdrop: <CoverBackdrop />,
   },
@@ -86,42 +82,44 @@ export const slides: DeckSlide[] = [
     id: "noi-dung",
     kind: "cover",
     tone: "light",
-    steps: [{ title: "Nội dung", notes: [say(1, 0)] }],
+    steps: [{ title: "Nội dung", ...speak(SCRIPT.agenda) }],
     content: <AgendaSlide />,
   },
 
-  divider(1, PHOTOS.tayNung),
+  divider(1, SCRIPT.part1, PHOTOS.tayNung),
   content(
     "hinh-thanh",
     1,
-    [{ title: "Sự hình thành dân tộc", notes: [say(1, 1)] }],
+    [{ title: "Sự hình thành dân tộc", ...speak(SCRIPT.formation) }],
     <FormationSlide />,
   ),
   content(
     "hai-nghia",
     2,
     [
-      { title: "Hai nghĩa của dân tộc: quốc gia – dân tộc", notes: sayAll(2) },
+      {
+        title: "Hai nghĩa của dân tộc: quốc gia – dân tộc",
+        ...speak(SCRIPT.nation),
+      },
       {
         title: "Hai nghĩa của dân tộc: dân tộc – tộc người",
-        notes: sayAll(3),
-        handoff: SCRIPT[3].handoff,
+        ...speak(SCRIPT.ethnie),
       },
     ],
     <MeaningsSlide />,
   ),
 
-  divider(2),
+  divider(2, SCRIPT.part2),
   content(
     "hai-xu-huong",
     3,
-    [{ title: "Hai xu hướng khách quan", notes: sayAll(4) }],
+    [{ title: "Hai xu hướng khách quan", ...speak(SCRIPT.trends) }],
     <TrendsSlide />,
   ),
   content(
     "binh-dang",
     4,
-    [{ title: "Cương lĩnh dân tộc: 01 — Bình đẳng", notes: sayAll(5) }],
+    [{ title: "Cương lĩnh dân tộc: bình đẳng", ...speak(SCRIPT.equality) }],
     <EqualitySlide />,
   ),
   content(
@@ -129,9 +127,8 @@ export const slides: DeckSlide[] = [
     4,
     [
       {
-        title: "Cương lĩnh dân tộc: 02 — Quyền tự quyết",
-        notes: sayAll(6),
-        hint: HINTS.selfDetermination,
+        title: "Cương lĩnh dân tộc: quyền tự quyết",
+        ...speak(SCRIPT.selfDetermination),
       },
     ],
     <SelfDeterminationSlide />,
@@ -141,30 +138,32 @@ export const slides: DeckSlide[] = [
     4,
     [
       {
-        title: "Cương lĩnh dân tộc: 03 — Liên hiệp",
-        hint: HINTS.workersUnion,
-        handoff: SCRIPT[6].handoff,
+        title: "Cương lĩnh dân tộc: liên hiệp công nhân",
+        ...speak(SCRIPT.workersUnion),
       },
     ],
     <WorkersUnionSlide />,
   ),
 
   // Mở đầu phần về các dân tộc ở Việt Nam bằng một con người cụ thể.
-  divider(3, PHOTOS.man),
+  divider(3, SCRIPT.part3, PHOTOS.man),
   content(
     "dac-diem",
     5,
     [
-      { title: "Sáu đặc điểm dân tộc Việt Nam", notes: [say(7, 0)] },
-      { title: "Dân cư & địa bàn", notes: [say(7, 1), say(8, 0)] },
-      { title: "Phát triển & đoàn kết", notes: [say(8, 1), say(9, 0)] },
+      {
+        title: "Sáu đặc điểm dân tộc Việt Nam",
+        ...speak(SCRIPT.featuresOverview),
+      },
+      { title: "Dân cư và địa bàn", ...speak(SCRIPT.featuresPopulation) },
+      { title: "Phát triển và đoàn kết", ...speak(SCRIPT.featuresUnity) },
     ],
     <FeaturesSteps />,
   ),
   content(
     "ban-sac-van-hoa",
     5,
-    [{ title: "06 — Bản sắc văn hóa riêng", notes: [CULTURE_SPEECH] }],
+    [{ title: "Bản sắc văn hóa riêng", ...speak(SCRIPT.culture) }],
     <CultureSlide />,
   ),
   content(
@@ -173,9 +172,7 @@ export const slides: DeckSlide[] = [
     [
       {
         title: "Đa dạng về bản sắc, thống nhất trong cộng đồng quốc gia",
-        notes: [FEATURES_RECAP],
-        hint: HINTS.diversityUnity,
-        handoff: SCRIPT[9].handoff,
+        ...speak(SCRIPT.diversity),
       },
     ],
     <DiversitySlide />,
@@ -183,43 +180,40 @@ export const slides: DeckSlide[] = [
   content(
     "van-de-chien-luoc",
     6,
-    [{ title: "Vấn đề dân tộc là vấn đề chiến lược", notes: [say(10, 0)] }],
+    [
+      {
+        title: "Vấn đề dân tộc là vấn đề chiến lược",
+        ...speak(SCRIPT.strategic),
+      },
+    ],
     <StrategicSlide />,
   ),
   content(
     "quan-he-dan-toc",
     6,
-    [
-      {
-        title: "Bình đẳng — Đoàn kết — Tương trợ — Cùng phát triển",
-        notes: [say(10, 1)],
-      },
-    ],
+    [{ title: "Quan hệ giữa các dân tộc", ...speak(SCRIPT.relations) }],
     <RelationsSlide />,
   ),
   content(
     "ba-huong",
     6,
-    [
-      {
-        title: "Ba hướng thực hiện",
-        notes: [...sayAll(11), ...sayAll(12)],
-      },
-    ],
+    [{ title: "Ba hướng thực hiện", ...speak(SCRIPT.directions) }],
     <DirectionsSlide />,
   ),
   content(
     "chinh-sach",
     7,
     [
-      { title: "Chính sách dân tộc: chính trị", notes: [say(13, 0)] },
-      { title: "Chính sách dân tộc: kinh tế", notes: [say(13, 1)] },
-      { title: "Chính sách dân tộc: văn hóa", notes: [say(14, 0)] },
-      { title: "Chính sách dân tộc: xã hội", notes: [say(14, 1)] },
+      {
+        title: "Chính sách dân tộc: chính trị",
+        ...speak(SCRIPT.policyPolitics),
+      },
+      { title: "Chính sách dân tộc: kinh tế", ...speak(SCRIPT.policyEconomy) },
+      { title: "Chính sách dân tộc: văn hóa", ...speak(SCRIPT.policyCulture) },
+      { title: "Chính sách dân tộc: xã hội", ...speak(SCRIPT.policySociety) },
       {
         title: "Chính sách dân tộc: an ninh – quốc phòng",
-        // Slide 15 bản Word gồm cả lời kết của bài.
-        notes: sayAll(15),
+        ...speak(SCRIPT.policySecurity),
       },
     ],
     <PolicySteps />,
@@ -229,7 +223,9 @@ export const slides: DeckSlide[] = [
     id: "tro-choi",
     kind: "game",
     tone: "dark",
-    steps: [{ title: "Trò chơi: Đường đua tiếp nhiên liệu" }],
+    steps: [
+      { title: "Trò chơi: Đường đua đại đoàn kết", ...speak(SCRIPT.game) },
+    ],
     content: <GameIntroSlide />,
   },
 
@@ -237,7 +233,12 @@ export const slides: DeckSlide[] = [
     id: "cam-on",
     kind: "closing",
     tone: "dark",
-    steps: [{ title: "Cảm ơn thầy cô và các bạn đã lắng nghe" }],
+    steps: [
+      {
+        title: "Cảm ơn thầy cô và các bạn đã lắng nghe",
+        ...speak(SCRIPT.closing),
+      },
+    ],
     content: <ClosingSlide />,
   },
 ];

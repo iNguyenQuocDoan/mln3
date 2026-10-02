@@ -1,13 +1,16 @@
 "use client";
 
 import { useMemo, useSyncExternalStore } from "react";
-import { createGame, isGameState, type GameState } from "./engine";
+import { QUESTION_POOL } from "@/content/game-questions";
+import { createGame, isGameState, teamOf, type GameState, type TeamId } from "./engine";
 import { clampMusicVolume, GAME_AUDIO } from "./audio-config";
 
 /*
  * Ván chơi được giữ trong bộ nhớ của trang và chép sang localStorage: lỡ
- * tải lại trang vẫn chơi tiếp được. Nếu trình duyệt chặn localStorage thì
- * vẫn chơi bình thường, chỉ không giữ được qua lần tải lại.
+ * tải lại trang vẫn chơi tiếp được. Cũng lưu ở localStorage: các câu đã hỏi
+ * qua nhiều ván (ván mới hỏi câu chưa ra trước) và kết quả các ván đã chơi.
+ * Nếu trình duyệt chặn localStorage thì vẫn chơi bình thường, chỉ không giữ
+ * được qua lần tải lại.
  */
 
 type Store<T> = {
@@ -70,8 +73,50 @@ function useStore<T>(store: Store<T>): T | null {
   return useMemo(() => store.decode(text), [store, text]);
 }
 
-const gameStore = createStore<GameState>("mln131-board-game-v5", (value) =>
+// v7: thêm mã ván và thứ tự câu hỏi trộn sẵn — ván lưu theo bản cũ bị bỏ qua.
+const gameStore = createStore<GameState>("mln131-board-game-v7", (value) =>
   isGameState(value) ? value : null,
+);
+
+/** Câu đã hỏi ở các ván trước (chưa hết một vòng ngân hàng câu hỏi). */
+const askedStore = createStore<string[]>("mln131-asked-questions", (value) =>
+  Array.isArray(value) && value.every((id) => typeof id === "string") ? value : null,
+);
+
+/** Kết quả một ván đã kết thúc, lưu lại để xem sau khi chơi ván mới. */
+export type GameRecord = {
+  id: string;
+  /** Thời điểm kết thúc (ms kể từ 1/1/1970). */
+  finishedAt: number;
+  reason: "finish" | "questions-exhausted";
+  /** Số lượt (số câu hỏi đã ra) của ván. */
+  turns: number;
+  /** Thứ hạng chung cuộc, đội thắng đứng đầu. */
+  ranking: { teamId: TeamId; position: number; correct: number }[];
+};
+
+/** Giữ kết quả của chừng này ván gần nhất. */
+const HISTORY_LIMIT = 12;
+const NO_RECORDS: GameRecord[] = [];
+
+function isRecordList(value: unknown): value is GameRecord[] {
+  return (
+    Array.isArray(value) &&
+    value.every(
+      (item) =>
+        typeof item === "object" &&
+        item !== null &&
+        typeof item.id === "string" &&
+        typeof item.finishedAt === "number" &&
+        typeof item.turns === "number" &&
+        Array.isArray(item.ranking) &&
+        item.ranking.length > 0,
+    )
+  );
+}
+
+const historyStore = createStore<GameRecord[]>("mln131-game-history", (value) =>
+  isRecordList(value) ? value : null,
 );
 
 export type Settings = {
@@ -81,7 +126,11 @@ export type Settings = {
   music: boolean;
   musicVolume: number;
 };
-const DEFAULT_SETTINGS: Settings = { sound: true, music: true, musicVolume: GAME_AUDIO.background.volume };
+const DEFAULT_SETTINGS: Settings = {
+  sound: true,
+  music: true,
+  musicVolume: GAME_AUDIO.background.volume,
+};
 
 function parseSettings(value: unknown): Settings | null {
   if (typeof value !== "object" || value === null) return null;
@@ -106,17 +155,63 @@ export function useSettings(): Settings {
   return useStore(settingsStore) ?? DEFAULT_SETTINGS;
 }
 
-export function saveGame(state: GameState | null) {
-  gameStore.set(state);
+/** Kết quả các ván đã chơi, ván cũ nhất đứng đầu. */
+export function useGameHistory(): GameRecord[] {
+  return useStore(historyStore) ?? NO_RECORDS;
 }
 
-/** Mở /tro-choi lần đầu: tạo sẵn ván "chưa bắt đầu"; có ván đang dở thì giữ. */
+/**
+ * Mở /tro-choi lần đầu: tạo sẵn ván "chưa bắt đầu" (câu hỏi trộn, hộp quà
+ * rải ngẫu nhiên); có ván đang dở thì giữ.
+ */
 export function ensureGame() {
-  if (!gameStore.get()) gameStore.set(createGame());
+  if (!gameStore.get()) gameStore.set(createGame(undefined, Math.random, askedStore.get() ?? []));
+}
+
+/**
+ * Chơi ván mới (cùng số đội): câu hỏi được trộn lại, câu đã hỏi ở các ván
+ * trước xếp xuống cuối. Hỏi hết cả ngân hàng thì sang vòng mới, chỉ còn
+ * tránh các câu của ván vừa chơi.
+ */
+export function startNewGame(teamCount?: number) {
+  const previous = gameStore.get();
+  const justAsked = previous?.usedQuestionIds ?? [];
+  const asked = [...new Set([...(askedStore.get() ?? []), ...justAsked])];
+  const roundDone = QUESTION_POOL.every((question) => asked.includes(question.id));
+  const avoid = roundDone ? justAsked : asked;
+  askedStore.set(avoid);
+  gameStore.set(createGame(teamCount ?? previous?.teams.length, Math.random, avoid));
+  clearUndoHistory();
+}
+
+/** Xóa kết quả các ván đã chơi và danh sách câu đã hỏi (ván đang chơi giữ nguyên). */
+export function clearGameHistory() {
+  historyStore.set(null);
+  askedStore.set(null);
+}
+
+/** Ván vừa kết thúc: ghi vào lịch sử (hoàn tác rồi kết thúc lại thì ghi đè đúng ván đó). */
+function recordFinishedGame(state: GameState) {
+  if (state.phase.kind !== "game-over") return;
+  const record: GameRecord = {
+    id: state.id,
+    finishedAt: Date.now(),
+    reason: state.phase.reason,
+    turns: state.usedQuestionIds.length,
+    ranking: state.phase.ranking.map((teamId) => {
+      const team = teamOf(state, teamId);
+      return { teamId, position: team.position, correct: team.correctAnswers };
+    }),
+  };
+  const others = (historyStore.get() ?? []).filter((item) => item.id !== state.id);
+  historyStore.set([...others, record].slice(-HISTORY_LIMIT));
 }
 
 export function updateSettings(change: Partial<Settings>) {
-  settingsStore.set({ ...(settingsStore.get() ?? DEFAULT_SETTINGS), ...change });
+  settingsStore.set({
+    ...(settingsStore.get() ?? DEFAULT_SETTINGS),
+    ...change,
+  });
 }
 
 /*
@@ -142,6 +237,7 @@ export function updateGame(
   if (next === current) return next;
   if (record) undoStack = [...undoStack.slice(-(UNDO_LIMIT - 1)), current];
   gameStore.set(next);
+  if (next.phase.kind === "game-over" && current.phase.kind !== "game-over") recordFinishedGame(next);
   return next;
 }
 

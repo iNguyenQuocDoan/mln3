@@ -1,126 +1,111 @@
 "use client";
 
+import type { ReactNode } from "react";
+import { BrocadeBand } from "@/components/art/brocade-band";
+import {
+  ANSWER_SECONDS,
+  CATCH_UP,
+  DICE_WHEN_CORRECT,
+  DICE_WHEN_WRONG,
+  LUCKY_STREAK,
+} from "@/content/game-balance";
+import { MAX_TEAMS, MIN_TEAMS, TEAM_DEFS } from "@/content/game-teams";
+import { BALANCE_COLORS } from "./leaderboard";
 import { TeamAvatar } from "./team-piece";
-import { TEAM_DEFS } from "@/content/game-teams";
 
 /**
- * Trang giới thiệu / luật chơi — màn hình ĐẦU TIÊN khi mở /tro-choi, trước
- * cả bàn cờ. Thuần hiển thị: không đụng tới `GameState` (không rút câu hỏi,
- * không đổ xúc xắc, không tăng lượt). MC đọc xong rồi mới bấm "VÀO TRÒ CHƠI"
- * để mở bàn cờ — bàn cờ vẫn dừng ở "chưa bắt đầu" cho tới khi bấm tiếp
- * "BẮT ĐẦU TRÒ CHƠI" (hai nút, hai việc khác nhau).
+ * Trang giới thiệu / luật chơi — màn hình ĐẦU TIÊN khi mở /tro-choi. Thuần
+ * hiển thị: không đụng tới `GameState`. MC đọc xong rồi bấm "Vào trò chơi"
+ * để mở bàn cờ; ván vẫn chờ MC chọn số đội và bấm "Bắt đầu".
  */
 export function IntroScreen({ onEnter }: { onEnter: () => void }) {
+  const lowestGap = Math.min(...CATCH_UP.map((level) => level.gap));
   return (
-    <div className="panel-in absolute inset-0 flex flex-col items-center justify-center gap-7 bg-cham px-20 text-center text-on-cham">
-      <div>
-        <p className="text-lead font-bold tracking-wide text-on-cham-soft uppercase">
-          🇻🇳 Hành trình xuyên Việt
-        </p>
-        <h1 className="mt-2 text-banner leading-tight font-extrabold">
-          ĐƯỜNG ĐUA
-          <br />
-          ĐẠI ĐOÀN KẾT
-        </h1>
-        <p className="mt-3 text-lead font-bold text-vang">Trả lời đúng · Đổ xúc xắc · Về đích</p>
-        <p className="mx-auto mt-3 max-w-[920px] text-body text-on-cham-soft text-balance">
-          5 đội cùng tham gia hành trình xuyên Việt. Trả lời đúng câu hỏi để giành quyền đổ xúc xắc
-          và tiến về đích — đội đầu tiên chạm đích sẽ chiến thắng.
-        </p>
-      </div>
-
-      <div className="grid grid-cols-4 gap-5">
-        <RuleCard icon="❓" title="TRẢ LỜI" text="Chọn đáp án đúng để giành quyền di chuyển." />
-        <RuleCard icon="🎲" title="ĐỔ XÚC XẮC" text="Trả lời đúng mới được đổ xúc xắc D6." />
-        <RuleCard icon="🎁" title="SĂN HỘP QUÀ" text="Đáp xuống ô quà để lật thẻ, nhận hiệu ứng bất ngờ." />
-        <RuleCard icon="🏆" title="VỀ ĐÍCH" text="Đội đầu tiên chạm đích sẽ chiến thắng ngay." />
-      </div>
-
-      <div className="flex flex-col items-center gap-2.5">
-        <div className="flex items-center gap-2 text-body font-bold text-on-cham-soft">
-          <FlowStep icon="❓" label="CÂU HỎI" />
-          <Arrow />
-          <FlowStep icon="✅" label="ĐÚNG" tone="#4fd88a" />
-          <Arrow />
-          <FlowStep icon="🎲" label="XÚC XẮC" />
-          <Arrow />
-          <FlowStep icon="🏃" label="DI CHUYỂN" />
-          <Arrow />
-          <FlowStep icon="🎁" label="Ô QUÀ?" />
-          <Arrow />
-          <FlowStep icon="🃏" label="LẬT THẺ" />
-          <Arrow />
-          <FlowStep icon="➡️" label="TIẾP TỤC" tone="#e3b44b" />
+    <div className="panel-in absolute inset-0 bg-dem text-on-cham">
+      <div className="grid h-[984px] grid-cols-[1fr_880px] gap-20 px-28 pt-22">
+        <div className="flex flex-col">
+          <p className="text-[30px] font-semibold text-vang">Trò chơi ôn tập MLN131</p>
+          <h1 className="mt-4 text-[112px] leading-[0.98] font-extrabold tracking-[-0.02em]">
+            Đường đua
+            <br />
+            đại đoàn kết
+          </h1>
+          <p className="mt-8 text-[34px] leading-snug text-on-cham-soft">
+            Từ {MIN_TEAMS} đến {MAX_TEAMS} đội cùng đi một hành trình xuyên Việt, từ Hà Nội về Cần Thơ. Trả
+            lời câu hỏi về bài Dân tộc để giành thêm bước đi.
+          </p>
+          <ul className="mt-10 flex gap-3">
+            {TEAM_DEFS.map((team) => (
+              <li key={team.id}>
+                <TeamAvatar teamId={team.id} size={84} />
+              </li>
+            ))}
+          </ul>
+          <div className="mt-auto pb-16">
+            <button
+              type="button"
+              autoFocus
+              onClick={onEnter}
+              className="cursor-pointer rounded-2xl bg-son px-14 py-5 text-[36px] leading-none font-extrabold text-paper transition-colors hover:bg-[#a51217] focus-visible:outline-4 focus-visible:outline-offset-4 focus-visible:outline-vang"
+            >
+              Vào trò chơi
+            </button>
+          </div>
         </div>
-        <div className="flex items-center gap-2 text-body font-bold text-on-cham-soft">
-          <FlowStep icon="❌" label="SAI" tone="#ff6b5e" />
-          <Arrow />
-          <FlowStep icon="⏸️" label="ĐỨNG YÊN" />
-          <Arrow />
-          <FlowStep icon="➡️" label="TIẾP TỤC" tone="#e3b44b" />
+
+        <div className="flex flex-col gap-10 pt-3">
+          <section>
+            <h2 className="text-[40px] font-extrabold">Cách chơi</h2>
+            <ol className="mt-5 flex flex-col gap-4 text-[30px] leading-snug">
+              <Step n={1}>Mỗi đội lắc một xúc xắc. Điểm cao đi trước.</Step>
+              <Step n={2}>Mỗi lượt, đội có {ANSWER_SECONDS} giây để trả lời một câu hỏi.</Step>
+              <Step n={3}>
+                Đúng lắc {DICE_WHEN_CORRECT} xúc xắc, sai hoặc hết giờ vẫn được lắc {DICE_WHEN_WRONG}.
+              </Step>
+              <Step n={4}>Dừng ở ô có hộp quà thì được mở một thẻ bất ngờ.</Step>
+              <Step n={5}>Đội về đích đầu tiên thắng.</Step>
+            </ol>
+          </section>
+
+          <section className="rounded-[28px] bg-nhua px-8 py-7">
+            <h2 className="text-[34px] font-extrabold">Ai gặp xui cũng có cơ hội</h2>
+            <dl className="mt-4 flex flex-col gap-3 text-[28px] leading-snug">
+              <Rule color={BALANCE_COLORS.boost} name="Tiếp sức">
+                Bị bỏ xa từ {lowestGap} ô thì mỗi lần lắc được tiến thêm, mở hộp quà không gặp thẻ lùi.
+              </Rule>
+              <Rule color={BALANCE_COLORS.lucky} name="Bùa may mắn">
+                Sai {LUCKY_STREAK} lượt liền thì lượt sau được thêm 1 xúc xắc.
+              </Rule>
+              <Rule color={BALANCE_COLORS.shield} name="Bảo hộ">
+                Đội đứng cuối không bị thẻ tấn công nhắm tới.
+              </Rule>
+            </dl>
+          </section>
         </div>
       </div>
-
-      <div className="flex items-center gap-5 text-label font-semibold text-on-cham-soft">
-        <span>⚡ Tiến lên</span>
-        <span>🍌 Lùi lại</span>
-        <span>💥 Tấn công</span>
-        <span>🔄 Đổi vị trí</span>
-      </div>
-
-      <ul className="flex flex-wrap justify-center gap-4">
-        {TEAM_DEFS.map((team) => (
-          <li
-            key={team.id}
-            className="flex items-center gap-2 rounded-full py-1.5 pr-5 pl-1.5 text-body font-extrabold"
-            style={{ background: team.color, color: team.ink }}
-          >
-            <TeamAvatar teamId={team.id} size={48} />
-            {team.name}
-          </li>
-        ))}
-      </ul>
-
-      <button
-        type="button"
-        autoFocus
-        onClick={onEnter}
-        className="cursor-pointer rounded-2xl bg-son px-16 py-5 text-lead font-extrabold text-paper transition-colors hover:bg-[#a51217] focus-visible:outline-4 focus-visible:outline-offset-4 focus-visible:outline-vang"
-      >
-        VÀO TRÒ CHƠI
-      </button>
+      <BrocadeBand id="band-intro" height={96} className="absolute inset-x-0 bottom-0" />
     </div>
   );
 }
 
-function RuleCard({ icon, title, text }: { icon: string; title: string; text: string }) {
+function Step({ n, children }: { n: number; children: ReactNode }) {
   return (
-    <div className="flex w-[300px] flex-col items-center gap-2 rounded-[24px] bg-dem/70 px-6 py-6 ring-1 ring-on-cham-soft/25">
-      <span className="text-[52px] leading-none" aria-hidden="true">
-        {icon}
+    <li className="flex gap-5">
+      <span className="grid size-12 shrink-0 place-items-center rounded-full bg-vang text-[26px] font-extrabold text-cham tabular-nums">
+        {n}
       </span>
-      <p className="text-body font-extrabold tracking-wide">{title}</p>
-      <p className="text-label text-on-cham-soft text-balance">{text}</p>
+      <span className="pt-1">{children}</span>
+    </li>
+  );
+}
+
+function Rule({ color, name, children }: { color: string; name: string; children: ReactNode }) {
+  return (
+    <div>
+      <dt className="font-extrabold" style={{ color }}>
+        {name}
+      </dt>
+      <dd className="text-on-cham-soft">{children}</dd>
     </div>
-  );
-}
-
-function FlowStep({ icon, label, tone }: { icon: string; label: string; tone?: string }) {
-  return (
-    <span
-      className="flex items-center gap-1.5 rounded-full bg-dem/70 px-3.5 py-1.5 ring-1 ring-on-cham-soft/25"
-      style={tone ? { color: tone } : undefined}
-    >
-      <span aria-hidden="true">{icon}</span>
-      {label}
-    </span>
-  );
-}
-
-function Arrow() {
-  return (
-    <span className="text-on-cham-soft/50" aria-hidden="true">
-      →
-    </span>
   );
 }

@@ -53,8 +53,7 @@ export function NumberedTitle({
 }) {
   return (
     <>
-      <span className="text-son tabular-nums">{number}</span>
-      <span className="text-cham-soft"> — </span>
+      <span className="mr-[0.4em] text-son tabular-nums">{number}</span>
       {keepWords(children)}
     </>
   );
