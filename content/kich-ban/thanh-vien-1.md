@@ -1,6 +1,6 @@
 # Thành viên 1 (màn 1 đến 6): Mở đầu, sự hình thành dân tộc và hai nghĩa của dân tộc
 
-Thời lượng nói khoảng 5 phút. Kịch bản của cả nhóm: [kich-ban-thuyet-trinh.md](../kich-ban-thuyet-trinh.md).
+Thời lượng nói khoảng 5,5 phút. Kịch bản của cả nhóm: [kich-ban-thuyet-trinh.md](../kich-ban-thuyet-trinh.md).
 
 ## Màn 1. Bìa
 
@@ -74,6 +74,6 @@ Nghĩa thứ hai là dân tộc – tộc người: một cộng đồng tộc n
 
 Thứ nhất là cộng đồng về ngôn ngữ, gồm cả ngôn ngữ nói và ngôn ngữ viết, hoặc chỉ riêng ngôn ngữ nói. Đây là tiêu chí cơ bản để phân biệt các tộc người. Thứ hai là cộng đồng về văn hóa, gồm văn hóa vật thể và phi vật thể, thể hiện qua phong tục, tập quán, trang phục, lễ hội. Thứ ba là ý thức tự giác tộc người, tức mỗi người tự nhận mình thuộc về tộc người nào, với tên gọi và nguồn gốc của tộc người đó. Đây là tiêu chí quan trọng nhất để phân định một tộc người. Bức ảnh bên cạnh là một phụ nữ người Dao Chàm trong trang phục truyền thống, một nét văn hóa riêng của người Dao.
 
-Như dòng kết luận cuối màn hình, hai nghĩa này có liên quan nhưng không đồng nhất. Quốc gia – dân tộc bao gồm nhiều tộc người, còn tộc người là bộ phận hợp thành quốc gia – dân tộc. Ví dụ, dân tộc Việt Nam là nghĩa thứ nhất, còn dân tộc Kinh, Tày, Thái, Dao là nghĩa thứ hai.
+Như dòng kết luận cuối màn hình, hai nghĩa này có liên quan nhưng không đồng nhất: tuy khác nhau nhưng gắn bó mật thiết, không thể tách rời. Dân tộc – tộc người là một bộ phận hợp thành của quốc gia – dân tộc; quan hệ giữa hai nghĩa là quan hệ giữa cái riêng và cái chung. Ví dụ, dân tộc Việt Nam là nghĩa thứ nhất, còn dân tộc Kinh, Tày, Thái, Dao là nghĩa thứ hai.
 
 **Chuyển người:** Em xin hết phần khái niệm. Sau đây em xin mời bạn tiếp theo trình bày quan điểm của chủ nghĩa Mác – Lênin về vấn đề dân tộc.

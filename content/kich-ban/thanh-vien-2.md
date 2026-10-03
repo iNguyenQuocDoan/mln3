@@ -1,6 +1,6 @@
 # Thành viên 2 (màn 7 đến 11): Hai xu hướng khách quan và Cương lĩnh dân tộc
 
-Thời lượng nói khoảng 5,5 phút. Kịch bản của cả nhóm: [kich-ban-thuyet-trinh.md](../kich-ban-thuyet-trinh.md).
+Thời lượng nói khoảng 6 phút. Kịch bản của cả nhóm: [kich-ban-thuyet-trinh.md](../kich-ban-thuyet-trinh.md).
 
 Bạn bắt đầu sau câu chuyển người của thành viên 1: *Em xin hết phần khái niệm. Sau đây em xin mời bạn tiếp theo trình bày quan điểm của chủ nghĩa Mác – Lênin về vấn đề dân tộc.*
 
@@ -26,7 +26,7 @@ Khi nghiên cứu vấn đề dân tộc trong điều kiện chủ nghĩa tư b
 
 Xu hướng thứ nhất là tách ra: cộng đồng dân cư muốn hình thành cộng đồng dân tộc độc lập. Nguyên nhân là sự thức tỉnh, trưởng thành của ý thức dân tộc, ý thức về quyền sống của mình. Xu hướng này thể hiện rõ trong phong trào đấu tranh giành độc lập của các dân tộc thuộc địa và phụ thuộc. Bức ảnh bên trái là nhân dân ở Ba Đình nghe Tuyên ngôn Độc lập ngày 2 tháng 9 năm 1945, khi dân tộc Việt Nam thoát khỏi ách thực dân và lập nên nhà nước độc lập.
 
-Xu hướng thứ hai là liên hiệp: các dân tộc có nhu cầu liên hệ và liên hiệp với nhau. Xu hướng này nổi lên khi lực lượng sản xuất, khoa học công nghệ và giao lưu kinh tế, văn hóa phát triển, làm xuất hiện nhu cầu xóa bỏ hàng rào ngăn cách giữa các dân tộc. Ảnh bên phải là lễ thượng cờ ASEAN tại Bộ Ngoại giao năm 2025, ví dụ về sự liên kết giữa các quốc gia trong khu vực.
+Xu hướng thứ hai là liên hiệp: các dân tộc có nhu cầu liên hệ và liên hiệp với nhau. Xu hướng này nổi lên khi chủ nghĩa tư bản phát triển thành chủ nghĩa đế quốc: sự phát triển của lực lượng sản xuất, khoa học công nghệ và giao lưu kinh tế, văn hóa làm xuất hiện nhu cầu xóa bỏ hàng rào ngăn cách giữa các dân tộc. Ảnh bên phải là lễ thượng cờ ASEAN tại Bộ Ngoại giao năm 2025, ví dụ về sự liên kết giữa các quốc gia trong khu vực.
 
 Mũi tên hai chiều ở giữa nhắc rằng hai xu hướng này cùng tồn tại và tác động qua lại. Ngày nay, các dân tộc vừa giữ vững độc lập, chủ quyền, vừa mở rộng hợp tác và hội nhập với nhau.
 
@@ -42,7 +42,7 @@ Dựa trên hai xu hướng đó và kinh nghiệm của phong trào cách mạn
 
 Nội dung thứ nhất: các dân tộc hoàn toàn bình đẳng. Đây là quyền thiêng liêng của các dân tộc, không phân biệt dân tộc lớn hay nhỏ, trình độ phát triển cao hay thấp. Không có dân tộc nào được đặt ở vị trí cao hơn hoặc thấp hơn dân tộc khác, như sơ đồ dân tộc A bằng dân tộc B bằng dân tộc C, cùng đứng trên một mặt bằng.
 
-Bình đẳng nghĩa là các dân tộc có quyền lợi và nghĩa vụ ngang nhau trên mọi lĩnh vực, không dân tộc nào được giữ đặc quyền, đặc lợi, và không dân tộc nào được áp bức dân tộc khác. Quyền bình đẳng phải được ghi trong pháp luật, nhưng quan trọng hơn là phải được thực hiện trên thực tế. Ảnh bên phải là các nữ đại biểu thuộc nhiều dân tộc tại Đại hội Mặt trận Tổ quốc, cùng tham gia công việc chung của đất nước.
+Bình đẳng nghĩa là các dân tộc có quyền lợi và nghĩa vụ ngang nhau trên mọi lĩnh vực, không dân tộc nào được giữ đặc quyền, đặc lợi, và không dân tộc nào được áp bức dân tộc khác. Quyền bình đẳng phải được pháp luật bảo vệ và phải được thực hiện trên thực tế, trong đó khắc phục sự chênh lệch về trình độ phát triển giữa các dân tộc có ý nghĩa cơ bản. Thực hiện quyền bình đẳng là cơ sở để thực hiện quyền dân tộc tự quyết. Ảnh bên phải là các nữ đại biểu thuộc nhiều dân tộc tại Đại hội Mặt trận Tổ quốc, cùng tham gia công việc chung của đất nước.
 
 ## Màn 10. Cương lĩnh dân tộc: quyền tự quyết
 
@@ -52,11 +52,11 @@ Bình đẳng nghĩa là các dân tộc có quyền lợi và nghĩa vụ ngang
 >
 > **Ảnh:** Bên phải: Cử tri bỏ phiếu trong Tổng tuyển cử 6/1/1946.
 
-Nội dung thứ hai: các dân tộc được quyền tự quyết. Quyền tự quyết là quyền của một dân tộc tự quyết định vận mệnh của mình và lựa chọn con đường phát triển của mình, cả về kinh tế, chính trị và xã hội.
+Nội dung thứ hai: các dân tộc được quyền tự quyết. Quyền tự quyết là quyền làm chủ của mỗi dân tộc đối với vận mệnh dân tộc mình, quyền tự quyết định chế độ chính trị – xã hội và con đường phát triển của dân tộc mình.
 
 Quyền này có hai nhánh như sơ đồ. Một là quyền tách ra để thành lập quốc gia dân tộc độc lập. Hai là quyền tự nguyện liên hiệp với dân tộc khác trên cơ sở bình đẳng.
 
-Điều cần nhớ là tự quyết không chỉ có tách ra. Việc thực hiện quyền tự quyết phải xuất phát từ thực tiễn cụ thể và đứng vững trên lập trường của giai cấp công nhân. Quyền tự quyết cũng không có nghĩa là một tộc người thiểu số trong một quốc gia được đòi tách ra lập nước riêng; chúng ta cần cảnh giác khi các thế lực thù địch lợi dụng chiêu bài dân tộc tự quyết để can thiệp vào công việc nội bộ của các nước.
+Điều cần nhớ là tự quyết không chỉ có tách ra. Việc thực hiện quyền tự quyết phải xuất phát từ thực tiễn cụ thể và đứng vững trên lập trường của giai cấp công nhân. Quyền dân tộc tự quyết cũng không đồng nhất với “quyền” của các tộc người thiểu số trong một quốc gia đa tộc người, nhất là việc đòi tách ra thành quốc gia riêng; chúng ta cần cảnh giác khi các thế lực thù địch lợi dụng chiêu bài dân tộc tự quyết để can thiệp vào công việc nội bộ của các nước.
 
 Ảnh bên phải là cử tri bỏ phiếu trong cuộc Tổng tuyển cử ngày 6 tháng 1 năm 1946, lần đầu tiên nhân dân ta tự bầu ra Quốc hội của mình, một biểu hiện rõ của quyền tự quyết.
 

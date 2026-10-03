@@ -1,6 +1,6 @@
 # Thành viên 5 (màn 21 đến 27): Chính sách dân tộc, tổng kết, trò chơi và lời cảm ơn
 
-Thời lượng nói khoảng 4 phút. Kịch bản của cả nhóm: [kich-ban-thuyet-trinh.md](../kich-ban-thuyet-trinh.md).
+Thời lượng nói khoảng 4,5 phút. Kịch bản của cả nhóm: [kich-ban-thuyet-trinh.md](../kich-ban-thuyet-trinh.md).
 
 Bạn bắt đầu sau câu chuyển người của thành viên 4: *Em xin mời bạn tiếp theo trình bày phần cuối: chính sách dân tộc.*
 
@@ -38,7 +38,7 @@ Lĩnh vực thứ hai là kinh tế: các chủ trương, chính sách phát tri
 >
 > **Ảnh:** Bên phải: Nghệ thuật các dân tộc Tây Nguyên, 2023.
 
-Lĩnh vực thứ ba là văn hóa: xây dựng nền văn hóa Việt Nam tiên tiến, đậm đà bản sắc dân tộc. Cụ thể là giữ gìn và phát huy giá trị văn hóa truyền thống của các dân tộc, phát triển ngôn ngữ, xây dựng đời sống văn hóa ở cơ sở, nâng cao trình độ văn hóa cho đồng bào, đồng thời chống việc lợi dụng vấn đề văn hóa để chia rẽ dân tộc. Ảnh bên phải là chương trình nghệ thuật của các dân tộc Tây Nguyên năm 2023.
+Lĩnh vực thứ ba là văn hóa: xây dựng nền văn hóa Việt Nam tiên tiến, đậm đà bản sắc dân tộc. Cụ thể là giữ gìn và phát huy giá trị văn hóa truyền thống của các dân tộc, phát triển ngôn ngữ, xây dựng đời sống văn hóa ở cơ sở, nâng cao trình độ văn hóa cho nhân dân các dân tộc; mở rộng giao lưu văn hóa với các nước; đồng thời đấu tranh chống tệ nạn xã hội và chống “diễn biến hòa bình” trên mặt trận tư tưởng – văn hóa. Ảnh bên phải là chương trình nghệ thuật của các dân tộc Tây Nguyên năm 2023.
 
 ## Màn 24. Chính sách dân tộc, lĩnh vực 4/5: Xã hội
 
@@ -64,7 +64,7 @@ Lĩnh vực thứ tư là xã hội: thực hiện chính sách xã hội và b�
 
 Lĩnh vực cuối cùng là an ninh – quốc phòng: tăng cường sức mạnh bảo vệ Tổ quốc trên cơ sở bảo đảm ổn định chính trị, thực hiện tốt an ninh chính trị và trật tự an toàn xã hội. Vùng đồng bào dân tộc thiểu số phần lớn là biên giới, địa bàn chiến lược, nên cần phối hợp chặt chẽ các lực lượng, tăng cường quan hệ quân dân và xây dựng thế trận quốc phòng toàn dân ở đây. Ảnh bên phải là khu trưng bày của Bộ Quốc phòng năm 2025.
 
-Tóm lại, nhóm em đã trình bày ba phần: khái niệm và đặc trưng của dân tộc; quan điểm của chủ nghĩa Mác – Lênin về vấn đề dân tộc; và dân tộc, quan hệ dân tộc ở Việt Nam. Chính sách dân tộc của Đảng và Nhà nước mang tính toàn diện, bao trùm năm lĩnh vực chính trị, kinh tế, văn hóa, xã hội và an ninh – quốc phòng, nhằm xây dựng khối đại đoàn kết toàn dân tộc vững chắc.
+Tóm lại, nhóm em đã trình bày ba phần: khái niệm và đặc trưng của dân tộc; quan điểm của chủ nghĩa Mác – Lênin về vấn đề dân tộc; và dân tộc, quan hệ dân tộc ở Việt Nam. Chính sách dân tộc của Đảng và Nhà nước mang tính toàn diện, tổng hợp, bao trùm năm lĩnh vực chính trị, kinh tế, văn hóa, xã hội và an ninh – quốc phòng, nhằm xây dựng khối đại đoàn kết toàn dân tộc vững chắc.
 
 ## Màn 26. Trò chơi: Đường đua đại đoàn kết
 

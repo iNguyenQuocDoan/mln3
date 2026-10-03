@@ -1,6 +1,6 @@
 # Thành viên 4 (màn 18 đến 20): Quan điểm của Đảng và Nhà nước về vấn đề dân tộc
 
-Thời lượng nói khoảng 3 phút. Kịch bản của cả nhóm: [kich-ban-thuyet-trinh.md](../kich-ban-thuyet-trinh.md).
+Thời lượng nói khoảng 3,5 phút. Kịch bản của cả nhóm: [kich-ban-thuyet-trinh.md](../kich-ban-thuyet-trinh.md).
 
 Bạn bắt đầu sau câu chuyển người của thành viên 3: *Từ những đặc điểm vừa trình bày, em xin mời bạn tiếp theo trình bày quan điểm của Đảng và Nhà nước về vấn đề dân tộc.*
 
@@ -12,7 +12,7 @@ Bạn bắt đầu sau câu chuyển người của thành viên 3: *Từ nhữn
 >
 > **Ảnh:** Bên phải: Đồng bào các dân tộc diễu hành.
 
-Em xin trình bày quan điểm của Đảng và Nhà nước Việt Nam về vấn đề dân tộc. Có năm quan điểm.
+Em xin trình bày quan điểm của Đảng và Nhà nước Việt Nam về vấn đề dân tộc. Năm quan điểm cơ bản được nêu trong Nghị quyết 24 của Hội nghị Trung ương 7 khóa IX năm 2003 về công tác dân tộc.
 
 Quan điểm thứ nhất: vấn đề dân tộc và đoàn kết dân tộc là vấn đề chiến lược cơ bản, lâu dài, đồng thời cũng là vấn đề cấp bách của cách mạng Việt Nam. Ba từ khóa cần nhớ là cơ bản, lâu dài và cấp bách.
 
@@ -44,7 +44,7 @@ Quan điểm thứ ba là phát triển toàn diện chính trị, kinh tế, v�
 
 Quan điểm thứ tư là ưu tiên đầu tư phát triển kinh tế – xã hội vùng dân tộc và miền núi, trước hết là giao thông, cơ sở hạ tầng và xóa đói giảm nghèo, đi đôi với phát huy tinh thần tự lực, tự cường của đồng bào. Ảnh có nhãn quan điểm 4 là một bản làng vùng cao được đầu tư theo Chương trình 1719, tức chương trình mục tiêu quốc gia phát triển kinh tế – xã hội vùng đồng bào dân tộc thiểu số và miền núi, có nhà văn hóa và đường bê tông mới.
 
-Quan điểm thứ năm: công tác dân tộc và thực hiện chính sách dân tộc là nhiệm vụ của toàn Đảng, toàn dân, các cấp, các ngành và toàn bộ hệ thống chính trị. Ảnh có nhãn quan điểm 5 là buổi gặp mặt học sinh, sinh viên dân tộc thiểu số tiêu biểu.
+Quan điểm thứ năm: công tác dân tộc và thực hiện chính sách dân tộc là nhiệm vụ của toàn Đảng, toàn dân, toàn quân, của các cấp, các ngành và toàn bộ hệ thống chính trị. Ảnh có nhãn quan điểm 5 là buổi gặp mặt học sinh, sinh viên dân tộc thiểu số tiêu biểu.
 
 Như vậy, năm quan điểm đã làm rõ vị trí của vấn đề dân tộc, quan hệ giữa các dân tộc, hướng phát triển và trách nhiệm thực hiện.
 

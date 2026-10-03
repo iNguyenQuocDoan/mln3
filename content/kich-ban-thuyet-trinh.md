@@ -8,13 +8,13 @@ Bấm vào tên thành viên để mở file riêng của người đó.
 
 | Người nói | Màn hình | Nội dung | Thời lượng nói |
 | --- | --- | --- | --- |
-| [Thành viên 1](kich-ban/thanh-vien-1.md) | 1 đến 6 | Mở đầu, sự hình thành dân tộc và hai nghĩa của dân tộc | khoảng 5 phút |
-| [Thành viên 2](kich-ban/thanh-vien-2.md) | 7 đến 11 | Hai xu hướng khách quan và Cương lĩnh dân tộc | khoảng 5,5 phút |
-| [Thành viên 3](kich-ban/thanh-vien-3.md) | 12 đến 17 | Sáu đặc điểm dân tộc Việt Nam | khoảng 4,5 phút |
-| [Thành viên 4](kich-ban/thanh-vien-4.md) | 18 đến 20 | Quan điểm của Đảng và Nhà nước về vấn đề dân tộc | khoảng 3 phút |
-| [Thành viên 5](kich-ban/thanh-vien-5.md) | 21 đến 27 | Chính sách dân tộc, tổng kết, trò chơi và lời cảm ơn | khoảng 4 phút |
+| [Thành viên 1](kich-ban/thanh-vien-1.md) | 1 đến 6 | Mở đầu, sự hình thành dân tộc và hai nghĩa của dân tộc | khoảng 5,5 phút |
+| [Thành viên 2](kich-ban/thanh-vien-2.md) | 7 đến 11 | Hai xu hướng khách quan và Cương lĩnh dân tộc | khoảng 6 phút |
+| [Thành viên 3](kich-ban/thanh-vien-3.md) | 12 đến 17 | Sáu đặc điểm dân tộc Việt Nam | khoảng 5 phút |
+| [Thành viên 4](kich-ban/thanh-vien-4.md) | 18 đến 20 | Quan điểm của Đảng và Nhà nước về vấn đề dân tộc | khoảng 3,5 phút |
+| [Thành viên 5](kich-ban/thanh-vien-5.md) | 21 đến 27 | Chính sách dân tộc, tổng kết, trò chơi và lời cảm ơn | khoảng 4,5 phút |
 
-Tổng thời gian nói khoảng 23 phút (tốc độ vừa phải, khoảng 170 tiếng mỗi phút), chưa tính thời gian chơi trò chơi.
+Tổng thời gian nói khoảng 24 phút (tốc độ vừa phải, khoảng 170 tiếng mỗi phút), chưa tính thời gian chơi trò chơi.
 
 ## Thành viên 1 (màn 1 đến 6): Mở đầu, sự hình thành dân tộc và hai nghĩa của dân tộc
 
@@ -90,7 +90,7 @@ Nghĩa thứ hai là dân tộc – tộc người: một cộng đồng tộc n
 
 Thứ nhất là cộng đồng về ngôn ngữ, gồm cả ngôn ngữ nói và ngôn ngữ viết, hoặc chỉ riêng ngôn ngữ nói. Đây là tiêu chí cơ bản để phân biệt các tộc người. Thứ hai là cộng đồng về văn hóa, gồm văn hóa vật thể và phi vật thể, thể hiện qua phong tục, tập quán, trang phục, lễ hội. Thứ ba là ý thức tự giác tộc người, tức mỗi người tự nhận mình thuộc về tộc người nào, với tên gọi và nguồn gốc của tộc người đó. Đây là tiêu chí quan trọng nhất để phân định một tộc người. Bức ảnh bên cạnh là một phụ nữ người Dao Chàm trong trang phục truyền thống, một nét văn hóa riêng của người Dao.
 
-Như dòng kết luận cuối màn hình, hai nghĩa này có liên quan nhưng không đồng nhất. Quốc gia – dân tộc bao gồm nhiều tộc người, còn tộc người là bộ phận hợp thành quốc gia – dân tộc. Ví dụ, dân tộc Việt Nam là nghĩa thứ nhất, còn dân tộc Kinh, Tày, Thái, Dao là nghĩa thứ hai.
+Như dòng kết luận cuối màn hình, hai nghĩa này có liên quan nhưng không đồng nhất: tuy khác nhau nhưng gắn bó mật thiết, không thể tách rời. Dân tộc – tộc người là một bộ phận hợp thành của quốc gia – dân tộc; quan hệ giữa hai nghĩa là quan hệ giữa cái riêng và cái chung. Ví dụ, dân tộc Việt Nam là nghĩa thứ nhất, còn dân tộc Kinh, Tày, Thái, Dao là nghĩa thứ hai.
 
 **Chuyển người:** Em xin hết phần khái niệm. Sau đây em xin mời bạn tiếp theo trình bày quan điểm của chủ nghĩa Mác – Lênin về vấn đề dân tộc.
 
@@ -118,7 +118,7 @@ Khi nghiên cứu vấn đề dân tộc trong điều kiện chủ nghĩa tư b
 
 Xu hướng thứ nhất là tách ra: cộng đồng dân cư muốn hình thành cộng đồng dân tộc độc lập. Nguyên nhân là sự thức tỉnh, trưởng thành của ý thức dân tộc, ý thức về quyền sống của mình. Xu hướng này thể hiện rõ trong phong trào đấu tranh giành độc lập của các dân tộc thuộc địa và phụ thuộc. Bức ảnh bên trái là nhân dân ở Ba Đình nghe Tuyên ngôn Độc lập ngày 2 tháng 9 năm 1945, khi dân tộc Việt Nam thoát khỏi ách thực dân và lập nên nhà nước độc lập.
 
-Xu hướng thứ hai là liên hiệp: các dân tộc có nhu cầu liên hệ và liên hiệp với nhau. Xu hướng này nổi lên khi lực lượng sản xuất, khoa học công nghệ và giao lưu kinh tế, văn hóa phát triển, làm xuất hiện nhu cầu xóa bỏ hàng rào ngăn cách giữa các dân tộc. Ảnh bên phải là lễ thượng cờ ASEAN tại Bộ Ngoại giao năm 2025, ví dụ về sự liên kết giữa các quốc gia trong khu vực.
+Xu hướng thứ hai là liên hiệp: các dân tộc có nhu cầu liên hệ và liên hiệp với nhau. Xu hướng này nổi lên khi chủ nghĩa tư bản phát triển thành chủ nghĩa đế quốc: sự phát triển của lực lượng sản xuất, khoa học công nghệ và giao lưu kinh tế, văn hóa làm xuất hiện nhu cầu xóa bỏ hàng rào ngăn cách giữa các dân tộc. Ảnh bên phải là lễ thượng cờ ASEAN tại Bộ Ngoại giao năm 2025, ví dụ về sự liên kết giữa các quốc gia trong khu vực.
 
 Mũi tên hai chiều ở giữa nhắc rằng hai xu hướng này cùng tồn tại và tác động qua lại. Ngày nay, các dân tộc vừa giữ vững độc lập, chủ quyền, vừa mở rộng hợp tác và hội nhập với nhau.
 
@@ -134,7 +134,7 @@ Dựa trên hai xu hướng đó và kinh nghiệm của phong trào cách mạn
 
 Nội dung thứ nhất: các dân tộc hoàn toàn bình đẳng. Đây là quyền thiêng liêng của các dân tộc, không phân biệt dân tộc lớn hay nhỏ, trình độ phát triển cao hay thấp. Không có dân tộc nào được đặt ở vị trí cao hơn hoặc thấp hơn dân tộc khác, như sơ đồ dân tộc A bằng dân tộc B bằng dân tộc C, cùng đứng trên một mặt bằng.
 
-Bình đẳng nghĩa là các dân tộc có quyền lợi và nghĩa vụ ngang nhau trên mọi lĩnh vực, không dân tộc nào được giữ đặc quyền, đặc lợi, và không dân tộc nào được áp bức dân tộc khác. Quyền bình đẳng phải được ghi trong pháp luật, nhưng quan trọng hơn là phải được thực hiện trên thực tế. Ảnh bên phải là các nữ đại biểu thuộc nhiều dân tộc tại Đại hội Mặt trận Tổ quốc, cùng tham gia công việc chung của đất nước.
+Bình đẳng nghĩa là các dân tộc có quyền lợi và nghĩa vụ ngang nhau trên mọi lĩnh vực, không dân tộc nào được giữ đặc quyền, đặc lợi, và không dân tộc nào được áp bức dân tộc khác. Quyền bình đẳng phải được pháp luật bảo vệ và phải được thực hiện trên thực tế, trong đó khắc phục sự chênh lệch về trình độ phát triển giữa các dân tộc có ý nghĩa cơ bản. Thực hiện quyền bình đẳng là cơ sở để thực hiện quyền dân tộc tự quyết. Ảnh bên phải là các nữ đại biểu thuộc nhiều dân tộc tại Đại hội Mặt trận Tổ quốc, cùng tham gia công việc chung của đất nước.
 
 ### Màn 10. Cương lĩnh dân tộc: quyền tự quyết
 
@@ -144,11 +144,11 @@ Bình đẳng nghĩa là các dân tộc có quyền lợi và nghĩa vụ ngang
 >
 > **Ảnh:** Bên phải: Cử tri bỏ phiếu trong Tổng tuyển cử 6/1/1946.
 
-Nội dung thứ hai: các dân tộc được quyền tự quyết. Quyền tự quyết là quyền của một dân tộc tự quyết định vận mệnh của mình và lựa chọn con đường phát triển của mình, cả về kinh tế, chính trị và xã hội.
+Nội dung thứ hai: các dân tộc được quyền tự quyết. Quyền tự quyết là quyền làm chủ của mỗi dân tộc đối với vận mệnh dân tộc mình, quyền tự quyết định chế độ chính trị – xã hội và con đường phát triển của dân tộc mình.
 
 Quyền này có hai nhánh như sơ đồ. Một là quyền tách ra để thành lập quốc gia dân tộc độc lập. Hai là quyền tự nguyện liên hiệp với dân tộc khác trên cơ sở bình đẳng.
 
-Điều cần nhớ là tự quyết không chỉ có tách ra. Việc thực hiện quyền tự quyết phải xuất phát từ thực tiễn cụ thể và đứng vững trên lập trường của giai cấp công nhân. Quyền tự quyết cũng không có nghĩa là một tộc người thiểu số trong một quốc gia được đòi tách ra lập nước riêng; chúng ta cần cảnh giác khi các thế lực thù địch lợi dụng chiêu bài dân tộc tự quyết để can thiệp vào công việc nội bộ của các nước.
+Điều cần nhớ là tự quyết không chỉ có tách ra. Việc thực hiện quyền tự quyết phải xuất phát từ thực tiễn cụ thể và đứng vững trên lập trường của giai cấp công nhân. Quyền dân tộc tự quyết cũng không đồng nhất với “quyền” của các tộc người thiểu số trong một quốc gia đa tộc người, nhất là việc đòi tách ra thành quốc gia riêng; chúng ta cần cảnh giác khi các thế lực thù địch lợi dụng chiêu bài dân tộc tự quyết để can thiệp vào công việc nội bộ của các nước.
 
 Ảnh bên phải là cử tri bỏ phiếu trong cuộc Tổng tuyển cử ngày 6 tháng 1 năm 1946, lần đầu tiên nhân dân ta tự bầu ra Quốc hội của mình, một biểu hiện rõ của quyền tự quyết.
 
@@ -202,11 +202,11 @@ Việt Nam là một quốc gia đa dân tộc với 54 dân tộc anh em. Dân 
 
 Ba đặc điểm đầu liên quan đến dân cư và địa bàn.
 
-Thứ nhất là chênh lệch số dân: quy mô dân số giữa các tộc người không giống nhau. Theo Tổng điều tra dân số năm 2019, dân tộc Kinh có hơn 82 triệu người, chiếm khoảng 85,3% dân số; 53 dân tộc thiểu số có hơn 14 triệu người, chiếm khoảng 14,7%. Có những dân tộc chỉ vài trăm người, như Ơ Đu khoảng 428 người hay Brâu khoảng 525 người. Dân tộc càng ít người thì càng khó giữ gìn tiếng nói, văn hóa và duy trì giống nòi, nên Nhà nước có chính sách quan tâm đặc biệt.
+Thứ nhất là chênh lệch số dân: quy mô dân số giữa các tộc người không giống nhau. Theo số liệu trong giáo trình, dân tộc Kinh có hơn 73,5 triệu người, chiếm 85,7% dân số; 53 dân tộc thiểu số có hơn 12,2 triệu người, chiếm 14,3%. Có dân tộc trên một triệu người như Tày, Thái, Mường, Khmer, Mông, nhưng cũng có dân tộc chỉ vài trăm người như Si La, Pu Péo, Rơ Măm, Brâu, Ơ Đu. Dân tộc càng ít người thì càng khó giữ gìn tiếng nói, văn hóa và duy trì giống nòi, nên Nhà nước có chính sách quan tâm đặc biệt.
 
 Thứ hai là cư trú xen kẽ: nhiều cộng đồng dân tộc cùng sinh sống trên một địa bàn, không dân tộc nào có lãnh thổ riêng. Điều này giúp các dân tộc hiểu nhau, giao lưu và giúp đỡ nhau cùng phát triển, nhưng trong quá trình sinh sống cũng có thể nảy sinh mâu thuẫn mà các thế lực thù địch có thể lợi dụng.
 
-Thứ ba là địa bàn chiến lược: các dân tộc thiểu số phân bố chủ yếu tại các địa bàn có vị trí chiến lược quan trọng. Dù chỉ chiếm khoảng 14,7% dân số, đồng bào dân tộc thiểu số cư trú trên khoảng ba phần tư diện tích lãnh thổ, nhiều nơi là biên giới, vùng núi, hải đảo, quan trọng cả về kinh tế, an ninh, quốc phòng và môi trường sinh thái. Bản đồ bên phải lấy từ Atlat Địa lí Việt Nam cho thấy sự phân bố của các dân tộc trên cả nước.
+Thứ ba là địa bàn chiến lược: các dân tộc thiểu số phân bố chủ yếu tại các địa bàn có vị trí chiến lược quan trọng. Dù chỉ chiếm 14,3% dân số, đồng bào dân tộc thiểu số cư trú trên khoảng ba phần tư diện tích lãnh thổ, nhiều nơi là biên giới, vùng núi, hải đảo, quan trọng cả về kinh tế, an ninh, quốc phòng và môi trường sinh thái. Bản đồ bên phải lấy từ Atlat Địa lí Việt Nam cho thấy sự phân bố của các dân tộc trên cả nước.
 
 ### Màn 15. Sáu đặc điểm dân tộc Việt Nam, bước 3: Phát triển và đoàn kết
 
@@ -256,7 +256,7 @@ Chính từ những đặc điểm này, Đảng và Nhà nước ta luôn coi v
 >
 > **Ảnh:** Bên phải: Đồng bào các dân tộc diễu hành.
 
-Em xin trình bày quan điểm của Đảng và Nhà nước Việt Nam về vấn đề dân tộc. Có năm quan điểm.
+Em xin trình bày quan điểm của Đảng và Nhà nước Việt Nam về vấn đề dân tộc. Năm quan điểm cơ bản được nêu trong Nghị quyết 24 của Hội nghị Trung ương 7 khóa IX năm 2003 về công tác dân tộc.
 
 Quan điểm thứ nhất: vấn đề dân tộc và đoàn kết dân tộc là vấn đề chiến lược cơ bản, lâu dài, đồng thời cũng là vấn đề cấp bách của cách mạng Việt Nam. Ba từ khóa cần nhớ là cơ bản, lâu dài và cấp bách.
 
@@ -288,7 +288,7 @@ Quan điểm thứ ba là phát triển toàn diện chính trị, kinh tế, v�
 
 Quan điểm thứ tư là ưu tiên đầu tư phát triển kinh tế – xã hội vùng dân tộc và miền núi, trước hết là giao thông, cơ sở hạ tầng và xóa đói giảm nghèo, đi đôi với phát huy tinh thần tự lực, tự cường của đồng bào. Ảnh có nhãn quan điểm 4 là một bản làng vùng cao được đầu tư theo Chương trình 1719, tức chương trình mục tiêu quốc gia phát triển kinh tế – xã hội vùng đồng bào dân tộc thiểu số và miền núi, có nhà văn hóa và đường bê tông mới.
 
-Quan điểm thứ năm: công tác dân tộc và thực hiện chính sách dân tộc là nhiệm vụ của toàn Đảng, toàn dân, các cấp, các ngành và toàn bộ hệ thống chính trị. Ảnh có nhãn quan điểm 5 là buổi gặp mặt học sinh, sinh viên dân tộc thiểu số tiêu biểu.
+Quan điểm thứ năm: công tác dân tộc và thực hiện chính sách dân tộc là nhiệm vụ của toàn Đảng, toàn dân, toàn quân, của các cấp, các ngành và toàn bộ hệ thống chính trị. Ảnh có nhãn quan điểm 5 là buổi gặp mặt học sinh, sinh viên dân tộc thiểu số tiêu biểu.
 
 Như vậy, năm quan điểm đã làm rõ vị trí của vấn đề dân tộc, quan hệ giữa các dân tộc, hướng phát triển và trách nhiệm thực hiện.
 
@@ -330,7 +330,7 @@ Lĩnh vực thứ hai là kinh tế: các chủ trương, chính sách phát tri
 >
 > **Ảnh:** Bên phải: Nghệ thuật các dân tộc Tây Nguyên, 2023.
 
-Lĩnh vực thứ ba là văn hóa: xây dựng nền văn hóa Việt Nam tiên tiến, đậm đà bản sắc dân tộc. Cụ thể là giữ gìn và phát huy giá trị văn hóa truyền thống của các dân tộc, phát triển ngôn ngữ, xây dựng đời sống văn hóa ở cơ sở, nâng cao trình độ văn hóa cho đồng bào, đồng thời chống việc lợi dụng vấn đề văn hóa để chia rẽ dân tộc. Ảnh bên phải là chương trình nghệ thuật của các dân tộc Tây Nguyên năm 2023.
+Lĩnh vực thứ ba là văn hóa: xây dựng nền văn hóa Việt Nam tiên tiến, đậm đà bản sắc dân tộc. Cụ thể là giữ gìn và phát huy giá trị văn hóa truyền thống của các dân tộc, phát triển ngôn ngữ, xây dựng đời sống văn hóa ở cơ sở, nâng cao trình độ văn hóa cho nhân dân các dân tộc; mở rộng giao lưu văn hóa với các nước; đồng thời đấu tranh chống tệ nạn xã hội và chống “diễn biến hòa bình” trên mặt trận tư tưởng – văn hóa. Ảnh bên phải là chương trình nghệ thuật của các dân tộc Tây Nguyên năm 2023.
 
 ### Màn 24. Chính sách dân tộc, lĩnh vực 4/5: Xã hội
 
@@ -356,7 +356,7 @@ Lĩnh vực thứ tư là xã hội: thực hiện chính sách xã hội và b�
 
 Lĩnh vực cuối cùng là an ninh – quốc phòng: tăng cường sức mạnh bảo vệ Tổ quốc trên cơ sở bảo đảm ổn định chính trị, thực hiện tốt an ninh chính trị và trật tự an toàn xã hội. Vùng đồng bào dân tộc thiểu số phần lớn là biên giới, địa bàn chiến lược, nên cần phối hợp chặt chẽ các lực lượng, tăng cường quan hệ quân dân và xây dựng thế trận quốc phòng toàn dân ở đây. Ảnh bên phải là khu trưng bày của Bộ Quốc phòng năm 2025.
 
-Tóm lại, nhóm em đã trình bày ba phần: khái niệm và đặc trưng của dân tộc; quan điểm của chủ nghĩa Mác – Lênin về vấn đề dân tộc; và dân tộc, quan hệ dân tộc ở Việt Nam. Chính sách dân tộc của Đảng và Nhà nước mang tính toàn diện, bao trùm năm lĩnh vực chính trị, kinh tế, văn hóa, xã hội và an ninh – quốc phòng, nhằm xây dựng khối đại đoàn kết toàn dân tộc vững chắc.
+Tóm lại, nhóm em đã trình bày ba phần: khái niệm và đặc trưng của dân tộc; quan điểm của chủ nghĩa Mác – Lênin về vấn đề dân tộc; và dân tộc, quan hệ dân tộc ở Việt Nam. Chính sách dân tộc của Đảng và Nhà nước mang tính toàn diện, tổng hợp, bao trùm năm lĩnh vực chính trị, kinh tế, văn hóa, xã hội và an ninh – quốc phòng, nhằm xây dựng khối đại đoàn kết toàn dân tộc vững chắc.
 
 ### Màn 26. Trò chơi: Đường đua đại đoàn kết
 
@@ -406,7 +406,9 @@ Bài thuyết trình của nhóm em đến đây là hết. Nhóm em rất mong 
 - Thêm câu giới thiệu ảnh ở những màn có ảnh, ghi rõ ảnh nằm bên nào.
 - Lời kết bài ở màn 25, lời cảm ơn ở màn 27, vì màn trò chơi nằm giữa phần chính sách và lời cảm ơn.
 
-### Cần đối chiếu với tài liệu môn học
+### Đối chiếu với giáo trình
 
-- Màn 14: số liệu dân số lấy theo Tổng điều tra dân số năm 2019 (Kinh khoảng 85,3%, 53 dân tộc thiểu số khoảng 14,7%). Nếu slide môn học dùng số liệu năm khác thì đọc theo slide môn học.
-- Màn 20, quan điểm thứ năm: lời nói giữ đúng bản Word là "nhiệm vụ của toàn Đảng, toàn dân, các cấp, các ngành và toàn bộ hệ thống chính trị". Giáo trình thường ghi thêm "toàn quân" sau "toàn dân"; nếu slide môn học (slide 155–163) có chữ này thì đọc thêm.
+Lời nói đã đối chiếu với giáo trình Chủ nghĩa xã hội khoa học, chương 6, mục I (Dân tộc trong thời kỳ quá độ lên chủ nghĩa xã hội): khái niệm và đặc trưng của dân tộc, hai xu hướng khách quan, Cương lĩnh dân tộc, sáu đặc điểm dân tộc Việt Nam, năm quan điểm (Nghị quyết 24-NQ/TW năm 2003) và chính sách dân tộc trên năm lĩnh vực.
+
+- Màn 14: số liệu dân số theo giáo trình (Tổng điều tra năm 2009: Kinh 85,7%, 53 dân tộc thiểu số 14,3%). Nếu thầy cô hỏi số liệu mới nhất: Tổng điều tra năm 2019 là Kinh 85,3%, dân tộc thiểu số 14,7%; dân tộc ít người nhất là Ơ Đu, 428 người.
+- Phần giải thích thêm ngoài giáo trình (ví dụ dân tộc Việt Nam hình thành sớm do nhu cầu trị thủy và chống ngoại xâm, lý do vấn đề dân tộc vừa lâu dài vừa cấp bách, các câu giới thiệu ảnh) chỉ để minh họa; khi bị hỏi, trả lời theo ý của giáo trình.

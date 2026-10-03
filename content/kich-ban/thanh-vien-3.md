@@ -1,6 +1,6 @@
 # Thành viên 3 (màn 12 đến 17): Sáu đặc điểm dân tộc Việt Nam
 
-Thời lượng nói khoảng 4,5 phút. Kịch bản của cả nhóm: [kich-ban-thuyet-trinh.md](../kich-ban-thuyet-trinh.md).
+Thời lượng nói khoảng 5 phút. Kịch bản của cả nhóm: [kich-ban-thuyet-trinh.md](../kich-ban-thuyet-trinh.md).
 
 Bạn bắt đầu sau câu chuyển người của thành viên 2: *Em xin hết phần quan điểm lý luận. Sau đây em xin mời bạn tiếp theo trình bày về dân tộc và quan hệ dân tộc ở Việt Nam.*
 
@@ -36,11 +36,11 @@ Việt Nam là một quốc gia đa dân tộc với 54 dân tộc anh em. Dân 
 
 Ba đặc điểm đầu liên quan đến dân cư và địa bàn.
 
-Thứ nhất là chênh lệch số dân: quy mô dân số giữa các tộc người không giống nhau. Theo Tổng điều tra dân số năm 2019, dân tộc Kinh có hơn 82 triệu người, chiếm khoảng 85,3% dân số; 53 dân tộc thiểu số có hơn 14 triệu người, chiếm khoảng 14,7%. Có những dân tộc chỉ vài trăm người, như Ơ Đu khoảng 428 người hay Brâu khoảng 525 người. Dân tộc càng ít người thì càng khó giữ gìn tiếng nói, văn hóa và duy trì giống nòi, nên Nhà nước có chính sách quan tâm đặc biệt.
+Thứ nhất là chênh lệch số dân: quy mô dân số giữa các tộc người không giống nhau. Theo số liệu trong giáo trình, dân tộc Kinh có hơn 73,5 triệu người, chiếm 85,7% dân số; 53 dân tộc thiểu số có hơn 12,2 triệu người, chiếm 14,3%. Có dân tộc trên một triệu người như Tày, Thái, Mường, Khmer, Mông, nhưng cũng có dân tộc chỉ vài trăm người như Si La, Pu Péo, Rơ Măm, Brâu, Ơ Đu. Dân tộc càng ít người thì càng khó giữ gìn tiếng nói, văn hóa và duy trì giống nòi, nên Nhà nước có chính sách quan tâm đặc biệt.
 
 Thứ hai là cư trú xen kẽ: nhiều cộng đồng dân tộc cùng sinh sống trên một địa bàn, không dân tộc nào có lãnh thổ riêng. Điều này giúp các dân tộc hiểu nhau, giao lưu và giúp đỡ nhau cùng phát triển, nhưng trong quá trình sinh sống cũng có thể nảy sinh mâu thuẫn mà các thế lực thù địch có thể lợi dụng.
 
-Thứ ba là địa bàn chiến lược: các dân tộc thiểu số phân bố chủ yếu tại các địa bàn có vị trí chiến lược quan trọng. Dù chỉ chiếm khoảng 14,7% dân số, đồng bào dân tộc thiểu số cư trú trên khoảng ba phần tư diện tích lãnh thổ, nhiều nơi là biên giới, vùng núi, hải đảo, quan trọng cả về kinh tế, an ninh, quốc phòng và môi trường sinh thái. Bản đồ bên phải lấy từ Atlat Địa lí Việt Nam cho thấy sự phân bố của các dân tộc trên cả nước.
+Thứ ba là địa bàn chiến lược: các dân tộc thiểu số phân bố chủ yếu tại các địa bàn có vị trí chiến lược quan trọng. Dù chỉ chiếm 14,3% dân số, đồng bào dân tộc thiểu số cư trú trên khoảng ba phần tư diện tích lãnh thổ, nhiều nơi là biên giới, vùng núi, hải đảo, quan trọng cả về kinh tế, an ninh, quốc phòng và môi trường sinh thái. Bản đồ bên phải lấy từ Atlat Địa lí Việt Nam cho thấy sự phân bố của các dân tộc trên cả nước.
 
 ## Màn 15. Sáu đặc điểm dân tộc Việt Nam, bước 3: Phát triển và đoàn kết
 
