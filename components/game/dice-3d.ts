@@ -3,7 +3,9 @@
 /*
  * Xúc xắc 3D (thư viện @3d-dice/dice-box: BabylonJS vẽ, AmmoJS mô phỏng vật
  * lý). Xúc xắc được ném lên lớp phủ trên bàn cờ; số chấm do vật lý quyết định
- * và được trả về cho luật chơi (engine nhận đúng các số này).
+ * và được trả về cho luật chơi (engine nhận đúng các số này). Người chơi tự
+ * ném (throw-hand.tsx): hướng kéo, tốc độ thả tay và thời gian giữ để lắc
+ * quyết định xúc xắc bay từ đâu, mạnh và xoáy tới mức nào.
  *
  * Thư viện chỉ chạy trong trình duyệt nên được nạp bằng `import()` lúc cần.
  * Máy không có WebGL hoặc nạp lỗi: `rollDice3d` trả về null và trò chơi
@@ -15,9 +17,22 @@
 
 type DiceRollResult = { value: number };
 
+/** Cú ném của người chơi: hướng trên màn hình, độ mạnh và độ xoáy (0–1). */
+export type ThrowAim = {
+  /** Hướng ném, x sang phải, y xuống dưới (không cần chuẩn hóa). */
+  dx: number;
+  dy: number;
+  power: number;
+  spin: number;
+};
+
 type DiceBoxInstance = {
   init(): Promise<unknown>;
-  roll(notation: string, options?: { themeColor?: string }): Promise<DiceRollResult[]>;
+  roll(
+    notation: string,
+    options?: { themeColor?: string; newStartPoint?: boolean },
+  ): Promise<DiceRollResult[]>;
+  updateConfig(options: Record<string, unknown>): unknown;
   clear(): unknown;
   show(): unknown;
   hide(className?: string): unknown;
@@ -31,6 +46,31 @@ const SHOW_RESULT_MS = 1300;
 
 /** Quá thời gian này mà xúc xắc chưa dừng thì coi như lỗi, dùng xúc xắc 2D. */
 const ROLL_TIMEOUT_MS = 9000;
+
+/*
+ * Toạ độ vật lý của dice-box: khay vuông cạnh 9,5 (mép ở ±4,75), xúc xắc thả
+ * từ độ cao 8 và bay về phía tâm với vận tốc tỉ lệ `throwForce`. Muốn xúc xắc
+ * bay theo hướng người chơi kéo thì cho xuất phát ở mép đối diện.
+ */
+const TRAY_EDGE = 4;
+const DROP_HEIGHT = 8;
+/** Chiều trục vật lý so với màn hình (đo thử: x vật lý ngược chiều màn hình, z cùng chiều xuống dưới). */
+const WORLD_X = -1;
+const WORLD_Z = 1;
+
+/** Cấu hình dice-box cho một cú ném: điểm xuất phát trên mép khay, lực và độ xoáy. */
+function throwConfig(aim: ThrowAim): Record<string, unknown> {
+  const reach = Math.max(Math.abs(aim.dx), Math.abs(aim.dy)) || 1;
+  return {
+    startPosition: [
+      (-aim.dx / reach) * TRAY_EDGE * WORLD_X,
+      DROP_HEIGHT,
+      (-aim.dy / reach) * TRAY_EDGE * WORLD_Z,
+    ],
+    throwForce: 3 + aim.power * 6,
+    spinForce: 3 + aim.spin * 8,
+  };
+}
 
 let boxPromise: Promise<DiceBoxInstance | null> | null = null;
 let hideTimer: number | undefined;
@@ -71,17 +111,18 @@ export function loadDiceBox(): Promise<DiceBoxInstance | null> {
 }
 
 /**
- * Ném `count` viên D6 màu `color` lên bàn và chờ chúng dừng hẳn. Trả về số
- * chấm từng viên; null nếu không dùng được xúc xắc 3D.
+ * Ném `count` viên D6 màu `color` lên bàn theo cú ném `aim` và chờ chúng dừng
+ * hẳn. Trả về số chấm từng viên; null nếu không dùng được xúc xắc 3D.
  */
-export async function rollDice3d(count: number, color: string): Promise<number[] | null> {
+export async function rollDice3d(count: number, color: string, aim: ThrowAim): Promise<number[] | null> {
   const box = await loadDiceBox();
   if (!box) return null;
   window.clearTimeout(hideTimer);
   try {
+    await box.updateConfig(throwConfig(aim));
     box.show();
     const results = await Promise.race([
-      box.roll(`${count}d6`, { themeColor: color }),
+      box.roll(`${count}d6`, { themeColor: color, newStartPoint: false }),
       new Promise<null>((resolve) => window.setTimeout(() => resolve(null), ROLL_TIMEOUT_MS)),
     ]);
     if (!results || results.length !== count) {

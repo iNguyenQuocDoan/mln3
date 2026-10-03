@@ -14,6 +14,7 @@ export function MCControls({
   onToggleSound,
   onUndo,
   onReset,
+  onShowResults,
   onClearHistory,
   onClose,
 }: {
@@ -22,6 +23,7 @@ export function MCControls({
   onToggleSound: () => void;
   onUndo: () => void;
   onReset: () => void;
+  onShowResults: () => void;
   onClearHistory: () => void;
   onClose: () => void;
 }) {
@@ -68,6 +70,16 @@ export function MCControls({
         </button>
         <button type="button" className={item} onClick={onReset}>
           Chơi lại từ đầu
+        </button>
+        <button
+          type="button"
+          className={item}
+          onClick={() => {
+            onShowResults();
+            onClose();
+          }}
+        >
+          Kết quả các ván
         </button>
         <button type="button" className={item} onClick={onClearHistory}>
           Xóa lịch sử các ván

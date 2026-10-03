@@ -86,6 +86,7 @@ export function GameBoard({
   positions,
   movingTeamIds,
   activeTeamId,
+  track,
   children,
 }: {
   game: GameState;
@@ -93,6 +94,11 @@ export function GameBoard({
   positions: Record<TeamId, number>;
   movingTeamIds: ReadonlySet<TeamId>;
   activeTeamId: TeamId | null;
+  /**
+   * Lượt đi bằng xúc xắc: các ô sẽ đi qua được đánh số 1, 2, 3… theo màu đội
+   * (số biến mất khi quân đã đi qua), ô sẽ dừng có viền màu đội.
+   */
+  track: { from: number; to: number; taken: number; color: string; ink: string } | null;
   children: ReactNode;
 }) {
   const [hovered, setHovered] = useState<number | null>(null);
@@ -117,6 +123,8 @@ export function GameBoard({
         const here = byTile.get(tile.id) ?? [];
         const isFinish = tile.type === "finish";
         const gift = gifts.has(tile.id);
+        const stepNo = track && tile.id > track.from && tile.id <= track.to ? tile.id - track.from : 0;
+        const isStop = track !== null && stepNo > 0 && tile.id === track.to;
         return (
           <div
             // Đổi key khi có đội bước vào đích để chạy lại hiệu ứng "về đích".
@@ -126,9 +134,26 @@ export function GameBoard({
             className={`absolute flex flex-col items-center overflow-visible rounded-2xl px-1.5 pt-2.5 ${tileClass(tile, gift)} ${
               isFinish ? (here.length > 0 ? "finish-arrive z-[5]" : "finish-glow z-[5]") : ""
             }`}
-            style={{ left: col * STEP, top: row * STEP, width: TILE, height: TILE }}
+            style={{
+              left: col * STEP,
+              top: row * STEP,
+              width: TILE,
+              height: TILE,
+              boxShadow: isStop && track ? `0 0 0 5px ${track.color}, 0 0 28px ${track.color}99` : undefined,
+            }}
           >
             <TileLabel tile={tile} />
+            {track && stepNo > track.taken ? (
+              <span
+                className={`gift-pop absolute bottom-1.5 left-1.5 z-[3] grid place-items-center rounded-full font-extrabold tabular-nums shadow-[0_0_0_3px_#0b0f26] ${
+                  isStop ? "size-13 text-[28px]" : "size-10 text-[22px]"
+                }`}
+                style={{ background: track.color, color: track.ink, animationDelay: `${stepNo * 35}ms` }}
+                aria-hidden="true"
+              >
+                {stepNo}
+              </span>
+            ) : null}
             {gift ? (
               <span
                 key={`gift-${tile.id}`}

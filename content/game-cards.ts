@@ -147,6 +147,10 @@ export const MAX_SWAP_CARDS_IN_SELECTION = 1;
  * tiến 40%, tự lùi 20%), tối đa một thẻ đổi vị trí. `excluded`: thẻ không
  * dùng được lúc này (ví dụ "Kéo Lại" khi không có đội nào đứng trước) —
  * được thay bằng thẻ khác ngay khi rút, để lật ra thẻ nào cũng áp dụng được.
+ *
+ * Ba thẻ được đảo vị trí ngẫu nhiên sau khi rút: rút theo trọng số làm thẻ
+ * phổ biến hay ra trước, nếu giữ nguyên thứ tự thì người chơi đoán được nên
+ * chọn ô nào.
  */
 export function drawThreeCards(rng: () => number, excluded: CardId[] = []): CardId[] {
   const drawn: CardId[] = [];
@@ -158,6 +162,10 @@ export function drawThreeCards(rng: () => number, excluded: CardId[] = []): Card
     const swaps = drawn.filter((id) => cardById(id).swap).length;
     if (card.swap && swaps >= MAX_SWAP_CARDS_IN_SELECTION) continue;
     drawn.push(card.id);
+  }
+  for (let i = drawn.length - 1; i > 0; i--) {
+    const j = Math.min(i, Math.floor(rng() * (i + 1)));
+    [drawn[i], drawn[j]] = [drawn[j], drawn[i]];
   }
   return drawn;
 }

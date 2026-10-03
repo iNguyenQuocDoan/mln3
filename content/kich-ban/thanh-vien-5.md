@@ -74,7 +74,7 @@ Tóm lại, nhóm em đã trình bày ba phần: khái niệm và đặc trưng 
 >
 > **Ảnh:** không có ảnh.
 
-Để ôn lại bài, nhóm em có một trò chơi nhỏ tên là Đường đua đại đoàn kết. Lớp mình chia thành hai đến năm đội. Mỗi lượt, đội chơi có 15 giây để trả lời một câu hỏi trắc nghiệm về nội dung vừa trình bày. Trả lời đúng được lắc hai xúc xắc, sai hoặc hết giờ vẫn được lắc một. Dừng ở ô có hộp quà thì được mở một thẻ bất ngờ. Đội về đích đầu tiên sẽ thắng. Mời các đội vào đường đua.
+Để ôn lại bài, nhóm em có một trò chơi nhỏ tên là Đường đua đại đoàn kết. Lớp mình chia thành hai đến năm đội. Mỗi lượt, đội chơi có 15 giây để trả lời một câu hỏi trắc nghiệm về nội dung vừa trình bày. Trả lời đúng được lắc hai xúc xắc, sai hoặc hết giờ vẫn được lắc một. Đội tự tay ném xúc xắc trên bàn cờ: nhấn giữ để lắc, kéo rồi thả tay để ném. Dừng ở ô có hộp quà thì được mở một thẻ bất ngờ. Đội về đích đầu tiên sẽ thắng. Mời các đội vào đường đua.
 
 ## Màn 27. Cảm ơn
 

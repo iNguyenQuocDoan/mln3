@@ -9,7 +9,15 @@ import {
 } from "@/content/game-balance";
 import { FINISH_POSITION, tileAt } from "@/content/game-board";
 import type { GameQuestion, OptionId } from "@/content/game-questions";
-import { catchUpSteps, currentTeam, hasLuckyCharm, type GameState, type RollPlan } from "./engine";
+import {
+  catchUpSteps,
+  currentTeam,
+  hasLuckyCharm,
+  optionOrder,
+  shownLetter,
+  type GameState,
+  type RollPlan,
+} from "./engine";
 import { sfx } from "./game-audio";
 import { Badge, BALANCE_COLORS } from "./leaderboard";
 import { teamDef } from "./palette";
@@ -38,13 +46,14 @@ export function QuestionScreen({
   question,
   onPick,
   onTimeUp,
-  onRoll,
+  onGoThrow,
 }: {
   game: GameState;
   question: GameQuestion;
   onPick: (option: OptionId) => void;
   onTimeUp: () => void;
-  onRoll: () => void;
+  /** Đóng màn câu hỏi, ra bàn cờ để đội tự ném xúc xắc. */
+  onGoThrow: () => void;
 }) {
   const phase = game.phase;
   const answered = phase.kind === "waiting-roll" ? phase : null;
@@ -94,7 +103,7 @@ export function QuestionScreen({
         </div>
 
         <ul className="mt-11 grid min-h-0 flex-1 grid-cols-2 grid-rows-2 gap-7">
-          {question.options.map((option) => {
+          {shownOptions(game, question).map(({ letter, option }) => {
             const isRight = option.id === question.correctAnswer;
             const state = !answered
               ? "idle"
@@ -104,7 +113,7 @@ export function QuestionScreen({
                   ? "wrong"
                   : "dim";
             return (
-              <li key={option.id} className="min-h-0">
+              <li key={letter} className="min-h-0">
                 <button
                   type="button"
                   disabled={answered !== null}
@@ -114,7 +123,7 @@ export function QuestionScreen({
                   <span
                     className={`grid size-20 shrink-0 place-items-center rounded-2xl text-[46px] leading-none font-extrabold ${LETTER_CLASS[state]}`}
                   >
-                    {option.id}
+                    {letter}
                   </span>
                   <span className="text-[44px] leading-[1.2] font-semibold text-pretty">{option.text}</span>
                 </button>
@@ -133,7 +142,7 @@ export function QuestionScreen({
                     color: answered.correct ? BALANCE_COLORS.boost : ALERT,
                   }}
                 >
-                  {verdictText(verdict, question.correctAnswer)}
+                  {verdictText(verdict, shownLetter(game, question.id, question.correctAnswer))}
                 </p>
                 <div className="mt-3 flex items-center gap-3">
                   <p className="text-[30px] leading-none text-on-cham-soft">
@@ -145,7 +154,7 @@ export function QuestionScreen({
               <button
                 type="button"
                 autoFocus
-                onClick={onRoll}
+                onClick={onGoThrow}
                 className="shrink-0 cursor-pointer rounded-[24px] bg-son px-12 py-6 text-[40px] leading-none font-extrabold text-paper transition-colors hover:bg-[#a51217] focus-visible:outline-4 focus-visible:outline-offset-4 focus-visible:outline-vang"
               >
                 Lắc {answered.plan.dice} xúc xắc
@@ -163,6 +172,15 @@ export function QuestionScreen({
       </div>
     </div>
   );
+}
+
+/** Bốn đáp án theo thứ tự đã trộn của ván này, kèm chữ cái đang hiện (A–D). */
+function shownOptions(game: GameState, question: GameQuestion) {
+  const letters: OptionId[] = ["A", "B", "C", "D"];
+  return optionOrder(game, question.id).flatMap((id, i) => {
+    const option = question.options.find((o) => o.id === id);
+    return option ? [{ letter: letters[i], option }] : [];
+  });
 }
 
 type OptionState = "idle" | "right" | "wrong" | "dim";

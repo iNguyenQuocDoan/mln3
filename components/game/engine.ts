@@ -134,6 +134,12 @@ export type Phase =
       next: Phase;
       /** Nước đi do xúc xắc hay do thẻ — để giao diện chú thích cho khán giả. */
       cause: "dice" | "card";
+      /**
+       * Quân cờ đang đi tới một hộp quà: bố cục hộp sau khi mở (hộp đó biến
+       * mất, hộp mới hiện ở ô khác). Chỉ áp dụng khi quân đã đến nơi, để lúc
+       * quân còn đi không có hộp nào biến mất hay hiện ra trên đường.
+       */
+      giftsOnArrival?: number[];
     }
   | { kind: "card-selection"; cards: CardId[] }
   | { kind: "card-result"; cards: CardId[]; cardId: CardId; cardIndex: number }
@@ -574,7 +580,7 @@ function setPhase(state: GameState, next: Phase): GameState {
  */
 export function settleMove(state: GameState): GameState {
   if (state.phase.kind !== "moving") return state;
-  return { ...state, phase: state.phase.next };
+  return { ...state, phase: state.phase.next, gifts: state.phase.giftsOnArrival ?? state.gifts };
 }
 
 /** Đội `winnerId` vừa chạm đích: dừng mọi lượt và chốt bảng xếp hạng. */
@@ -627,6 +633,40 @@ function respawnGift(state: GameState, opened: number, rng: Rng): number[] {
 /* -------------------------------------------------------------------- */
 /* Câu hỏi                                                                */
 /* -------------------------------------------------------------------- */
+
+const OPTION_IDS: OptionId[] = ["A", "B", "C", "D"];
+
+/**
+ * Thứ tự bốn đáp án của câu `questionId` trong ván này, theo mã đáp án gốc:
+ * phần tử thứ i hiện ở chữ cái thứ i (A, B, C, D). Trộn theo mã ván nên mỗi
+ * ván một kiểu (câu hỏi lặp lại ở ván sau không còn đáp án ở chỗ cũ), còn
+ * trong cùng một ván (vẽ lại, tải lại trang, hoàn tác) thì luôn giữ nguyên.
+ */
+export function optionOrder(state: GameState, questionId: string): OptionId[] {
+  return shuffle(OPTION_IDS, seededRng(`${state.id}:${questionId}`));
+}
+
+/** Chữ cái đang hiện trên màn hình của đáp án gốc `optionId`. */
+export function shownLetter(state: GameState, questionId: string, optionId: OptionId): OptionId {
+  return OPTION_IDS[optionOrder(state, questionId).indexOf(optionId)] ?? optionId;
+}
+
+/** RNG có hạt giống từ một chuỗi (FNV-1a rồi mulberry32): cùng chuỗi, cùng dãy số. */
+function seededRng(text: string): Rng {
+  let hash = 2166136261;
+  for (let i = 0; i < text.length; i++) {
+    hash ^= text.charCodeAt(i);
+    hash = Math.imul(hash, 16777619);
+  }
+  let a = hash >>> 0;
+  return () => {
+    a = (a + 0x6d2b79f5) >>> 0;
+    let t = a;
+    t = Math.imul(t ^ (t >>> 15), t | 1);
+    t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+  };
+}
 
 /**
  * Lấy câu kế tiếp CHƯA TỪNG xuất hiện trong ván, theo thứ tự đã trộn lúc tạo
@@ -710,6 +750,41 @@ export function rollDice(state: GameState, rng: Rng, faces?: number[]): GameStat
   };
 }
 
+/** Lượt đi bằng xúc xắc: đội nào, từ ô nào tới ô sẽ dừng, tổng số ô theo xúc xắc. */
+export type DiceMove = {
+  teamId: TeamId;
+  from: number;
+  /** Ô sẽ dừng (không vượt quá ĐÍCH). */
+  to: number;
+  /** Tổng số chấm cộng ô Tiếp sức; lớn hơn `to - from` khi về đích sớm. */
+  total: number;
+};
+
+/**
+ * Lượt đi bằng xúc xắc đang diễn ra (xúc xắc vừa dừng hoặc quân đang đi), để
+ * giao diện báo trước quãng đường và đánh số các ô sẽ đi qua; null nếu không có.
+ */
+export function diceMove(state: GameState): DiceMove | null {
+  const roll = state.lastRoll;
+  if (!roll) return null;
+  const total = roll.values.reduce((sum, value) => sum + value, 0) + roll.boost;
+  const phase = state.phase;
+  if (phase.kind === "rolling") {
+    const team = currentTeam(state);
+    return {
+      teamId: team.id,
+      from: team.position,
+      to: Math.min(team.position + total, FINISH_POSITION),
+      total,
+    };
+  }
+  if (phase.kind === "moving" && phase.cause === "dice") {
+    const move = phase.moves[0];
+    return { teamId: move.teamId, from: move.from, to: move.to, total };
+  }
+  return null;
+}
+
 /** Xúc xắc dừng lại: quân đi tổng số chấm (+ ô Tiếp sức), đáp ô 🎁 thì mở hộp. */
 export function settleRoll(state: GameState, rng: Rng): GameState {
   if (state.phase.kind !== "rolling") return state;
@@ -721,16 +796,20 @@ export function settleRoll(state: GameState, rng: Rng): GameState {
   if (landed >= FINISH_POSITION) return finishGame(moved, team.id, "finish");
   if (!hasGift(moved, landed)) return completeTurn(moved, outcomeOf(moved));
 
-  const opened = { ...moved, gifts: respawnGift(moved, landed, rng) };
-  const someoneAhead = opened.teams.some((t) => t.id !== team.id && t.position > landed);
+  const someoneAhead = moved.teams.some((t) => t.id !== team.id && t.position > landed);
   const excluded: CardId[] = someoneAhead ? [] : ["pullback"];
   // 🛡️ Đội đang bị bỏ xa: hộp quà không có thẻ rủi ro (tự lùi).
-  if (isTrailing(opened, team.id))
+  if (isTrailing(moved, team.id))
     excluded.push(...CARDS.filter((c) => c.category === "penalty").map((c) => c.id));
-  return setPhase(opened, {
+  const giftsOnArrival = respawnGift(moved, landed, rng);
+  const next = setPhase(moved, {
     kind: "card-selection",
     cards: drawThreeCards(rng, excluded),
   });
+  // Hộp quà chỉ mở khi quân cờ đã đến ô đó (xem settleMove).
+  return next.phase.kind === "moving"
+    ? { ...next, phase: { ...next.phase, giftsOnArrival } }
+    : { ...next, gifts: giftsOnArrival };
 }
 
 /* -------------------------------------------------------------------- */

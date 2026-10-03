@@ -1,8 +1,8 @@
 "use client";
 
 import Image from "next/image";
-import type { ReactNode } from "react";
-import { tileAt } from "@/content/game-board";
+import { useEffect, useState, type ReactNode } from "react";
+import { tileAt, type BoardTile } from "@/content/game-board";
 import { ANSWER_SECONDS, DICE_WHEN_CORRECT, DICE_WHEN_WRONG } from "@/content/game-balance";
 import { cardById, type CardId } from "@/content/game-cards";
 import { questionById, type OptionId } from "@/content/game-questions";
@@ -10,7 +10,9 @@ import { CARD_BACK_SRC, MAX_TEAMS, MIN_TEAMS } from "@/content/game-teams";
 import { DiceRow, Dice } from "./dice";
 import {
   currentTeam,
+  diceMove,
   nextTeam,
+  shownLetter,
   type GameState,
   type RollPlan,
   type TeamId,
@@ -30,12 +32,12 @@ export type TurnActions = {
   onSetTeamCount: (count: number) => void;
   onStart: () => void;
   onShowIntro: () => void;
-  onRollForOrder: () => void;
   onBeginFirstTurn: () => void;
   onPick: (option: OptionId) => void;
   /** Hết giờ trả lời mà chưa chọn: tính như trả lời sai. */
   onTimeUp: () => void;
-  onRoll: () => void;
+  /** Mở lại màn câu hỏi (trước khi ném). */
+  onShowQuestion: () => void;
   onPickCard: (index: number) => void;
   onApplyCard: () => void;
   onChooseTarget: (teamId: TeamId) => void;
@@ -86,12 +88,15 @@ export function TurnBanner({ game, winnerId }: { game: GameState; winnerId: Team
 export function TurnCard({
   game,
   landed,
+  stepsTaken,
   busy,
   winnerDismissed,
   actions,
 }: {
   game: GameState;
   landed: boolean;
+  /** Số ô quân cờ đã đi trong lượt đang chạy hoạt ảnh. */
+  stepsTaken: number;
   busy: boolean;
   winnerDismissed: boolean;
   actions: TurnActions;
@@ -112,7 +117,7 @@ export function TurnCard({
       break;
     case "rolling":
     case "moving":
-      content = <MoveContent game={game} landed={landed} />;
+      content = <MoveContent game={game} landed={landed} stepsTaken={stepsTaken} />;
       break;
     case "card-selection":
     case "card-result":
@@ -270,7 +275,7 @@ function OrderContent({ game, busy, actions }: { game: GameState; busy: boolean;
                 {def.name}
               </span>
               {rolls.length === 0 ? (
-                <span className="text-[26px] text-cham-soft">{isNext ? "Đến lượt lắc" : "Chưa lắc"}</span>
+                <span className="text-[26px] text-cham-soft">{isNext ? "Đến lượt ném" : "Chưa ném"}</span>
               ) : (
                 <span className="flex items-center gap-2">
                   {rolls.map((value, i) => (
@@ -295,18 +300,21 @@ function OrderContent({ game, busy, actions }: { game: GameState; busy: boolean;
             Bắt đầu với {teamDef(phase.order[0]).name}
           </button>
         ) : (
-          <button
-            type="button"
-            autoFocus
-            disabled={rolling}
-            onClick={actions.onRollForOrder}
-            className={PRIMARY}
-          >
-            {rolling ? "Đang lắc" : `Lắc cho ${nextId ? teamDef(nextId).name : ""}`}
-          </button>
+          <ThrowPrompt name={nextId ? teamDef(nextId).name : ""} rolling={rolling} />
         )}
       </div>
     </div>
+  );
+}
+
+/** Lời nhắc ném xúc xắc trên bàn cờ (người chơi tự ném, không có nút lắc hộ). */
+function ThrowPrompt({ name, rolling }: { name: string; rolling: boolean }) {
+  return (
+    <p className="rounded-2xl bg-cham-tint px-6 py-4 text-[30px] leading-snug font-bold">
+      {rolling
+        ? `${name} đang ném`
+        : `Mời ${name} ném xúc xắc trên bàn cờ: nhấn giữ để lắc, kéo rồi thả tay.`}
+    </p>
   );
 }
 
@@ -316,12 +324,12 @@ function joinNames(names: string[]): string {
 }
 
 /* ------------------------------------------------------------------ */
-/* Đã trả lời, chờ lắc                                                 */
+/* Đã trả lời, chờ ném                                                 */
 /* ------------------------------------------------------------------ */
 
 /**
  * Câu hỏi hiện toàn màn hình (question-screen.tsx). Thẻ này chỉ lộ ra khi
- * màn câu hỏi đóng lại để xúc xắc lăn trên bàn cờ.
+ * màn câu hỏi đóng lại để đội tự ném xúc xắc trên bàn cờ.
  */
 function AnswerContent({ game, busy, actions }: { game: GameState; busy: boolean; actions: TurnActions }) {
   const phase = game.phase;
@@ -333,12 +341,13 @@ function AnswerContent({ game, busy, actions }: { game: GameState; busy: boolean
       </div>
     );
   }
-  const answer = questionById(phase.questionId)?.correctAnswer;
+  const question = questionById(phase.questionId);
+  const answer = question ? shownLetter(game, question.id, question.correctAnswer) : "";
   const rolling = busy || phase.thrown === true;
   return (
     <div className="panel-in flex h-full flex-col">
       <h2 className="text-[44px] leading-tight font-extrabold">
-        {rolling ? `${name} đang lắc` : `${name} lắc ${phase.plan.dice} xúc xắc`}
+        {rolling ? `${name} đang ném` : `${name} ném ${phase.plan.dice} xúc xắc`}
       </h2>
       <p className="mt-2 text-[30px] leading-snug text-cham-soft">
         {phase.correct
@@ -348,13 +357,14 @@ function AnswerContent({ game, busy, actions }: { game: GameState; busy: boolean
             : `Chưa đúng, đáp án đúng là ${answer}.`}
       </p>
       <BonusBadges plan={phase.plan} />
-      {rolling ? null : (
-        <div className="mt-auto pt-6">
-          <button type="button" onClick={actions.onRoll} className={PRIMARY}>
-            Lắc {phase.plan.dice} xúc xắc
+      <div className="mt-auto flex flex-col items-start gap-4 pt-6">
+        <ThrowPrompt name={name} rolling={rolling} />
+        {rolling ? null : (
+          <button type="button" onClick={actions.onShowQuestion} className={SECONDARY}>
+            Xem lại câu hỏi
           </button>
-        </div>
-      )}
+        )}
+      </div>
     </div>
   );
 }
@@ -389,12 +399,13 @@ function LightBadge({ color, children }: { color: string; children: ReactNode })
 /* Đang lắc / đang đi                                                  */
 /* ------------------------------------------------------------------ */
 
-function MoveContent({ game, landed }: { game: GameState; landed: boolean }) {
+function MoveContent({ game, landed, stepsTaken }: { game: GameState; landed: boolean; stepsTaken: number }) {
   const phase = game.phase;
   const def = teamDef(currentTeam(game).id);
   const roll = game.lastRoll;
   const rolling = phase.kind === "rolling" && !phase.physical;
   const total = roll ? roll.values.reduce((sum, v) => sum + v, 0) + roll.boost : 0;
+  const move = rolling ? null : diceMove(game);
 
   return (
     <div className="panel-in flex h-full flex-col">
@@ -410,11 +421,19 @@ function MoveContent({ game, landed }: { game: GameState; landed: boolean }) {
             color={def.color}
             size={110}
           />
-          {!rolling ? (
-            <p className="text-[30px] leading-snug text-cham-soft">{rollSentence(roll.values, roll.boost)}</p>
-          ) : null}
           <BonusBadges plan={roll} />
         </div>
+      ) : null}
+      {roll && move ? (
+        <MoveDistance
+          values={roll.values}
+          boost={roll.boost}
+          total={move.total}
+          steps={move.to - move.from}
+          taken={stepsTaken}
+          stop={tileAt(move.to)}
+          color={def.color}
+        />
       ) : null}
     </div>
   );
@@ -441,11 +460,76 @@ function headline(game: GameState, landed: boolean, total: number): string {
   return `${mover} ${delta > 0 ? "tiến" : "lùi"} ${Math.abs(delta)} ô`;
 }
 
-/** "Lắc được 4 và 5, cộng 1 ô tiếp sức." */
+/** "Lắc được 4 và 5, cộng 1 ô tiếp sức: đi 10 ô." */
 function rollSentence(values: number[], boost: number): string {
   const faces =
     values.length === 1 ? `${values[0]}` : `${values.slice(0, -1).join(", ")} và ${values.at(-1)}`;
-  return `Lắc được ${faces}${boost > 0 ? `, cộng ${boost} ô tiếp sức` : ""}.`;
+  const total = values.reduce((sum, v) => sum + v, 0) + boost;
+  return `Lắc được ${faces}${boost > 0 ? `, cộng ${boost} ô tiếp sức` : ""}: đi ${total} ô.`;
+}
+
+/** "4 + 5 + 1 tiếp sức": các số cộng lại thành quãng đường của lượt. */
+export function moveEquation(values: number[], boost: number): string {
+  return [...values.map(String), ...(boost > 0 ? [`${boost} tiếp sức`] : [])].join(" + ");
+}
+
+/**
+ * Quãng đường của lượt: tổng số ô thật to, phép cộng từ các viên xúc xắc,
+ * ô sẽ dừng và thanh tiến độ "đã đi 3 / 10 ô" trong lúc quân cờ đi.
+ */
+function MoveDistance({
+  values,
+  boost,
+  total,
+  steps,
+  taken,
+  stop,
+  color,
+}: {
+  values: number[];
+  boost: number;
+  total: number;
+  /** Số ô thật sự đi (ít hơn `total` khi về đích sớm). */
+  steps: number;
+  taken: number;
+  stop: BoardTile;
+  color: string;
+}) {
+  const done = Math.min(taken, steps);
+  return (
+    <section className="mt-6 rounded-2xl bg-cham-tint px-6 py-5" aria-label="Quãng đường lượt này">
+      <div className="flex items-baseline gap-3">
+        <p className="text-[96px] leading-none font-extrabold tabular-nums">{total}</p>
+        <p className="text-[40px] font-extrabold">ô</p>
+        {values.length > 1 || boost > 0 ? (
+          <p className="ml-auto text-right text-[30px] font-semibold text-cham-soft">
+            {moveEquation(values, boost)}
+          </p>
+        ) : null}
+      </div>
+      <p className="mt-3 text-[28px] leading-snug font-semibold">
+        {stop.type === "finish"
+          ? steps < total
+            ? `Về đích sau ${steps} ô`
+            : "Dừng ở Đích đến"
+          : `Dừng ở ${stop.name}, ô ${stop.id}`}
+      </p>
+      <div className="mt-3 flex items-center gap-4">
+        <div
+          className="h-4 flex-1 overflow-hidden rounded-full bg-paper ring-1 ring-cham-line"
+          aria-hidden="true"
+        >
+          <div
+            className="h-full rounded-full transition-[width] duration-200"
+            style={{ width: `${steps ? (done / steps) * 100 : 0}%`, background: color }}
+          />
+        </div>
+        <p className="text-[26px] font-bold text-cham-soft tabular-nums">
+          Đã đi {done} / {steps} ô
+        </p>
+      </div>
+    </section>
+  );
 }
 
 /* ------------------------------------------------------------------ */
@@ -467,6 +551,9 @@ const CATEGORY_LABEL = {
 const CARD_W = 196;
 const CARD_H = Math.round((CARD_W * 668) / 442);
 
+/** Hoạt ảnh trộn ba thẻ úp trước khi cho chọn (xem .card-shuffle trong globals.css). */
+const SHUFFLE_MS = 1300;
+
 function CardContent({
   cards,
   chosenIndex,
@@ -477,42 +564,62 @@ function CardContent({
   actions: TurnActions;
 }) {
   const chosen = chosenIndex === null ? null : cardById(cards[chosenIndex]);
+  // Vừa mở hộp: trộn thẻ trước mắt mọi người rồi mới cho chọn.
+  const [shuffling, setShuffling] = useState(chosenIndex === null);
+  useEffect(() => {
+    if (!shuffling) return;
+    const timer = window.setTimeout(() => setShuffling(false), SHUFFLE_MS);
+    return () => window.clearTimeout(timer);
+  }, [shuffling]);
+
   return (
     <div className="panel-in flex h-full flex-col">
       <h2 className="text-[40px] leading-tight font-extrabold">Mở hộp quà</h2>
-      <p className="mt-2 text-[28px] text-cham-soft">Chọn một trong ba thẻ úp.</p>
+      <p className="mt-2 text-[28px] text-cham-soft">
+        {shuffling ? "Đang trộn thẻ…" : "Chọn một trong ba thẻ úp."}
+      </p>
 
       <div className="mt-6 flex justify-center gap-7">
         {cards.map((cardId, i) => {
           const isChosen = chosenIndex === i;
           return (
-            <button
-              key={i}
-              type="button"
-              disabled={chosenIndex !== null}
-              onClick={() => actions.onPickCard(i)}
-              className={`flip-card cursor-pointer rounded-[20px] transition-opacity disabled:cursor-default ${
-                chosenIndex !== null && !isChosen ? "opacity-30" : ""
-              }`}
-              style={{
-                width: CARD_W,
-                height: CARD_H,
-                boxShadow: isChosen ? "0 0 0 4px #e3b44b, 0 18px 40px -12px rgb(28 37 83 / 0.6)" : undefined,
-              }}
-              aria-label={`Thẻ ${i + 1}`}
-            >
-              <div
-                className="flip-inner relative size-full"
-                style={isChosen ? undefined : { animation: "none" }}
+            <div key={i} className={shuffling ? `card-shuffle card-shuffle-${i}` : undefined}>
+              <button
+                type="button"
+                disabled={chosenIndex !== null || shuffling}
+                onClick={() => actions.onPickCard(i)}
+                className={`flip-card cursor-pointer rounded-[20px] transition-opacity disabled:cursor-default ${
+                  chosenIndex !== null && !isChosen ? "opacity-30" : ""
+                }`}
+                style={{
+                  width: CARD_W,
+                  height: CARD_H,
+                  boxShadow: isChosen
+                    ? "0 0 0 4px #e3b44b, 0 18px 40px -12px rgb(28 37 83 / 0.6)"
+                    : undefined,
+                }}
+                aria-label={`Thẻ ${i + 1}`}
               >
-                <div className="flip-face absolute inset-0 overflow-hidden rounded-[20px]">
-                  <Image src={CARD_BACK_SRC} alt="Mặt sau thẻ" fill unoptimized className="object-cover" />
+                <div
+                  className="flip-inner relative size-full"
+                  style={isChosen ? undefined : { animation: "none" }}
+                >
+                  <div className="flip-face absolute inset-0 overflow-hidden rounded-[20px]">
+                    <Image
+                      src={CARD_BACK_SRC}
+                      alt="Mặt sau thẻ"
+                      fill
+                      unoptimized
+                      loading="eager"
+                      className="object-cover"
+                    />
+                  </div>
+                  <div className="flip-face flip-back absolute inset-0 flex flex-col items-center justify-center gap-2 rounded-[20px] bg-paper p-3 text-center text-cham ring-2 ring-cham-line">
+                    {isChosen ? <CardFace cardId={cardId} /> : null}
+                  </div>
                 </div>
-                <div className="flip-face flip-back absolute inset-0 flex flex-col items-center justify-center gap-2 rounded-[20px] bg-paper p-3 text-center text-cham ring-2 ring-cham-line">
-                  {isChosen ? <CardFace cardId={cardId} /> : null}
-                </div>
-              </div>
-            </button>
+              </button>
+            </div>
           );
         })}
       </div>

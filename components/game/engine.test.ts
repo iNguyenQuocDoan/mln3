@@ -20,6 +20,9 @@ import {
   chooseTarget,
   continueToNextTeam,
   createGame,
+  diceMove,
+  optionOrder,
+  shownLetter,
   currentQuestion,
   currentTeam,
   hasLuckyCharm,
@@ -300,6 +303,20 @@ test("the piece moves by the dice total; a plain tile ends the turn and waits fo
   assert.equal(settleMove(game), game, "animation callbacks cannot advance the turn");
 });
 
+test("the move plan shows the total distance and the stop tile before and while the piece walks", () => {
+  let game = setGifts(setPositions(started(), { [T1]: 2, [T2]: 14 }), []);
+  game = rollDice(answer(game, "right"), zero, [4, 5]);
+  const boost = catchUpSteps(game, T1);
+  assert.deepEqual(diceMove(game), { teamId: T1, from: 2, to: 11 + boost, total: 9 + boost });
+  game = settleRoll(game, zero);
+  assert.deepEqual(diceMove(game), { teamId: T1, from: 2, to: 11 + boost, total: 9 + boost });
+  assert.equal(diceMove(settle(game)), null, "nothing to show once the turn is over");
+
+  let near = setGifts(setPositions(started(), { [T1]: FINISH_POSITION - 3 }), []);
+  near = rollDice(answer(near, "right"), zero, [6, 6]);
+  assert.deepEqual(diceMove(near), { teamId: T1, from: FINISH_POSITION - 3, to: FINISH_POSITION, total: 12 });
+});
+
 /* ------------------------------ Hộp quà ------------------------------ */
 
 test("landing exactly on a gift opens it, and a new box appears on another free tile", () => {
@@ -315,6 +332,19 @@ test("landing exactly on a gift opens it, and a new box appears on another free 
   const passing = rollFaces(setGifts(answer(started(), "wrong"), [2]), [4]);
   assert.equal(passing.phase.kind, "turn-complete", "passing over a box does not open it");
   assert.deepEqual(passing.gifts, [2]);
+});
+
+test("a gift box opens only when the piece arrives, never while it is still walking past tiles", () => {
+  for (let seed = 0; seed < 50; seed++) {
+    const ready = rollDice(setGifts(answer(started(), "wrong"), [6, 12, 18]), zero, [6]);
+    const walking = settleRoll(ready, seeded(seed));
+    assert.equal(walking.phase.kind, "moving");
+    assert.deepEqual(walking.gifts, [6, 12, 18], "no box moves or appears while the piece walks");
+    const arrived = settle(walking);
+    assert.equal(arrived.phase.kind, "card-selection");
+    assert.ok(!arrived.gifts.includes(6), "the box opened on arrival is gone");
+    assert.equal(arrived.gifts.length, 3, "a new box appears elsewhere after arrival");
+  }
 });
 
 test("pullback is never dealt when nobody is ahead, and only targets teams ahead", () => {
@@ -573,6 +603,45 @@ test("swap with the leader: two teams tied for the lead, choose one of them", ()
   game = settle(chooseTarget(game, T4));
   assert.equal(teamOf(game, T1).position, 11);
   assert.equal(teamOf(game, T4).position, 3);
+});
+
+test("the three face-down cards sit in random positions, so no slot is safer than another", () => {
+  const forwardBySlot = [0, 0, 0];
+  const draws = 30000;
+  for (let i = 0; i < draws; i++) {
+    drawThreeCards(Math.random).forEach((id, slot) => {
+      if (cardById(id).category === "forward") forwardBySlot[slot]++;
+    });
+  }
+  const shares = forwardBySlot.map((count) => count / draws);
+  assert.ok(Math.max(...shares) - Math.min(...shares) < 0.02, `forward share by slot ${shares.join(", ")}`);
+});
+
+test("answer options are shuffled per game, and stay put within a game", () => {
+  const game = started();
+  const id = currentQuestion(game)!.id;
+  const order = optionOrder(game, id);
+  assert.deepEqual([...order].sort(), ["A", "B", "C", "D"]);
+  assert.deepEqual(optionOrder(JSON.parse(JSON.stringify(game)), id), order, "same game, same order");
+
+  const slotOfRight: Record<string, number> = { A: 0, B: 0, C: 0, D: 0 };
+  for (let n = 0; n < 4000; n++) {
+    const other = { ...game, id: `game-${n}` };
+    slotOfRight[shownLetter(other, "Q001", "B")]++;
+  }
+  for (const count of Object.values(slotOfRight))
+    assert.ok(count > 850 && count < 1150, JSON.stringify(slotOfRight));
+});
+
+test("each new game gets a fresh random question order", () => {
+  const firsts = new Set<string>();
+  for (let seed = 0; seed < 40; seed++)
+    firsts.add(
+      createGame(4, seeded(500 + seed))
+        .questionDeck.slice(0, 5)
+        .join(),
+    );
+  assert.equal(firsts.size, 40, "no two new games start with the same questions in the same order");
 });
 
 test("card draw: never more than one swap card among the three, rates close to the weights", () => {

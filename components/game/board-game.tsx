@@ -1,12 +1,12 @@
 "use client";
 
-import { useEffect, useEffectEvent, useRef, useState, type CSSProperties } from "react";
+import { useEffect, useEffectEvent, useRef, useState, type CSSProperties, type ReactNode } from "react";
 import { BrocadeBand } from "@/components/art/brocade-band";
 import { toggleFullscreen, useStageScale } from "@/components/stage";
 import { cardById } from "@/content/game-cards";
 import { questionById, validateQuestionBank } from "@/content/game-questions";
 import { GameBackgroundMusic } from "./background-music";
-import { DICE_TRAY_ID, loadDiceBox, rollDice3d } from "./dice-3d";
+import { DICE_TRAY_ID, loadDiceBox, rollDice3d, type ThrowAim } from "./dice-3d";
 import {
   answerQuestion,
   applyCard,
@@ -15,6 +15,7 @@ import {
   continueToNextTeam,
   createGame,
   currentTeam,
+  diceMove,
   markDiceThrown,
   pickCard,
   rollDice,
@@ -27,7 +28,7 @@ import {
   type TeamId,
 } from "./engine";
 import { CENTER_SIZE, GameBoard, STEP } from "./game-board";
-import { GameHistory } from "./game-history";
+import { GameHistory, ResultsDialog } from "./game-history";
 import { IntroScreen } from "./intro-screen";
 import { Leaderboard } from "./leaderboard";
 import { MCControls } from "./mc-controls";
@@ -48,7 +49,8 @@ import {
   useGameHistory,
   useSettings,
 } from "./stores";
-import { TurnBanner, TurnCard, type TurnActions } from "./turn-panel";
+import { ThrowHand } from "./throw-hand";
+import { moveEquation, TurnBanner, TurnCard, type TurnActions } from "./turn-panel";
 import { WinnerScreen } from "./winner-screen";
 
 /* Chỉ hai bước chạy tự động, đều nằm GIỮA một lượt và không bao giờ đổi đội:
@@ -75,6 +77,8 @@ export function BoardGame() {
   const history = useGameHistory();
   const [menuOpen, setMenuOpen] = useState(false);
   const [confirm, setConfirm] = useState<"reset" | "history" | null>(null);
+  /** Hộp "Kết quả các ván" mở từ menu người dẫn. */
+  const [resultsOpen, setResultsOpen] = useState(false);
   const [winnerDismissed, setWinnerDismissed] = useState(false);
   /** Trang giới thiệu/luật chơi trước bàn cờ — chỉ có ý nghĩa khi ván chưa bắt đầu. */
   const [introChoice, setIntroChoice] = useState<"intro" | "game">("intro");
@@ -82,6 +86,8 @@ export function BoardGame() {
   const [busy, setBusy] = useState(false);
   /** Khay xúc xắc 3D đang mở giữa bàn cờ (thay chỗ bảng xếp hạng một lúc). */
   const [arena, setArena] = useState<{ color: string; label: string } | null>(null);
+  /** Câu hỏi đã trả lời xong và MC đã đóng màn câu hỏi để đội ra bàn cờ ném. */
+  const [throwingFor, setThrowingFor] = useState<string | null>(null);
   /** Tiến trình hoạt ảnh của pha "moving" đang chạy; chỉ cập nhật trong
    *  callback của setInterval. Vị trí hiển thị được suy ra lúc render. */
   const [anim, setAnim] = useState<{
@@ -198,8 +204,9 @@ export function BoardGame() {
   const positions: Record<TeamId, number> = {};
   const movingTeamIds = new Set<TeamId>();
   let landed = false;
+  /** Số ô quân cờ đã đi trong hoạt ảnh hiện tại. */
+  const step = moving && anim && anim.phase === moving ? anim.step : 0;
   if (moving) {
-    const step = anim && anim.phase === moving ? anim.step : 0;
     for (const move of moving.moves) {
       const steps = buildSteps(move.from, move.to);
       positions[move.teamId] = step === 0 ? move.from : steps[Math.min(step - 1, steps.length - 1)];
@@ -207,6 +214,15 @@ export function BoardGame() {
     }
     landed = movingTeamIds.size === 0 && step > 0;
   }
+
+  // Quãng đường lượt này: hiện khi xúc xắc đã dừng (xúc xắc 2D còn lăn thì chưa
+  // hiện, để không lộ kết quả) và trong lúc quân cờ đi.
+  const plannedMove = diceMove(game);
+  const rollingHidden = game.phase.kind === "rolling" && !game.phase.physical;
+  const move =
+    plannedMove && !rollingHidden
+      ? { ...plannedMove, taken: Math.min(step, plannedMove.to - plannedMove.from) }
+      : null;
 
   const onKeyDown = useEffectEvent((event: KeyboardEvent) => {
     if (event.altKey || event.ctrlKey || event.metaKey) return;
@@ -217,6 +233,7 @@ export function BoardGame() {
     if (event.key === "Escape") {
       setConfirm(null);
       setMenuOpen(false);
+      setResultsOpen(false);
     }
   });
   useEffect(() => {
@@ -226,20 +243,22 @@ export function BoardGame() {
   }, []);
 
   /**
-   * Ném xúc xắc 3D lên khay giữa bàn cờ rồi đưa số chấm cho `apply` (null nếu
-   * không dùng được 3D — luật chơi sẽ tự đổ và hiện xúc xắc 2D). `apply` chạy
-   * cùng nhịp với lúc mở khóa nút lắc nên màn hình không nháy lại pha cũ.
+   * Ném xúc xắc 3D theo cú ném `aim` của người chơi lên khay giữa bàn cờ rồi
+   * đưa số chấm cho `apply` (null nếu không dùng được 3D — luật chơi sẽ tự đổ
+   * và hiện xúc xắc 2D). `apply` chạy cùng nhịp với lúc mở khóa khay nên màn
+   * hình không nháy lại pha cũ.
    */
   async function throwDice(
     count: number,
     color: string,
     label: string,
+    aim: ThrowAim,
     apply: (faces: number[] | null) => void,
   ) {
     window.clearTimeout(arenaTimer.current);
     setBusy(true);
     setArena({ color, label });
-    const faces = await rollDice3d(count, color);
+    const faces = await rollDice3d(count, color, aim);
     apply(faces);
     setBusy(false);
     if (faces) arenaTimer.current = window.setTimeout(() => setArena(null), ARENA_CLOSE_MS);
@@ -260,32 +279,10 @@ export function BoardGame() {
     onSetTeamCount: (count) => updateGame((s) => setTeamCount(s, count, Math.random), AUTO),
     onStart: () => updateGame(startGame),
     onShowIntro: () => setIntroChoice("intro"),
-    onRollForOrder: async () => {
-      const phase = game.phase;
-      if (busy || phase.kind !== "order-roll" || phase.thrown) return;
-      const teamId = phase.queue[0];
-      if (!teamId) return;
-      const def = teamDef(teamId);
-      const landing = throwDice(1, def.color, `${def.name} lắc chọn thứ tự`, (faces) =>
-        updateGame((s) => rollForOrder(s, Math.random, faces?.[0]), AUTO),
-      );
-      // Ghi ngay là đã lắc (cũng là mốc hoàn tác) trong lúc xúc xắc còn lăn.
-      updateGame(markDiceThrown);
-      await landing;
-    },
     onBeginFirstTurn: () => updateGame(beginFirstTurn),
     onPick: (option) => updateGame((s) => answerQuestion(s, option)),
     onTimeUp: () => updateGame((s) => answerQuestion(s, null)),
-    onRoll: async () => {
-      const phase = game.phase;
-      if (busy || phase.kind !== "waiting-roll" || phase.thrown) return;
-      const def = teamDef(currentTeam(game).id);
-      const landing = throwDice(phase.plan.dice, def.color, `${def.name} đang lắc`, (faces) =>
-        updateGame((s) => rollDice(s, Math.random, faces ?? undefined), AUTO),
-      );
-      updateGame(markDiceThrown);
-      await landing;
-    },
+    onShowQuestion: () => setThrowingFor(null),
     onPickCard: (index) => {
       sfx.cardFlip();
       updateGame((s) => pickCard(s, index));
@@ -305,6 +302,33 @@ export function BoardGame() {
     onShowWinner: () => setWinnerDismissed(false),
   };
 
+  /** Đội vừa ném xong một xúc xắc chọn thứ tự (chưa áp dụng vào ván khi đang lăn). */
+  async function throwForOrder(aim: ThrowAim) {
+    const phase = game.phase;
+    if (busy || phase.kind !== "order-roll" || phase.thrown) return;
+    const teamId = phase.queue[0];
+    if (!teamId) return;
+    const def = teamDef(teamId);
+    const landing = throwDice(1, def.color, `${def.name} ném chọn thứ tự`, aim, (faces) =>
+      updateGame((s) => rollForOrder(s, Math.random, faces?.[0]), AUTO),
+    );
+    // Ghi ngay là đã ném (cũng là mốc hoàn tác) trong lúc xúc xắc còn lăn.
+    updateGame(markDiceThrown);
+    await landing;
+  }
+
+  /** Đội vừa ném xúc xắc của lượt (sau khi trả lời câu hỏi). */
+  async function throwForTurn(aim: ThrowAim) {
+    const phase = game.phase;
+    if (busy || phase.kind !== "waiting-roll" || phase.thrown) return;
+    const def = teamDef(currentTeam(game).id);
+    const landing = throwDice(phase.plan.dice, def.color, `${def.name} vừa ném`, aim, (faces) =>
+      updateGame((s) => rollDice(s, Math.random, faces ?? undefined), AUTO),
+    );
+    updateGame(markDiceThrown);
+    await landing;
+  }
+
   const phase = game.phase;
   const activeTeamId =
     phase.kind === "game-over" ||
@@ -314,9 +338,42 @@ export function BoardGame() {
       ? null
       : currentTeam(game).id;
 
-  // Câu hỏi chiếm trọn màn hình tới khi MC bấm lắc (xúc xắc lăn trên bàn cờ).
+  // Câu hỏi chiếm trọn màn hình tới khi MC đưa đội ra bàn cờ ném xúc xắc.
   const asking =
-    phase.kind === "question" || (phase.kind === "waiting-roll" && !busy && !phase.thrown) ? phase : null;
+    phase.kind === "question" ||
+    (phase.kind === "waiting-roll" && !busy && !phase.thrown && throwingFor !== phase.questionId)
+      ? phase
+      : null;
+
+  // Khay đang chờ một đội tự tay ném: chọn thứ tự, hoặc lượt sau khi trả lời.
+  let pendingThrow: {
+    kind: "order" | "turn";
+    key: string;
+    count: number;
+    color: string;
+    label: string;
+  } | null = null;
+  if (view === "game" && !busy) {
+    if (phase.kind === "order-roll" && !phase.thrown && phase.queue[0]) {
+      const def = teamDef(phase.queue[0]);
+      pendingThrow = {
+        key: `order-${def.id}-${phase.rolls[def.id]?.length ?? 0}`,
+        count: 1,
+        color: def.color,
+        kind: "order",
+        label: `${def.name} ném chọn thứ tự`,
+      };
+    } else if (phase.kind === "waiting-roll" && !phase.thrown && throwingFor === phase.questionId) {
+      const def = teamDef(currentTeam(game).id);
+      pendingThrow = {
+        key: `turn-${phase.questionId}`,
+        count: phase.plan.dice,
+        color: def.color,
+        kind: "turn",
+        label: `${def.name} ném ${phase.plan.dice} xúc xắc`,
+      };
+    }
+  }
   // Trước khi vào lượt đầu, mọi đội còn ở Khởi hành: giữa bàn cờ hiện kết quả các ván trước.
   const showHistory =
     history.length > 0 &&
@@ -340,6 +397,7 @@ export function BoardGame() {
             <TurnCard
               game={game}
               landed={landed}
+              stepsTaken={move?.taken ?? 0}
               busy={busy}
               winnerDismissed={winnerDismissed}
               actions={actions}
@@ -365,9 +423,34 @@ export function BoardGame() {
               positions={positions}
               movingTeamIds={movingTeamIds}
               activeTeamId={activeTeamId}
+              track={
+                move
+                  ? {
+                      from: move.from,
+                      to: move.to,
+                      taken: move.taken,
+                      color: teamDef(move.teamId).color,
+                      ink: teamDef(move.teamId).ink,
+                    }
+                  : null
+              }
             >
               {arena ? (
-                <DiceFelt color={arena.color} label={arena.label} />
+                <DiceFelt color={arena.color} label={arena.label}>
+                  {move && game.lastRoll ? (
+                    <MoveTotal values={game.lastRoll.values} boost={game.lastRoll.boost} total={move.total} />
+                  ) : null}
+                </DiceFelt>
+              ) : pendingThrow ? (
+                <DiceFelt color={pendingThrow.color} label={pendingThrow.label}>
+                  <ThrowHand
+                    key={pendingThrow.key}
+                    count={pendingThrow.count}
+                    color={pendingThrow.color}
+                    label={pendingThrow.label}
+                    onThrow={pendingThrow.kind === "order" ? throwForOrder : throwForTurn}
+                  />
+                </DiceFelt>
               ) : showHistory ? (
                 <GameHistory records={history} limit={7} className="size-full" />
               ) : (
@@ -399,7 +482,7 @@ export function BoardGame() {
             question={openQuestion}
             onPick={actions.onPick}
             onTimeUp={actions.onTimeUp}
-            onRoll={actions.onRoll}
+            onGoThrow={() => setThrowingFor(openQuestion.id)}
           />
         ) : null}
 
@@ -421,6 +504,7 @@ export function BoardGame() {
             onToggleSound={() => updateSettings({ sound: !settings.sound })}
             onUndo={() => undo()}
             onReset={() => setConfirm("reset")}
+            onShowResults={() => setResultsOpen(true)}
             onClearHistory={() => setConfirm("history")}
             onClose={() => setMenuOpen(false)}
           />
@@ -435,6 +519,8 @@ export function BoardGame() {
             onConfirm={newGame}
           />
         ) : null}
+
+        {resultsOpen ? <ResultsDialog records={history} onClose={() => setResultsOpen(false)} /> : null}
 
         {confirm === "history" ? (
           <ConfirmDialog
@@ -453,8 +539,23 @@ export function BoardGame() {
   );
 }
 
-/** Mặt khay nỉ chàm viền thổ cẩm, nơi xúc xắc 3D lăn. */
-function DiceFelt({ color, label }: { color: string; label: string }) {
+/** Tổng quãng đường ngay trên khay khi xúc xắc vừa dừng: "4 + 5 + 1 tiếp sức = 10 ô". */
+function MoveTotal({ values, boost, total }: { values: number[]; boost: number; total: number }) {
+  return (
+    <div className="pointer-events-none absolute inset-x-0 top-28 flex items-baseline justify-center gap-4 text-on-cham">
+      {values.length > 1 || boost > 0 ? (
+        <span className="text-[40px] font-bold text-on-cham-soft">{moveEquation(values, boost)} =</span>
+      ) : (
+        <span className="text-[40px] font-bold text-on-cham-soft">Đi</span>
+      )}
+      <span className="text-[88px] leading-none font-extrabold tabular-nums">{total}</span>
+      <span className="text-[44px] font-extrabold">ô</span>
+    </div>
+  );
+}
+
+/** Mặt khay nỉ chàm viền thổ cẩm, nơi đội ném và xúc xắc 3D lăn. */
+function DiceFelt({ color, label, children }: { color: string; label: string; children?: ReactNode }) {
   return (
     <div
       className="fade-in relative flex size-full flex-col overflow-hidden rounded-[28px] ring-4"
@@ -469,6 +570,7 @@ function DiceFelt({ color, label }: { color: string; label: string }) {
       <p className="mt-6 text-center text-[30px] font-bold text-on-cham-soft">{label}</p>
       <div className="flex-1" />
       <BrocadeBand id="felt-bottom" height={36} />
+      {children}
     </div>
   );
 }

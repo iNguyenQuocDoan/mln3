@@ -96,7 +96,7 @@ export type GameRecord = {
 };
 
 /** Giữ kết quả của chừng này ván gần nhất. */
-const HISTORY_LIMIT = 12;
+export const HISTORY_LIMIT = 50;
 const NO_RECORDS: GameRecord[] = [];
 
 function isRecordList(value: unknown): value is GameRecord[] {
