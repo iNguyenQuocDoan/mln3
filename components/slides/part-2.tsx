@@ -11,7 +11,7 @@ import { SlideFrame } from "./frame";
 
 /*
  * Hai cột đối xứng: ảnh minh họa, từ khóa, sơ đồ ngang.
- * Màu son cho "tách ra" (nhân dân Ba Đình nghe Tuyên ngôn Độc lập), màu
+ * Màu son cho "tách ra" (lễ chào cờ 80 năm Quốc khánh ở Ba Đình), màu
  * chàm cho "liên hiệp" (lễ thượng cờ ASEAN); mũi tên hai chiều ở giữa nhắc
  * rằng hai xu hướng cùng tồn tại.
  */

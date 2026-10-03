@@ -1,22 +1,20 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
 import {
-  CATCH_UP,
+  BALANCE_GAP,
+  CARD_ODDS,
   DICE_WHEN_CORRECT,
   DICE_WHEN_WRONG,
   GIFT_BOX_COUNT,
-  LUCKY_STREAK,
 } from "../../content/game-balance.ts";
 import { BOARD_TILES, DEFAULT_GIFT_TILES, FINISH_POSITION, GIFT_ZONE } from "../../content/game-board.ts";
-import { cardById, CARDS, drawThreeCards, type CardId } from "../../content/game-cards.ts";
+import { cardById, CARDS, drawThreeCards, type CardCategory, type CardId } from "../../content/game-cards.ts";
 import { QUESTION_POOL, type OptionId } from "../../content/game-questions.ts";
 import { MAX_TEAMS, MIN_TEAMS, TEAM_DEFS } from "../../content/game-teams.ts";
 import {
   answerQuestion,
   applyCard,
-  beginFirstTurn,
   canRollDice,
-  catchUpSteps,
   chooseTarget,
   continueToNextTeam,
   createGame,
@@ -25,19 +23,17 @@ import {
   shownLetter,
   currentQuestion,
   currentTeam,
-  hasLuckyCharm,
   isGameState,
   markDiceThrown,
   nextTeam,
   pickCard,
-  protectedTeams,
   ranking,
   rollDice,
-  rollForOrder,
   setTeamCount,
   settleMove,
   settleRoll,
   shuffleQuestions,
+  standingOf,
   startGame,
   teamOf,
   type GameState,
@@ -82,16 +78,10 @@ function settle(game: GameState): GameState {
   return next;
 }
 
-/** Đổ phân thứ tự với các số chấm cho trước, theo hàng chờ. */
-function rollOrder(game: GameState, faces: number[]): GameState {
-  return faces.reduce((state, value) => rollForOrder(state, zero, value), game);
-}
-
-/** Ván `count` đội đã phân thứ tự T1, T2, … và đang ở câu hỏi của đội `teamIndex`. */
+/** Ván `count` đội (T1, T2, …) đã bắt đầu và đang ở câu hỏi của đội `teamIndex`. */
 function started(count = MAX_TEAMS, teamIndex = 0): GameState {
   const game = startGame(createGame(count, seeded(count)));
-  const ready = beginFirstTurn(rollOrder(game, [6, 5, 4, 3, 2].slice(0, count)));
-  return { ...ready, currentTeamIndex: teamIndex };
+  return { ...game, currentTeamIndex: teamIndex };
 }
 
 /** Trả lời câu đang mở: đúng, sai, hay để hết giờ. */
@@ -186,49 +176,29 @@ test("a new game asks the questions not used in earlier games first", () => {
   assert.ok(!earlier.includes(createGame(4, seeded(9), earlier).questionDeck[0]));
 });
 
-/* ------------------------- Lắc chọn thứ tự ------------------------- */
+/* ---------------------------- Bắt đầu ván ---------------------------- */
 
-test("order roll: each team rolls one die and the highest goes first", () => {
-  let game = startGame(createGame(4, seeded(1)));
-  assert.equal(game.phase.kind, "order-roll");
-  assert.equal(currentQuestion(game), undefined, "no question before the order is set");
-  game = rollOrder(game, [3, 6, 1, 4]);
-  assert.equal(game.phase.kind, "order-ready");
-  if (game.phase.kind === "order-ready") assert.deepEqual(game.phase.order, [T2, T4, T1, T3]);
-
-  game = beginFirstTurn(game);
+test("start: no order roll, team 1 gets the first question and the teams go in number order", () => {
+  const game = startGame(createGame(4, seeded(1)));
   assert.deepEqual(
     game.teams.map((t) => t.id),
-    [T2, T4, T1, T3],
+    [T1, T2, T3, T4],
   );
-  assert.equal(currentTeam(game).id, T2);
   assert.equal(game.phase.kind, "question");
+  assert.equal(currentTeam(game).id, T1);
   assert.equal(currentQuestion(game)?.id, game.questionDeck[0]);
-});
-
-test("order roll: tied teams roll again among themselves until the order is clear", () => {
-  let game = startGame(createGame(4, seeded(1)));
-  game = rollOrder(game, [5, 5, 2, 5]);
-  assert.equal(game.phase.kind, "order-roll");
-  if (game.phase.kind === "order-roll") assert.deepEqual(game.phase.queue, [T1, T2, T4]);
-  game = rollOrder(game, [4, 4, 1]);
-  if (game.phase.kind === "order-roll") assert.deepEqual(game.phase.queue, [T1, T2]);
-  game = rollOrder(game, [2, 6]);
-  assert.equal(game.phase.kind, "order-ready");
-  if (game.phase.kind === "order-ready") assert.deepEqual(game.phase.order, [T2, T1, T4, T3]);
+  assert.equal(nextTeam(game).id, T2);
+  assert.equal(startGame(game), game, "Start does nothing once the game is running");
 });
 
 test("pressing roll is saved at once, so a reload cannot roll the same dice again", () => {
-  const order = markDiceThrown(startGame(createGame(3, seeded(1))));
-  assert.ok(order.phase.kind === "order-roll" && order.phase.thrown);
-  assert.equal(markDiceThrown(order), order);
-  const next = rollForOrder(order, zero, 4);
-  assert.ok(next.phase.kind === "order-roll" && !next.phase.thrown, "the next team has not thrown yet");
-
+  const blank = createGame(3, seeded(1));
+  assert.equal(markDiceThrown(blank), blank, "nothing to throw before the start");
   const asked = started(3);
   assert.equal(markDiceThrown(asked), asked, "nothing to throw while the question is open");
   const thrown = markDiceThrown(answer(asked, "right"));
   assert.ok(thrown.phase.kind === "waiting-roll" && thrown.phase.thrown);
+  assert.equal(markDiceThrown(thrown), thrown);
   assert.equal(rollDice(thrown, zero, [3, 4]).phase.kind, "rolling");
 });
 
@@ -245,7 +215,7 @@ test("a right answer rolls 2 dice, a wrong answer or a time-out still rolls 1", 
 
   const wrong = answer(started(), "wrong");
   if (wrong.phase.kind === "waiting-roll") assert.equal(wrong.phase.plan.dice, DICE_WHEN_WRONG);
-  assert.equal(teamOf(wrong, T1).wrongStreak, 1);
+  assert.equal(teamOf(wrong, T1).correctAnswers, 0);
 
   const late = answer(started(), "timeout");
   assert.equal(late.phase.kind, "waiting-roll");
@@ -255,7 +225,6 @@ test("a right answer rolls 2 dice, a wrong answer or a time-out still rolls 1", 
     assert.equal(late.phase.plan.dice, DICE_WHEN_WRONG);
   }
   assert.equal(teamOf(late, T1).correctAnswers, 0);
-  assert.equal(teamOf(late, T1).wrongStreak, 1);
   assert.equal(answerQuestion(late, "A"), late, "cannot answer twice");
 });
 
@@ -306,10 +275,9 @@ test("the piece moves by the dice total; a plain tile ends the turn and waits fo
 test("the move plan shows the total distance and the stop tile before and while the piece walks", () => {
   let game = setGifts(setPositions(started(), { [T1]: 2, [T2]: 14 }), []);
   game = rollDice(answer(game, "right"), zero, [4, 5]);
-  const boost = catchUpSteps(game, T1);
-  assert.deepEqual(diceMove(game), { teamId: T1, from: 2, to: 11 + boost, total: 9 + boost });
+  assert.deepEqual(diceMove(game), { teamId: T1, from: 2, to: 11, total: 9 }, "far behind, still just the dice");
   game = settleRoll(game, zero);
-  assert.deepEqual(diceMove(game), { teamId: T1, from: 2, to: 11 + boost, total: 9 + boost });
+  assert.deepEqual(diceMove(game), { teamId: T1, from: 2, to: 11, total: 9 });
   assert.equal(diceMove(settle(game)), null, "nothing to show once the turn is over");
 
   let near = setGifts(setPositions(started(), { [T1]: FINISH_POSITION - 3 }), []);
@@ -367,61 +335,70 @@ test("a forward card onto another box does not chain: no new card, no new questi
   assert.equal(game.usedQuestionIds.length, used);
 });
 
-/* ------------------------- Cơ chế cân bằng ------------------------- */
+/* --------------------------- Cân bằng ngầm --------------------------- */
 
-test("Tiếp sức: far behind the leader, every roll moves extra tiles", () => {
-  const [far, near] = CATCH_UP;
-  const leader = far.gap + 2;
-  let game = setGifts(setPositions(started(), { [T1]: 2, [T2]: leader - near.gap, [T3]: leader }), []);
-  assert.equal(catchUpSteps(game, T3), 0);
-  assert.equal(catchUpSteps(game, T2), near.steps);
-  assert.equal(catchUpSteps(game, T1), far.steps);
-
-  game = answer(game, "wrong");
-  if (game.phase.kind === "waiting-roll") assert.equal(game.phase.plan.boost, far.steps);
-  game = rollFaces(game, [3]);
-  assert.equal(teamOf(game, T1).position, 2 + 3 + far.steps);
-  if (game.phase.kind === "turn-complete") assert.equal(game.phase.outcome.boost, far.steps);
-});
-
-test("Bùa may mắn: after a run of wrong answers the next turn gets one more die", () => {
-  let game = setGifts(started(2), []);
-  for (let round = 0; round < LUCKY_STREAK; round++) {
+test("no visible bonuses: far behind after many wrong answers, a team still rolls and moves by the dice only", () => {
+  let game = setGifts(setPositions(started(2), { [T2]: 20 }), []);
+  for (let round = 0; round < 3; round++) {
     game = continueToNextTeam(rollFaces(answer(game, "wrong"), [1]));
-    game = continueToNextTeam(rollFaces(answer(game, "right"), [1, 1]));
+    game = continueToNextTeam(rollFaces(answer(game, "wrong"), [1]));
   }
   assert.equal(currentTeam(game).id, T1);
-  assert.ok(hasLuckyCharm(teamOf(game, T1)));
-  game = answer(game, "right");
-  assert.equal(game.phase.kind, "waiting-roll");
-  if (game.phase.kind === "waiting-roll") {
-    assert.equal(game.phase.plan.lucky, true);
-    assert.equal(game.phase.plan.dice, DICE_WHEN_CORRECT + 1);
-  }
-  assert.equal(teamOf(game, T1).wrongStreak, 0, "the charm is used up");
+  game = answer(game, "wrong");
+  if (game.phase.kind === "waiting-roll") assert.equal(game.phase.plan.dice, DICE_WHEN_WRONG);
+  const before = teamOf(game, T1).position;
+  game = rollFaces(game, [3]);
+  assert.equal(teamOf(game, T1).position, before + 3);
 });
 
-test("Bảo hộ: attack cards cannot push back the last team; nobody is protected when all stand together", () => {
+test("attack cards can target any other team, the last one included", () => {
   const game = setPositions(started(), { [T1]: 8, [T2]: 6, [T3]: 3, [T4]: 6, [T5]: 6 });
-  assert.deepEqual(protectedTeams(game), [T3]);
   const attack = applyCard(flipped(game, 0, "pushback"));
   assert.equal(attack.phase.kind, "target-selection");
-  if (attack.phase.kind === "target-selection") assert.deepEqual(attack.phase.candidates, [T2, T4, T5]);
-  assert.deepEqual(protectedTeams(createGame(3, seeded(1))), []);
+  if (attack.phase.kind === "target-selection") assert.deepEqual(attack.phase.candidates, [T2, T3, T4, T5]);
 });
 
-test("a team far behind never draws a penalty card from a gift box", () => {
-  const behind = setPositions(started(), { [T2]: 15 });
-  const boost = catchUpSteps(behind, T1);
-  assert.ok(boost > 0, "Đội 1 is far behind");
-  for (let seed = 0; seed < 300; seed++) {
-    let game = setGifts(behind, [2 + boost]);
-    game = rollFaces(answer(game, "wrong"), [2], seeded(seed));
+test("hidden balance: a team leads or trails only when BALANCE_GAP tiles apart", () => {
+  const game = setPositions(started(), { [T1]: BALANCE_GAP + 6, [T2]: 6, [T3]: 4, [T4]: 6, [T5]: 1 });
+  assert.equal(standingOf(game, T1), "leading");
+  assert.equal(standingOf(game, T5), "trailing");
+  assert.equal(standingOf(game, T2), "even");
+  assert.equal(standingOf(game, T3), "even", "far behind but not last");
+  const close = setPositions(started(), { [T1]: BALANCE_GAP - 1 });
+  assert.equal(standingOf(close, T1), "even");
+  assert.equal(standingOf(close, T2), "even");
+});
+
+test("hidden balance: each row of CARD_ODDS adds up to 100 and the even row is the plain deck", () => {
+  for (const odds of Object.values(CARD_ODDS)) assert.equal(odds.forward + odds.attack + odds.penalty, 100);
+  const plain: Record<CardCategory, number> = { forward: 0, attack: 0, penalty: 0 };
+  for (const card of CARDS) plain[card.category] += card.weight;
+  assert.deepEqual(CARD_ODDS.even, plain);
+});
+
+/** Tỉ lệ từng nhóm thẻ khi Đội 1 đi từ ô 7 tới hộp quà ở ô 10, các đội khác đứng ở `others`. */
+function giftShares(others: Record<string, number>): Record<CardCategory, number> {
+  const counts: Record<CardCategory, number> = { forward: 0, attack: 0, penalty: 0 };
+  let total = 0;
+  for (let seed = 0; seed < 800; seed++) {
+    let game = setGifts(setPositions(started(), { [T1]: 7, ...others }), [10]);
+    game = rollFaces(answer(game, "wrong"), [3], seeded(seed));
     assert.equal(game.phase.kind, "card-selection");
-    if (game.phase.kind === "card-selection") {
-      assert.ok(game.phase.cards.every((id) => cardById(id).category !== "penalty"));
-    }
+    if (game.phase.kind !== "card-selection") continue;
+    for (const id of game.phase.cards) counts[cardById(id).category]++;
+    total += game.phase.cards.length;
   }
+  return { forward: counts.forward / total, attack: counts.attack / total, penalty: counts.penalty / total };
+}
+
+test("hidden balance: far ahead meets more self-penalty cards, last and far behind meets none", () => {
+  const even = giftShares({ [T2]: 12, [T3]: 9, [T4]: 8, [T5]: 6 });
+  const leading = giftShares({ [T2]: 10 - BALANCE_GAP, [T3]: 2, [T4]: 0, [T5]: 1 });
+  const trailing = giftShares({ [T2]: 10 + BALANCE_GAP, [T3]: 13, [T4]: 12, [T5]: 11 });
+  assert.equal(trailing.penalty, 0, "the last team far behind never draws a self-penalty card");
+  assert.ok(trailing.forward > even.forward + 0.1, `forward ${trailing.forward} vs ${even.forward}`);
+  assert.ok(leading.penalty > even.penalty + 0.1, `penalty ${leading.penalty} vs ${even.penalty}`);
+  assert.ok(leading.forward < even.forward - 0.1, `forward ${leading.forward} vs ${even.forward}`);
 });
 
 /* ------------------------- Lượt và câu hỏi ------------------------- */
@@ -458,8 +435,6 @@ test("300 random games: each ends, no question repeats, the saved state stays va
     const rng = seeded(1000 + n);
     const count = MIN_TEAMS + (n % (MAX_TEAMS - MIN_TEAMS + 1));
     let game = startGame(createGame(count, rng));
-    while (game.phase.kind === "order-roll") game = rollForOrder(markDiceThrown(game), rng);
-    game = beginFirstTurn(game);
     const seen = new Set<string>();
     for (let turn = 0; turn < 1000 && game.phase.kind !== "game-over"; turn++) {
       assert.equal(game.phase.kind, "question", "every turn starts with a question");
@@ -673,4 +648,8 @@ test("saved games from an older version are rejected", () => {
   assert.equal(isGameState(withoutDeck), false);
   assert.equal(isGameState({ ...game, id: undefined }), false);
   assert.equal(isGameState({ ...game, teams: game.teams.slice(0, 1) }), false);
+  const duringOrderRoll = { ...game, phase: { kind: "order-roll", rolls: {}, queue: [], last: null } };
+  assert.equal(isGameState(duringOrderRoll), false, "the removed order roll cannot be resumed");
+  const olderTeams = { ...game, teams: game.teams.map((t) => ({ ...t, wrongStreak: 2 })) };
+  assert.ok(isGameState(JSON.parse(JSON.stringify(olderTeams))), "a game saved mid-turn by the older build still loads");
 });

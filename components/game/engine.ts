@@ -2,16 +2,13 @@
  * Luật chơi "Đường đua đại đoàn kết" — race board game kiểu Cờ Tỷ Phú.
  *
  * Mọi hàm ở đây là hàm thuần: nhận trạng thái ván chơi, trả về trạng thái
- * mới, không đụng tới giao diện. MC chọn 2–5 đội; thứ tự đi do xúc xắc quyết
- * định ngay đầu ván.
+ * mới, không đụng tới giao diện. MC chọn 2–5 đội; các đội đi lần lượt theo
+ * số thứ tự, Đội 1 đi trước.
  *
  * MC điều khiển nhịp chơi — phần mềm không bao giờ tự chuyển đội:
- *   not-started (chọn số đội) ──[MC: BẮT ĐẦU]──▶ order-roll
- *   order-roll: từng đội đổ 1 xúc xắc, cao đi trước; bằng điểm thì các đội
- *     đó đổ lại tới khi phân xong ──▶ order-ready ──[MC]──▶ question (đội đầu)
+ *   not-started (chọn số đội) ──[MC: BẮT ĐẦU]──▶ question (Đội 1)
  *   question → chọn A/B/C/D trong ANSWER_SECONDS giây (giao diện đếm giờ)
  *     ĐÚNG → waiting-roll (2 xúc xắc)   SAI / HẾT GIỜ → waiting-roll (1 xúc xắc)
- *     (+1 xúc xắc 🍀 nếu đã sai liên tiếp; +ô 🤝 nếu đang bị bỏ xa)
  *     ──[🎲]──▶ rolling → moving (từng ô)
  *     → ô có 🎁: mở hộp (hộp mới hiện ở ô khác) → card-selection →
  *       card-result → (target-selection) → moving
@@ -19,7 +16,10 @@
  *   turn-complete ──[MC: TIẾP TỤC → ĐỘI n]──▶ question của đội kế tiếp
  *   Đội nào chạm FINISH (xúc xắc, thẻ hay đổi vị trí) thì game-over ngay.
  *
- * `beginFirstTurn` và `continueToNextTeam` là hai nơi DUY NHẤT rút câu hỏi
+ * Cân bằng ngầm (màn hình không hiện): tỉ lệ các nhóm thẻ trong hộp quà đổi
+ * theo thế của đội mở hộp (xem CARD_ODDS trong content/game-balance.ts).
+ *
+ * `startGame` và `continueToNextTeam` là hai nơi DUY NHẤT rút câu hỏi
  * mới / đổi đội; cả hai chỉ được gọi từ nút bấm của MC.
  *
  * Vị trí không bao giờ "teleport" trước mắt người xem: mọi thay đổi vị trí
@@ -28,14 +28,15 @@
  */
 
 import {
-  CATCH_UP,
+  BALANCE_GAP,
+  CARD_ODDS,
   DICE_WHEN_CORRECT,
   DICE_WHEN_WRONG,
   GIFT_BOX_COUNT,
-  LUCKY_STREAK,
+  type Standing,
 } from "../../content/game-balance.ts";
 import { DEFAULT_GIFT_TILES, FINISH_POSITION, GIFT_ZONE } from "../../content/game-board.ts";
-import { cardById, CARDS, drawThreeCards, type CardId } from "../../content/game-cards.ts";
+import { cardById, drawThreeCards, type CardId } from "../../content/game-cards.ts";
 import {
   QUESTION_POOL,
   questionById,
@@ -51,8 +52,6 @@ export type Team = {
   position: number;
   previousPosition: number;
   correctAnswers: number;
-  /** Số lượt trả lời sai liên tiếp gần nhất (đủ LUCKY_STREAK thì có 🍀). */
-  wrongStreak: number;
   /** Thứ tự (toàn cục) lần gần nhất đội đổi vị trí — đội tới trước xếp trên. */
   reachedPositionAt: number;
 };
@@ -62,19 +61,13 @@ export type BoardMove = { teamId: TeamId; from: number; to: number };
 
 /** Lượt đổ đã được tính trước khi bấm 🎲, để khán giả thấy ngay. */
 export type RollPlan = {
-  /** Số viên xúc xắc: 2 nếu đúng, 1 nếu sai, cộng 1 nếu có 🍀. */
+  /** Số viên xúc xắc: 2 nếu đúng, 1 nếu sai. */
   dice: number;
-  /** Có viên xúc xắc thêm nhờ 🍀 Bùa may mắn. */
-  lucky: boolean;
-  /** Số ô tiến thêm nhờ 🤝 Tiếp sức. */
-  boost: number;
 };
 
 /** Lần đổ gần nhất của lượt đang chơi. */
 export type LastRoll = {
   values: number[];
-  boost: number;
-  lucky: boolean;
   correct: boolean;
   /** Hết giờ mà chưa chọn đáp án (ván lưu từ bản cũ không có trường này). */
   timedOut?: boolean;
@@ -85,8 +78,6 @@ export type TurnOutcome = {
   correct: boolean;
   timedOut: boolean;
   dice: number[];
-  boost: number;
-  lucky: boolean;
   /** Đáp đúng ô có hộp quà và đã mở hộp. */
   gift: boolean;
   cardId?: CardId;
@@ -95,24 +86,6 @@ export type TurnOutcome = {
 
 export type Phase =
   | { kind: "not-started" }
-  /**
-   * Đổ xúc xắc phân thứ tự: `queue[0]` là đội đổ kế tiếp; `rolls` là các lần
-   * đổ (gồm đổ lại khi bằng điểm). `thrown`: đội đó đã bấm lắc, xúc xắc đang lăn.
-   */
-  | {
-      kind: "order-roll";
-      rolls: Record<TeamId, number[]>;
-      queue: TeamId[];
-      last: TeamId | null;
-      thrown?: boolean;
-    }
-  /** Đã phân xong thứ tự, chờ MC bấm bắt đầu lượt đầu tiên. */
-  | {
-      kind: "order-ready";
-      rolls: Record<TeamId, number[]>;
-      order: TeamId[];
-      last: TeamId | null;
-    }
   | { kind: "question"; questionId: string }
   /**
    * Đã trả lời câu `questionId` (`picked` null: hết giờ); chờ bấm 🎲 với số
@@ -127,7 +100,7 @@ export type Phase =
       thrown?: boolean;
     }
   /** `physical`: số chấm đến từ xúc xắc 3D đã lăn xong trên màn hình (không cần lăn 2D nữa). */
-  | { kind: "rolling"; values: number[]; boost: number; physical: boolean }
+  | { kind: "rolling"; values: number[]; physical: boolean }
   | {
       kind: "moving";
       moves: BoardMove[];
@@ -157,7 +130,7 @@ export type Phase =
 export type GameState = {
   /** Mã ván — để lịch sử các ván không ghi trùng một ván hai lần. */
   id: string;
-  /** Các đội trong ván, xếp theo thứ tự đi (sau khi đổ phân thứ tự). */
+  /** Các đội trong ván, xếp theo thứ tự đi: Đội 1, Đội 2, … */
   teams: Team[];
   currentTeamIndex: number;
   phase: Phase;
@@ -198,7 +171,6 @@ export function createGame(
       position: 0,
       previousPosition: 0,
       correctAnswers: 0,
-      wrongStreak: 0,
       reachedPositionAt: 0,
     })),
     currentTeamIndex: 0,
@@ -307,136 +279,32 @@ export function ranking(state: GameState): TeamId[] {
 }
 
 /* -------------------------------------------------------------------- */
-/* Cân bằng                                                               */
+/* Cân bằng ngầm                                                          */
 /* -------------------------------------------------------------------- */
 
-/** Khoảng cách (số ô) từ đội `teamId` tới đội dẫn đầu (0 nếu đang dẫn đầu). */
-export function gapToLeader(state: GameState, teamId: TeamId): number {
-  const top = Math.max(...state.teams.map((t) => t.position));
-  return top - teamOf(state, teamId).position;
-}
-
-/** 🤝 Tiếp sức: số ô được tiến thêm sau khi đổ, theo khoảng cách tới đội dẫn đầu. */
-export function catchUpSteps(state: GameState, teamId: TeamId): number {
-  const gap = gapToLeader(state, teamId);
-  return CATCH_UP.find((level) => gap >= level.gap)?.steps ?? 0;
-}
-
-/** 🍀 Bùa may mắn: đội đã sai đủ LUCKY_STREAK lượt liên tiếp, lượt tới được thêm một xúc xắc. */
-export function hasLuckyCharm(team: Team): boolean {
-  return team.wrongStreak >= LUCKY_STREAK;
-}
-
 /**
- * 🛡️ Bảo hộ: đội (hoặc các đội) đang đứng cuối, khi không phải tất cả cùng
- * một ô — thẻ tấn công không nhắm được vào họ.
+ * Thế của đội `teamId` so với các đội còn lại, dùng cho cân bằng ngầm khi mở
+ * hộp quà (xem CARD_ODDS): bỏ xa mọi đội khác từ BALANCE_GAP ô thì "leading",
+ * đứng cuối và kém đội dẫn đầu từ BALANCE_GAP ô thì "trailing", còn lại "even".
  */
-export function protectedTeams(state: GameState): TeamId[] {
-  const positions = state.teams.map((t) => t.position);
-  const low = Math.min(...positions);
-  if (low === Math.max(...positions)) return [];
-  return state.teams.filter((t) => t.position === low).map((t) => t.id);
-}
-
-/** Đội đang bị bỏ xa (đủ mức Tiếp sức thấp nhất) mở hộp quà thì không gặp thẻ rủi ro. */
-function isTrailing(state: GameState, teamId: TeamId): boolean {
-  const lowest = Math.min(...CATCH_UP.map((level) => level.gap));
-  return gapToLeader(state, teamId) >= lowest;
-}
-
-/* -------------------------------------------------------------------- */
-/* Đổ xúc xắc phân thứ tự                                                 */
-/* -------------------------------------------------------------------- */
-
-function d6(rng: Rng): number {
-  return Math.min(6, Math.floor(rng() * 6) + 1);
-}
-
-function clampFace(value: number): number {
-  return Math.min(6, Math.max(1, Math.round(value)));
-}
-
-/**
- * MC vừa bấm lắc (chọn thứ tự hoặc lắc của lượt): ghi ngay vào ván để tải lại
- * trang giữa lúc xúc xắc 3D đang lăn cũng không lắc lại được — giao diện thấy
- * `thrown` mà không có xúc xắc nào đang lăn thì tự đổ thay.
- */
-export function markDiceThrown(state: GameState): GameState {
-  const phase = state.phase;
-  if ((phase.kind !== "order-roll" && phase.kind !== "waiting-roll") || phase.thrown) return state;
-  return { ...state, phase: { ...phase, thrown: true } };
-}
-
-/** MC bấm "BẮT ĐẦU TRÒ CHƠI": vào vòng đổ xúc xắc phân thứ tự đi. */
-export function startGame(state: GameState): GameState {
-  if (state.phase.kind !== "not-started") return state;
-  return {
-    ...state,
-    phase: {
-      kind: "order-roll",
-      rolls: {},
-      queue: state.teams.map((t) => t.id),
-      last: null,
-    },
-  };
-}
-
-/** So hai dãy điểm đổ: điểm cao hơn ở lần đổ sớm nhất khác nhau thì đi trước. */
-function compareRolls(a: number[], b: number[]): number {
-  for (let i = 0; i < Math.max(a.length, b.length); i++) {
-    const diff = (b[i] ?? 0) - (a[i] ?? 0);
-    if (diff !== 0) return diff;
-  }
-  return 0;
-}
-
-/**
- * Đội ở đầu hàng chờ đổ một xúc xắc (`value`: số chấm xúc xắc 3D vừa lăn ra;
- * bỏ trống thì tự đổ bằng `rng`). Đổ đủ một vòng: nếu còn đội bằng điểm
- * nhau thì chỉ các đội đó đổ lại; không thì chốt thứ tự đi.
- */
-export function rollForOrder(state: GameState, rng: Rng, value?: number): GameState {
-  if (state.phase.kind !== "order-roll") return state;
-  const [teamId, ...queue] = state.phase.queue;
-  if (!teamId) return state;
-  const face = value === undefined ? d6(rng) : clampFace(value);
-  const rolls = {
-    ...state.phase.rolls,
-    [teamId]: [...(state.phase.rolls[teamId] ?? []), face],
-  };
-  if (queue.length > 0)
-    return {
-      ...state,
-      phase: { kind: "order-roll", rolls, queue, last: teamId },
-    };
-
-  const ids = state.teams.map((t) => t.id);
-  const tied = ids.filter((id) =>
-    ids.some((other) => other !== id && compareRolls(rolls[id] ?? [], rolls[other] ?? []) === 0),
-  );
-  if (tied.length > 0)
-    return {
-      ...state,
-      phase: { kind: "order-roll", rolls, queue: tied, last: teamId },
-    };
-  const order = [...ids].sort((a, b) => compareRolls(rolls[a], rolls[b]));
-  return {
-    ...state,
-    phase: { kind: "order-ready", rolls, order, last: teamId },
-  };
-}
-
-/** MC bấm bắt đầu lượt đầu: xếp các đội theo thứ tự vừa đổ, đội đầu nhận câu hỏi. */
-export function beginFirstTurn(state: GameState): GameState {
-  if (state.phase.kind !== "order-ready") return state;
-  const order = state.phase.order;
-  const teams = order.map((id) => teamOf(state, id));
-  return askQuestion({ ...state, teams, currentTeamIndex: 0 });
+export function standingOf(state: GameState, teamId: TeamId): Standing {
+  const mine = teamOf(state, teamId).position;
+  const others = state.teams.filter((t) => t.id !== teamId).map((t) => t.position);
+  const best = Math.max(...others);
+  if (mine - best >= BALANCE_GAP) return "leading";
+  if (mine <= Math.min(...others) && best - mine >= BALANCE_GAP) return "trailing";
+  return "even";
 }
 
 /* -------------------------------------------------------------------- */
 /* Nhịp lượt — chỉ MC mới chuyển đội                                      */
 /* -------------------------------------------------------------------- */
+
+/** MC bấm "BẮT ĐẦU": Đội 1 nhận câu hỏi đầu tiên, các đội đi lần lượt theo số thứ tự. */
+export function startGame(state: GameState): GameState {
+  if (state.phase.kind !== "not-started") return state;
+  return askQuestion({ ...state, currentTeamIndex: 0 });
+}
 
 /**
  * MC bấm "TIẾP TỤC → ĐỘI n": nơi DUY NHẤT (ngoài lượt đầu) chuyển sang đội
@@ -477,8 +345,6 @@ function outcomeOf(state: GameState, extra: Partial<TurnOutcome> = {}): TurnOutc
     correct: roll?.correct ?? false,
     timedOut: roll?.timedOut ?? false,
     dice: roll?.values ?? [],
-    boost: roll?.boost ?? 0,
-    lucky: roll?.lucky ?? false,
     gift: false,
     ...extra,
   };
@@ -692,7 +558,6 @@ export function drawQuestion(state: GameState): { state: GameState; questionId: 
 /**
  * Người chơi bấm A/B/C/D; hệ thống tự chấm. Đúng → được đổ 2 xúc xắc, sai →
  * vẫn được đổ 1 xúc xắc. `picked` null: hết giờ mà chưa chọn, tính như sai.
- * 🍀 và 🤝 được tính ngay lúc này để hiện cho khán giả trước khi đổ.
  */
 export function answerQuestion(state: GameState, picked: OptionId | null): GameState {
   if (state.phase.kind !== "question") return state;
@@ -701,24 +566,11 @@ export function answerQuestion(state: GameState, picked: OptionId | null): GameS
   if (!question) return state;
   const correct = picked === question.correctAnswer;
   const team = currentTeam(state);
-  const lucky = hasLuckyCharm(team);
-  const plan: RollPlan = {
-    dice: (correct ? DICE_WHEN_CORRECT : DICE_WHEN_WRONG) + (lucky ? 1 : 0),
-    lucky,
-    boost: catchUpSteps(state, team.id),
-  };
-  // Dùng 🍀 thì chuỗi sai đếm lại từ đầu.
-  const streak = lucky ? 0 : team.wrongStreak;
+  const plan: RollPlan = { dice: correct ? DICE_WHEN_CORRECT : DICE_WHEN_WRONG };
   return {
     ...state,
     teams: state.teams.map((t) =>
-      t.id === team.id
-        ? {
-            ...t,
-            correctAnswers: t.correctAnswers + (correct ? 1 : 0),
-            wrongStreak: correct ? 0 : streak + 1,
-          }
-        : t,
+      t.id === team.id ? { ...t, correctAnswers: t.correctAnswers + (correct ? 1 : 0) } : t,
     ),
     phase: { kind: "waiting-roll", questionId, picked, correct, plan },
   };
@@ -727,6 +579,25 @@ export function answerQuestion(state: GameState, picked: OptionId | null): GameS
 /* -------------------------------------------------------------------- */
 /* Xúc xắc                                                                */
 /* -------------------------------------------------------------------- */
+
+function d6(rng: Rng): number {
+  return Math.min(6, Math.floor(rng() * 6) + 1);
+}
+
+function clampFace(value: number): number {
+  return Math.min(6, Math.max(1, Math.round(value)));
+}
+
+/**
+ * Đội vừa ném xúc xắc của lượt: ghi ngay vào ván để tải lại trang giữa lúc
+ * xúc xắc 3D đang lăn cũng không lắc lại được — giao diện thấy `thrown` mà
+ * không có xúc xắc nào đang lăn thì tự đổ thay.
+ */
+export function markDiceThrown(state: GameState): GameState {
+  const phase = state.phase;
+  if (phase.kind !== "waiting-roll" || phase.thrown) return state;
+  return { ...state, phase: { ...phase, thrown: true } };
+}
 
 /**
  * Đổ đủ số xúc xắc D6 của lượt — không thể đổ hai lần. `faces`: số chấm các
@@ -739,14 +610,8 @@ export function rollDice(state: GameState, rng: Rng, faces?: number[]): GameStat
   const values = physical ? faces.map(clampFace) : Array.from({ length: plan.dice }, () => d6(rng));
   return {
     ...state,
-    lastRoll: {
-      values,
-      boost: plan.boost,
-      lucky: plan.lucky,
-      correct,
-      timedOut: picked === null,
-    },
-    phase: { kind: "rolling", values, boost: plan.boost, physical },
+    lastRoll: { values, correct, timedOut: picked === null },
+    phase: { kind: "rolling", values, physical },
   };
 }
 
@@ -756,7 +621,7 @@ export type DiceMove = {
   from: number;
   /** Ô sẽ dừng (không vượt quá ĐÍCH). */
   to: number;
-  /** Tổng số chấm cộng ô Tiếp sức; lớn hơn `to - from` khi về đích sớm. */
+  /** Tổng số chấm; lớn hơn `to - from` khi về đích sớm. */
   total: number;
 };
 
@@ -767,7 +632,7 @@ export type DiceMove = {
 export function diceMove(state: GameState): DiceMove | null {
   const roll = state.lastRoll;
   if (!roll) return null;
-  const total = roll.values.reduce((sum, value) => sum + value, 0) + roll.boost;
+  const total = roll.values.reduce((sum, value) => sum + value, 0);
   const phase = state.phase;
   if (phase.kind === "rolling") {
     const team = currentTeam(state);
@@ -785,10 +650,10 @@ export function diceMove(state: GameState): DiceMove | null {
   return null;
 }
 
-/** Xúc xắc dừng lại: quân đi tổng số chấm (+ ô Tiếp sức), đáp ô 🎁 thì mở hộp. */
+/** Xúc xắc dừng lại: quân đi tổng số chấm, đáp ô 🎁 thì mở hộp. */
 export function settleRoll(state: GameState, rng: Rng): GameState {
   if (state.phase.kind !== "rolling") return state;
-  const steps = state.phase.values.reduce((sum, value) => sum + value, 0) + state.phase.boost;
+  const steps = state.phase.values.reduce((sum, value) => sum + value, 0);
   const team = currentTeam(state);
   const moved = moveTeam(state, team.id, steps);
   const landed = teamOf(moved, team.id).position;
@@ -798,13 +663,11 @@ export function settleRoll(state: GameState, rng: Rng): GameState {
 
   const someoneAhead = moved.teams.some((t) => t.id !== team.id && t.position > landed);
   const excluded: CardId[] = someoneAhead ? [] : ["pullback"];
-  // 🛡️ Đội đang bị bỏ xa: hộp quà không có thẻ rủi ro (tự lùi).
-  if (isTrailing(moved, team.id))
-    excluded.push(...CARDS.filter((c) => c.category === "penalty").map((c) => c.id));
   const giftsOnArrival = respawnGift(moved, landed, rng);
   const next = setPhase(moved, {
     kind: "card-selection",
-    cards: drawThreeCards(rng, excluded),
+    // Cân bằng ngầm: tỉ lệ các nhóm thẻ theo thế của đội vừa mở hộp.
+    cards: drawThreeCards(rng, excluded, CARD_ODDS[standingOf(moved, team.id)]),
   });
   // Hộp quà chỉ mở khi quân cờ đã đến ô đó (xem settleMove).
   return next.phase.kind === "moving"
@@ -863,8 +726,7 @@ export function applyCard(state: GameState): GameState {
 /**
  * Các đội có thể bị nhắm bởi thẻ tấn công (không bao giờ có chính mình).
  * "Đổi chỗ với đội dẫn đầu": các đội đứng cao nhất trong số đội còn lại —
- * nếu chính mình đang dẫn đầu thì đó là đội đứng thứ hai. Thẻ đẩy lùi
- * không nhắm được đội đang được 🛡️ Bảo hộ (đứng cuối).
+ * nếu chính mình đang dẫn đầu thì đó là đội đứng thứ hai.
  */
 function targetsFor(state: GameState, cardId: CardId): TeamId[] {
   const card = cardById(cardId);
@@ -874,11 +736,7 @@ function targetsFor(state: GameState, cardId: CardId): TeamId[] {
     const top = Math.max(...others.map((t) => t.position));
     return others.filter((t) => t.position === top).map((t) => t.id);
   }
-  const shielded = card.cells < 0 ? protectedTeams(state) : [];
-  return others
-    .filter((t) => !card.targetAheadOnly || t.position > me.position)
-    .filter((t) => !shielded.includes(t.id))
-    .map((t) => t.id);
+  return others.filter((t) => !card.targetAheadOnly || t.position > me.position).map((t) => t.id);
 }
 
 /** Chọn đội bị tấn công / để đổi vị trí (chỉ một đội, không có phòng thủ). */
@@ -896,6 +754,23 @@ export function chooseTarget(state: GameState, targetId: TeamId): GameState {
 /* Kiểm tra dữ liệu đọc lại từ localStorage                               */
 /* -------------------------------------------------------------------- */
 
+/**
+ * Đủ các pha của bản hiện tại. Ván lưu ở pha đã bỏ (ví dụ vòng lắc chọn thứ
+ * tự của bản cũ) bị bỏ qua để trang tạo ván mới, không kẹt ở màn trống.
+ */
+const PHASE_KINDS: Record<Phase["kind"], true> = {
+  "not-started": true,
+  question: true,
+  "waiting-roll": true,
+  rolling: true,
+  moving: true,
+  "card-selection": true,
+  "card-result": true,
+  "target-selection": true,
+  "turn-complete": true,
+  "game-over": true,
+};
+
 export function isGameState(value: unknown): value is GameState {
   if (!isRecord(value)) return false;
   const phase = value.phase;
@@ -910,6 +785,7 @@ export function isGameState(value: unknown): value is GameState {
     typeof value.currentTeamIndex === "number" &&
     isRecord(phase) &&
     typeof phase.kind === "string" &&
+    Object.hasOwn(PHASE_KINDS, phase.kind) &&
     Array.isArray(value.usedQuestionIds) &&
     Array.isArray(value.gifts) &&
     typeof value.moveSeq === "number" &&
@@ -927,7 +803,6 @@ function isTeam(value: unknown): value is Team {
     typeof value.id === "string" &&
     typeof value.position === "number" &&
     typeof value.correctAnswers === "number" &&
-    typeof value.wrongStreak === "number" &&
     typeof value.reachedPositionAt === "number"
   );
 }

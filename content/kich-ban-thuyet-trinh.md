@@ -112,11 +112,11 @@ Em xin trình bày phần hai: quan điểm của chủ nghĩa Mác – Lênin v
 
 > **Trên slide:** Tiêu đề phụ: Trong sự phát triển quan hệ dân tộc. Cột trái: TÁCH RA (Xu hướng thứ nhất). Sơ đồ: Cộng đồng dân cư, mũi tên, Dân tộc độc lập. Cột phải: LIÊN HIỆP (Xu hướng thứ hai). Sơ đồ: Dân tộc A + Dân tộc B + Dân tộc C. Giữa hai cột: mũi tên hai chiều.
 >
-> **Ảnh:** Bên trái: Nhân dân ở Ba Đình nghe Tuyên ngôn Độc lập, 2/9/1945; Bên phải: Lễ thượng cờ ASEAN tại Bộ Ngoại giao, 2025.
+> **Ảnh:** Bên trái: Lễ chào cờ 80 năm Quốc khánh ở Ba Đình, 2/9/2025; Bên phải: Lễ thượng cờ ASEAN tại Bộ Ngoại giao, 2025.
 
 Khi nghiên cứu vấn đề dân tộc trong điều kiện chủ nghĩa tư bản, Lênin đã chỉ ra hai xu hướng khách quan trong sự phát triển quan hệ dân tộc.
 
-Xu hướng thứ nhất là tách ra: cộng đồng dân cư muốn hình thành cộng đồng dân tộc độc lập. Nguyên nhân là sự thức tỉnh, trưởng thành của ý thức dân tộc, ý thức về quyền sống của mình. Xu hướng này thể hiện rõ trong phong trào đấu tranh giành độc lập của các dân tộc thuộc địa và phụ thuộc. Bức ảnh bên trái là nhân dân ở Ba Đình nghe Tuyên ngôn Độc lập ngày 2 tháng 9 năm 1945, khi dân tộc Việt Nam thoát khỏi ách thực dân và lập nên nhà nước độc lập.
+Xu hướng thứ nhất là tách ra: cộng đồng dân cư muốn hình thành cộng đồng dân tộc độc lập. Nguyên nhân là sự thức tỉnh, trưởng thành của ý thức dân tộc, ý thức về quyền sống của mình. Xu hướng này thể hiện rõ trong phong trào đấu tranh giành độc lập của các dân tộc thuộc địa và phụ thuộc. Bức ảnh bên trái là lễ chào cờ kỷ niệm 80 năm Quốc khánh trên Quảng trường Ba Đình năm 2025. Cũng tại nơi này, ngày 2 tháng 9 năm 1945, Chủ tịch Hồ Chí Minh đọc Tuyên ngôn Độc lập, khi dân tộc Việt Nam thoát khỏi ách thực dân và lập nên nhà nước độc lập.
 
 Xu hướng thứ hai là liên hiệp: các dân tộc có nhu cầu liên hệ và liên hiệp với nhau. Xu hướng này nổi lên khi chủ nghĩa tư bản phát triển thành chủ nghĩa đế quốc: sự phát triển của lực lượng sản xuất, khoa học công nghệ và giao lưu kinh tế, văn hóa làm xuất hiện nhu cầu xóa bỏ hàng rào ngăn cách giữa các dân tộc. Ảnh bên phải là lễ thượng cờ ASEAN tại Bộ Ngoại giao năm 2025, ví dụ về sự liên kết giữa các quốc gia trong khu vực.
 
@@ -142,7 +142,7 @@ Bình đẳng nghĩa là các dân tộc có quyền lợi và nghĩa vụ ngang
 
 > **Trên slide:** Dòng dẫn: Nội dung thứ hai của Cương lĩnh dân tộc. Tiêu đề: 02 QUYỀN TỰ QUYẾT. Các dân tộc được quyền tự quyết. Hai nhánh: TÁCH RA ĐỘC LẬP và TỰ NGUYỆN LIÊN HIỆP. Khung cuối: Tự quyết không chỉ có tách ra. Mà là: tự quyết định vận mệnh và tự lựa chọn con đường phát triển.
 >
-> **Ảnh:** Bên phải: Cử tri bỏ phiếu trong Tổng tuyển cử 6/1/1946.
+> **Ảnh:** Bên phải: Cử tri người Mường bầu Quốc hội khóa XVI, 15/3/2026.
 
 Nội dung thứ hai: các dân tộc được quyền tự quyết. Quyền tự quyết là quyền làm chủ của mỗi dân tộc đối với vận mệnh dân tộc mình, quyền tự quyết định chế độ chính trị – xã hội và con đường phát triển của dân tộc mình.
 
@@ -150,7 +150,7 @@ Quyền này có hai nhánh như sơ đồ. Một là quyền tách ra để th�
 
 Điều cần nhớ là tự quyết không chỉ có tách ra. Việc thực hiện quyền tự quyết phải xuất phát từ thực tiễn cụ thể và đứng vững trên lập trường của giai cấp công nhân. Quyền dân tộc tự quyết cũng không đồng nhất với “quyền” của các tộc người thiểu số trong một quốc gia đa tộc người, nhất là việc đòi tách ra thành quốc gia riêng; chúng ta cần cảnh giác khi các thế lực thù địch lợi dụng chiêu bài dân tộc tự quyết để can thiệp vào công việc nội bộ của các nước.
 
-Ảnh bên phải là cử tri bỏ phiếu trong cuộc Tổng tuyển cử ngày 6 tháng 1 năm 1946, lần đầu tiên nhân dân ta tự bầu ra Quốc hội của mình, một biểu hiện rõ của quyền tự quyết.
+Ảnh bên phải là cử tri người Mường ở Ninh Bình bỏ phiếu bầu đại biểu Quốc hội khóa XVI ngày 15 tháng 3 năm 2026. Từ cuộc Tổng tuyển cử đầu tiên năm 1946 đến nay, nhân dân các dân tộc tự bầu ra Quốc hội của mình, một biểu hiện rõ của quyền tự quyết.
 
 ### Màn 11. Cương lĩnh dân tộc: liên hiệp công nhân
 

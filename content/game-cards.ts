@@ -147,17 +147,23 @@ export const MAX_SWAP_CARDS_IN_SELECTION = 1;
  * tiến 40%, tự lùi 20%), tối đa một thẻ đổi vị trí. `excluded`: thẻ không
  * dùng được lúc này (ví dụ "Kéo Lại" khi không có đội nào đứng trước) —
  * được thay bằng thẻ khác ngay khi rút, để lật ra thẻ nào cũng áp dụng được.
+ * `odds`: tỉ lệ phần trăm của từng nhóm thẻ (cân bằng ngầm, xem CARD_ODDS
+ * trong game-balance.ts); bỏ trống thì rút theo trọng số gốc.
  *
  * Ba thẻ được đảo vị trí ngẫu nhiên sau khi rút: rút theo trọng số làm thẻ
  * phổ biến hay ra trước, nếu giữ nguyên thứ tự thì người chơi đoán được nên
  * chọn ô nào.
  */
-export function drawThreeCards(rng: () => number, excluded: CardId[] = []): CardId[] {
+export function drawThreeCards(
+  rng: () => number,
+  excluded: CardId[] = [],
+  odds?: Record<CardCategory, number>,
+): CardId[] {
   const drawn: CardId[] = [];
   let guard = 0;
   while (drawn.length < 3 && guard < 500) {
     guard++;
-    const card = drawOneCard(rng);
+    const card = drawOneCard(rng, odds);
     if (drawn.includes(card.id) || excluded.includes(card.id)) continue;
     const swaps = drawn.filter((id) => cardById(id).swap).length;
     if (card.swap && swaps >= MAX_SWAP_CARDS_IN_SELECTION) continue;
@@ -170,12 +176,21 @@ export function drawThreeCards(rng: () => number, excluded: CardId[] = []): Card
   return drawn;
 }
 
-function drawOneCard(rng: () => number): CardDef {
-  const total = CARDS.reduce((sum, card) => sum + card.weight, 0);
+function drawOneCard(rng: () => number, odds?: Record<CardCategory, number>): CardDef {
+  // Có `odds`: mỗi nhóm chiếm đúng tỉ lệ đã cho, thẻ trong nhóm chia theo trọng số.
+  const weightOf = (card: CardDef) =>
+    odds ? (card.weight / categoryWeight(card.category)) * odds[card.category] : card.weight;
+  const total = CARDS.reduce((sum, card) => sum + weightOf(card), 0);
   let roll = rng() * total;
   for (const card of CARDS) {
-    if (roll < card.weight) return card;
-    roll -= card.weight;
+    const weight = weightOf(card);
+    if (roll < weight) return card;
+    roll -= weight;
   }
   return CARDS[CARDS.length - 1];
+}
+
+/** Tổng trọng số của các thẻ trong nhóm `category`. */
+function categoryWeight(category: CardCategory): number {
+  return CARDS.filter((card) => card.category === category).reduce((sum, card) => sum + card.weight, 0);
 }

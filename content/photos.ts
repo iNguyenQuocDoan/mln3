@@ -1,8 +1,8 @@
 import type { StaticImageData } from "next/image";
-import independence from "./photos/doc-lap-ba-dinh-1945.jpg";
+import independence from "./photos/chao-co-ba-dinh-2025.jpg";
 import aseanFlag from "./photos/thuong-co-asean.jpg";
 import delegates from "./photos/dai-bieu-cac-dan-toc.jpg";
-import election1946 from "./photos/tong-tuyen-cu-1946.jpg";
+import election from "./photos/cu-tri-bau-cu-2026.jpg";
 import mayDay from "./photos/quoc-te-lao-dong.jpg";
 import security from "./photos/an-ninh-quoc-phong.jpg";
 import highlandVillage from "./photos/ban-lang-vung-cao.jpg";
@@ -30,7 +30,7 @@ import society from "./photos/xa-hoi-dan-toc.jpg";
  * - tayNung: slide mở đầu Phần 1 (khái niệm và đặc trưng của dân tộc)
  * - highland: 02 Dân tộc – tộc người, cạnh ba đặc trưng
  * - independence, aseanFlag: 03 Hai xu hướng (tách ra, liên hiệp)
- * - delegates, election1946, mayDay: 04 Cương lĩnh dân tộc (bình đẳng,
+ * - delegates, election, mayDay: 04 Cương lĩnh dân tộc (bình đẳng,
  *   quyền tự quyết, liên hiệp công nhân)
  * - ethnicMap: 05 Dân cư & địa bàn (bản đồ dân tộc trong Atlat, giữ
  *   nguyên cả trang, không cắt)
@@ -197,12 +197,12 @@ export const PHOTOS = {
   },
   independence: {
     image: independence,
-    alt: "Ảnh tư liệu: biển người tập trung ở vườn hoa Ba Đình ngày 2/9/1945, lá cờ đỏ sao vàng tung bay",
+    alt: "Lễ chào cờ kỷ niệm 80 năm Quốc khánh ở Quảng trường Ba Đình: khán đài xếp thành lá cờ đỏ sao vàng, các khối diễu binh đứng nghiêm",
     focus: "50% 45%",
-    caption: "Nhân dân ở Ba Đình nghe Tuyên ngôn Độc lập, 2/9/1945",
+    caption: "Lễ chào cờ 80 năm Quốc khánh ở Ba Đình, 2/9/2025",
     source: {
-      site: "TTXVN – VietnamPlus",
-      url: "https://www.vietnamplus.vn/photo-quang-truong-ba-dinh-trong-thoi-khac-lich-su-70-nam-truoc-post340716.vnp",
+      site: "baochinhphu.vn",
+      url: "https://baochinhphu.vn/truc-tiep-ky-niem-trong-the-80-nam-quoc-khanh-nuoc-cong-hoa-xhcn-viet-nam-102250902000653367.htm",
     },
   },
   aseanFlag: {
@@ -226,14 +226,15 @@ export const PHOTOS = {
       url: "https://nhandan.vn/anh-sac-mau-dai-doan-ket-tai-dai-hoi-dai-bieu-toan-quoc-mat-tran-to-quoc-viet-nam-lan-thu-xi-post961609.html",
     },
   },
-  election1946: {
-    image: election1946,
-    alt: "Ảnh tư liệu: cử tri bỏ phiếu bầu Quốc hội khóa I trong Tổng tuyển cử ngày 6/1/1946",
-    focus: "50% 50%",
-    caption: "Cử tri bỏ phiếu trong Tổng tuyển cử 6/1/1946",
+  election: {
+    image: election,
+    alt: "Hai phụ nữ Mường mặc trang phục truyền thống bỏ phiếu bầu đại biểu Quốc hội khóa XVI ngày 15/3/2026 ở Ninh Bình",
+    // Lệch sang phải để khung ảnh cắt bỏ logo báo ở góc dưới bên trái.
+    focus: "56% 50%",
+    caption: "Cử tri người Mường bầu Quốc hội khóa XVI",
     source: {
-      site: "TTXVN – VietnamPlus",
-      url: "https://www.vietnamplus.vn/nhung-hinh-anh-ngay-tong-tuyen-cu-dau-tien-cach-day-73-nam-post545639.vnp",
+      site: "vnexpress.net",
+      url: "https://vnexpress.net/cu-tri-ca-nuoc-bo-phieu-bau-nguoi-dai-dien-5050485.html",
     },
   },
   mayDay: {

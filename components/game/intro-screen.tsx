@@ -2,15 +2,8 @@
 
 import type { ReactNode } from "react";
 import { BrocadeBand } from "@/components/art/brocade-band";
-import {
-  ANSWER_SECONDS,
-  CATCH_UP,
-  DICE_WHEN_CORRECT,
-  DICE_WHEN_WRONG,
-  LUCKY_STREAK,
-} from "@/content/game-balance";
+import { ANSWER_SECONDS, DICE_WHEN_CORRECT, DICE_WHEN_WRONG } from "@/content/game-balance";
 import { MAX_TEAMS, MIN_TEAMS, TEAM_DEFS } from "@/content/game-teams";
-import { BALANCE_COLORS } from "./leaderboard";
 import { TeamAvatar } from "./team-piece";
 
 /**
@@ -19,7 +12,6 @@ import { TeamAvatar } from "./team-piece";
  * để mở bàn cờ; ván vẫn chờ MC chọn số đội và bấm "Bắt đầu".
  */
 export function IntroScreen({ onEnter }: { onEnter: () => void }) {
-  const lowestGap = Math.min(...CATCH_UP.map((level) => level.gap));
   return (
     <div className="panel-in absolute inset-0 bg-dem text-on-cham">
       <div className="grid h-[984px] grid-cols-[1fr_880px] gap-20 px-28 pt-22">
@@ -57,7 +49,7 @@ export function IntroScreen({ onEnter }: { onEnter: () => void }) {
           <section>
             <h2 className="text-[40px] font-extrabold">Cách chơi</h2>
             <ol className="mt-5 flex flex-col gap-4 text-[30px] leading-snug">
-              <Step n={1}>Mỗi đội lắc một xúc xắc. Điểm cao đi trước.</Step>
+              <Step n={1}>Các đội đi lần lượt theo số thứ tự, {TEAM_DEFS[0].name} đi trước.</Step>
               <Step n={2}>Mỗi lượt, đội có {ANSWER_SECONDS} giây để trả lời một câu hỏi.</Step>
               <Step n={3}>
                 Đúng lắc {DICE_WHEN_CORRECT} xúc xắc, sai hoặc hết giờ vẫn được lắc {DICE_WHEN_WRONG}.
@@ -65,21 +57,6 @@ export function IntroScreen({ onEnter }: { onEnter: () => void }) {
               <Step n={4}>Dừng ở ô có hộp quà thì được mở một thẻ bất ngờ.</Step>
               <Step n={5}>Đội về đích đầu tiên thắng.</Step>
             </ol>
-          </section>
-
-          <section className="rounded-[28px] bg-nhua px-8 py-7">
-            <h2 className="text-[34px] font-extrabold">Ai gặp xui cũng có cơ hội</h2>
-            <dl className="mt-4 flex flex-col gap-3 text-[28px] leading-snug">
-              <Rule color={BALANCE_COLORS.boost} name="Tiếp sức">
-                Bị bỏ xa từ {lowestGap} ô thì mỗi lần lắc được tiến thêm, mở hộp quà không gặp thẻ lùi.
-              </Rule>
-              <Rule color={BALANCE_COLORS.lucky} name="Bùa may mắn">
-                Sai {LUCKY_STREAK} lượt liền thì lượt sau được thêm 1 xúc xắc.
-              </Rule>
-              <Rule color={BALANCE_COLORS.shield} name="Bảo hộ">
-                Đội đứng cuối không bị thẻ tấn công nhắm tới.
-              </Rule>
-            </dl>
           </section>
         </div>
       </div>
@@ -96,16 +73,5 @@ function Step({ n, children }: { n: number; children: ReactNode }) {
       </span>
       <span className="pt-1">{children}</span>
     </li>
-  );
-}
-
-function Rule({ color, name, children }: { color: string; name: string; children: ReactNode }) {
-  return (
-    <div>
-      <dt className="font-extrabold" style={{ color }}>
-        {name}
-      </dt>
-      <dd className="text-on-cham-soft">{children}</dd>
-    </div>
   );
 }

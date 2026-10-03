@@ -10,7 +10,6 @@ import { DICE_TRAY_ID, loadDiceBox, rollDice3d, type ThrowAim } from "./dice-3d"
 import {
   answerQuestion,
   applyCard,
-  beginFirstTurn,
   chooseTarget,
   continueToNextTeam,
   createGame,
@@ -19,7 +18,6 @@ import {
   markDiceThrown,
   pickCard,
   rollDice,
-  rollForOrder,
   setTeamCount,
   settleMove,
   settleRoll,
@@ -159,16 +157,10 @@ export function BoardGame() {
 
   // Tải lại trang giữa lúc xúc xắc 3D đang lăn: lượt lắc đã được ghi lại nên
   // tự đổ thay (xúc xắc 2D), không cho lắc lại.
-  const stranded =
-    !busy &&
-    (game.phase.kind === "order-roll" || game.phase.kind === "waiting-roll") &&
-    game.phase.thrown === true;
+  const stranded = !busy && game.phase.kind === "waiting-roll" && game.phase.thrown === true;
   useEffect(() => {
     if (!stranded) return;
-    updateGame(
-      (s) => (s.phase.kind === "order-roll" ? rollForOrder(s, Math.random) : rollDice(s, Math.random)),
-      AUTO,
-    );
+    updateGame((s) => rollDice(s, Math.random), AUTO);
   }, [stranded]);
 
   // Quân cờ đi qua từng ô, dừng lại một lúc ở ô vừa đến rồi mới sang pha kế
@@ -279,7 +271,6 @@ export function BoardGame() {
     onSetTeamCount: (count) => updateGame((s) => setTeamCount(s, count, Math.random), AUTO),
     onStart: () => updateGame(startGame),
     onShowIntro: () => setIntroChoice("intro"),
-    onBeginFirstTurn: () => updateGame(beginFirstTurn),
     onPick: (option) => updateGame((s) => answerQuestion(s, option)),
     onTimeUp: () => updateGame((s) => answerQuestion(s, null)),
     onShowQuestion: () => setThrowingFor(null),
@@ -302,21 +293,6 @@ export function BoardGame() {
     onShowWinner: () => setWinnerDismissed(false),
   };
 
-  /** Đội vừa ném xong một xúc xắc chọn thứ tự (chưa áp dụng vào ván khi đang lăn). */
-  async function throwForOrder(aim: ThrowAim) {
-    const phase = game.phase;
-    if (busy || phase.kind !== "order-roll" || phase.thrown) return;
-    const teamId = phase.queue[0];
-    if (!teamId) return;
-    const def = teamDef(teamId);
-    const landing = throwDice(1, def.color, `${def.name} ném chọn thứ tự`, aim, (faces) =>
-      updateGame((s) => rollForOrder(s, Math.random, faces?.[0]), AUTO),
-    );
-    // Ghi ngay là đã ném (cũng là mốc hoàn tác) trong lúc xúc xắc còn lăn.
-    updateGame(markDiceThrown);
-    await landing;
-  }
-
   /** Đội vừa ném xúc xắc của lượt (sau khi trả lời câu hỏi). */
   async function throwForTurn(aim: ThrowAim) {
     const phase = game.phase;
@@ -325,18 +301,14 @@ export function BoardGame() {
     const landing = throwDice(phase.plan.dice, def.color, `${def.name} vừa ném`, aim, (faces) =>
       updateGame((s) => rollDice(s, Math.random, faces ?? undefined), AUTO),
     );
+    // Ghi ngay là đã ném (cũng là mốc hoàn tác) trong lúc xúc xắc còn lăn.
     updateGame(markDiceThrown);
     await landing;
   }
 
   const phase = game.phase;
   const activeTeamId =
-    phase.kind === "game-over" ||
-    phase.kind === "not-started" ||
-    phase.kind === "order-roll" ||
-    phase.kind === "order-ready"
-      ? null
-      : currentTeam(game).id;
+    phase.kind === "game-over" || phase.kind === "not-started" ? null : currentTeam(game).id;
 
   // Câu hỏi chiếm trọn màn hình tới khi MC đưa đội ra bàn cờ ném xúc xắc.
   const asking =
@@ -345,39 +317,25 @@ export function BoardGame() {
       ? phase
       : null;
 
-  // Khay đang chờ một đội tự tay ném: chọn thứ tự, hoặc lượt sau khi trả lời.
-  let pendingThrow: {
-    kind: "order" | "turn";
-    key: string;
-    count: number;
-    color: string;
-    label: string;
-  } | null = null;
-  if (view === "game" && !busy) {
-    if (phase.kind === "order-roll" && !phase.thrown && phase.queue[0]) {
-      const def = teamDef(phase.queue[0]);
-      pendingThrow = {
-        key: `order-${def.id}-${phase.rolls[def.id]?.length ?? 0}`,
-        count: 1,
-        color: def.color,
-        kind: "order",
-        label: `${def.name} ném chọn thứ tự`,
-      };
-    } else if (phase.kind === "waiting-roll" && !phase.thrown && throwingFor === phase.questionId) {
-      const def = teamDef(currentTeam(game).id);
-      pendingThrow = {
-        key: `turn-${phase.questionId}`,
-        count: phase.plan.dice,
-        color: def.color,
-        kind: "turn",
-        label: `${def.name} ném ${phase.plan.dice} xúc xắc`,
-      };
-    }
+  // Khay đang chờ đội tự tay ném xúc xắc của lượt (sau khi trả lời).
+  let pendingThrow: { key: string; count: number; color: string; label: string } | null = null;
+  if (
+    view === "game" &&
+    !busy &&
+    phase.kind === "waiting-roll" &&
+    !phase.thrown &&
+    throwingFor === phase.questionId
+  ) {
+    const def = teamDef(currentTeam(game).id);
+    pendingThrow = {
+      key: `turn-${phase.questionId}`,
+      count: phase.plan.dice,
+      color: def.color,
+      label: `${def.name} ném ${phase.plan.dice} xúc xắc`,
+    };
   }
   // Trước khi vào lượt đầu, mọi đội còn ở Khởi hành: giữa bàn cờ hiện kết quả các ván trước.
-  const showHistory =
-    history.length > 0 &&
-    (phase.kind === "not-started" || phase.kind === "order-roll" || phase.kind === "order-ready");
+  const showHistory = history.length > 0 && phase.kind === "not-started";
   const openQuestion = view === "game" && asking ? questionById(asking.questionId) : undefined;
 
   const stageStyle: CSSProperties = {
@@ -437,9 +395,7 @@ export function BoardGame() {
             >
               {arena ? (
                 <DiceFelt color={arena.color} label={arena.label}>
-                  {move && game.lastRoll ? (
-                    <MoveTotal values={game.lastRoll.values} boost={game.lastRoll.boost} total={move.total} />
-                  ) : null}
+                  {move && game.lastRoll ? <MoveTotal values={game.lastRoll.values} total={move.total} /> : null}
                 </DiceFelt>
               ) : pendingThrow ? (
                 <DiceFelt color={pendingThrow.color} label={pendingThrow.label}>
@@ -448,7 +404,7 @@ export function BoardGame() {
                     count={pendingThrow.count}
                     color={pendingThrow.color}
                     label={pendingThrow.label}
-                    onThrow={pendingThrow.kind === "order" ? throwForOrder : throwForTurn}
+                    onThrow={throwForTurn}
                   />
                 </DiceFelt>
               ) : showHistory ? (
@@ -539,12 +495,12 @@ export function BoardGame() {
   );
 }
 
-/** Tổng quãng đường ngay trên khay khi xúc xắc vừa dừng: "4 + 5 + 1 tiếp sức = 10 ô". */
-function MoveTotal({ values, boost, total }: { values: number[]; boost: number; total: number }) {
+/** Tổng quãng đường ngay trên khay khi xúc xắc vừa dừng: "4 + 5 = 9 ô". */
+function MoveTotal({ values, total }: { values: number[]; total: number }) {
   return (
     <div className="pointer-events-none absolute inset-x-0 top-28 flex items-baseline justify-center gap-4 text-on-cham">
-      {values.length > 1 || boost > 0 ? (
-        <span className="text-[40px] font-bold text-on-cham-soft">{moveEquation(values, boost)} =</span>
+      {values.length > 1 ? (
+        <span className="text-[40px] font-bold text-on-cham-soft">{moveEquation(values)} =</span>
       ) : (
         <span className="text-[40px] font-bold text-on-cham-soft">Đi</span>
       )}

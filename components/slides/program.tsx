@@ -149,7 +149,7 @@ export function SelfDeterminationSlide() {
           </p>
         </div>
       </div>
-      <SidePhoto photo={PHOTOS.election1946} />
+      <SidePhoto photo={PHOTOS.election} />
     </SlideFrame>
   );
 }

@@ -7,14 +7,13 @@ import { ANSWER_SECONDS, DICE_WHEN_CORRECT, DICE_WHEN_WRONG } from "@/content/ga
 import { cardById, type CardId } from "@/content/game-cards";
 import { questionById, type OptionId } from "@/content/game-questions";
 import { CARD_BACK_SRC, MAX_TEAMS, MIN_TEAMS } from "@/content/game-teams";
-import { DiceRow, Dice } from "./dice";
+import { DiceRow } from "./dice";
 import {
   currentTeam,
   diceMove,
   nextTeam,
   shownLetter,
   type GameState,
-  type RollPlan,
   type TeamId,
   type TurnOutcome,
 } from "./engine";
@@ -32,7 +31,6 @@ export type TurnActions = {
   onSetTeamCount: (count: number) => void;
   onStart: () => void;
   onShowIntro: () => void;
-  onBeginFirstTurn: () => void;
   onPick: (option: OptionId) => void;
   /** Hết giờ trả lời mà chưa chọn: tính như trả lời sai. */
   onTimeUp: () => void;
@@ -53,8 +51,7 @@ const SECONDARY =
 
 /** Thanh trên cùng: đội đang chơi (hoặc tên trò chơi khi chưa vào lượt). */
 export function TurnBanner({ game, winnerId }: { game: GameState; winnerId: TeamId | null }) {
-  const kind = game.phase.kind;
-  if (kind === "not-started" || kind === "order-roll" || kind === "order-ready") {
+  if (game.phase.kind === "not-started") {
     return (
       <header className="flex h-24 items-center rounded-[28px] bg-nhua-sang px-8">
         <p className="text-[44px] leading-none font-extrabold text-on-cham">Đường đua đại đoàn kết</p>
@@ -106,10 +103,6 @@ export function TurnCard({
   switch (phase.kind) {
     case "not-started":
       content = <SetupContent game={game} actions={actions} />;
-      break;
-    case "order-roll":
-    case "order-ready":
-      content = <OrderContent game={game} busy={busy} actions={actions} />;
       break;
     case "question":
     case "waiting-roll":
@@ -194,7 +187,7 @@ function SetupContent({ game, actions }: { game: GameState; actions: TurnActions
       </ul>
 
       <ol className="mt-7 flex flex-col gap-2.5 text-[28px] leading-snug">
-        <Step n={1}>Mỗi đội lắc một xúc xắc để chọn đội đi trước.</Step>
+        <Step n={1}>{teamDef(game.teams[0].id).name} đi trước, các đội đi lần lượt.</Step>
         <Step n={2}>
           Mỗi câu có {ANSWER_SECONDS} giây. Đúng được lắc {DICE_WHEN_CORRECT} xúc xắc, sai hoặc hết giờ vẫn
           được lắc {DICE_WHEN_WRONG}.
@@ -224,103 +217,6 @@ function Step({ n, children }: { n: number; children: ReactNode }) {
       <span className="pt-0.5">{children}</span>
     </li>
   );
-}
-
-/* ------------------------------------------------------------------ */
-/* Lắc chọn thứ tự đi                                                  */
-/* ------------------------------------------------------------------ */
-
-function OrderContent({ game, busy, actions }: { game: GameState; busy: boolean; actions: TurnActions }) {
-  const phase = game.phase;
-  if (phase.kind !== "order-roll" && phase.kind !== "order-ready") return null;
-  const ready = phase.kind === "order-ready";
-  const ids = ready ? phase.order : game.teams.map((t) => t.id);
-  const nextId = ready ? null : phase.queue[0];
-  const retie = !ready && phase.queue.some((id) => (phase.rolls[id]?.length ?? 0) > 0);
-  const rolling = busy || (phase.kind === "order-roll" && phase.thrown === true);
-  const tiedNames = retie ? phase.queue.map((id) => teamDef(id).name) : [];
-
-  return (
-    <div className="panel-in flex h-full flex-col">
-      <h2 className="text-[40px] leading-tight font-extrabold">
-        {ready ? "Thứ tự đi" : "Chọn đội đi trước"}
-      </h2>
-      <p className="mt-2 text-[28px] leading-snug text-cham-soft">
-        {ready
-          ? "Các đội sẽ đi lần lượt theo thứ tự này trong cả ván."
-          : retie
-            ? `${joinNames(tiedNames)} bằng điểm, lắc lại để phân thứ tự.`
-            : "Mỗi đội lắc một xúc xắc. Điểm cao đi trước, bằng điểm thì lắc lại."}
-      </p>
-
-      <ol className="mt-5 flex flex-col gap-2.5">
-        {ids.map((id, index) => {
-          const def = teamDef(id);
-          const rolls = phase.rolls[id] ?? [];
-          const isNext = id === nextId;
-          return (
-            <li
-              key={id}
-              className="flex items-center gap-4 rounded-2xl px-4 py-2.5"
-              style={{
-                background: isNext ? `${def.color}26` : "#f4f5fa",
-                boxShadow: isNext ? `inset 0 0 0 3px ${def.color}` : undefined,
-              }}
-            >
-              {ready ? (
-                <span className="w-8 text-center text-[32px] font-extrabold tabular-nums">{index + 1}</span>
-              ) : null}
-              <TeamAvatar teamId={id} size={52} />
-              <span className="flex-1 text-[32px] font-extrabold" style={{ color: def.color }}>
-                {def.name}
-              </span>
-              {rolls.length === 0 ? (
-                <span className="text-[26px] text-cham-soft">{isNext ? "Đến lượt ném" : "Chưa ném"}</span>
-              ) : (
-                <span className="flex items-center gap-2">
-                  {rolls.map((value, i) => (
-                    <Dice
-                      key={i}
-                      value={value}
-                      rolling={false}
-                      color={def.color}
-                      size={i === rolls.length - 1 ? 60 : 44}
-                    />
-                  ))}
-                </span>
-              )}
-            </li>
-          );
-        })}
-      </ol>
-
-      <div className="mt-auto pt-6">
-        {ready ? (
-          <button type="button" autoFocus onClick={actions.onBeginFirstTurn} className={PRIMARY}>
-            Bắt đầu với {teamDef(phase.order[0]).name}
-          </button>
-        ) : (
-          <ThrowPrompt name={nextId ? teamDef(nextId).name : ""} rolling={rolling} />
-        )}
-      </div>
-    </div>
-  );
-}
-
-/** Lời nhắc ném xúc xắc trên bàn cờ (người chơi tự ném, không có nút lắc hộ). */
-function ThrowPrompt({ name, rolling }: { name: string; rolling: boolean }) {
-  return (
-    <p className="rounded-2xl bg-cham-tint px-6 py-4 text-[30px] leading-snug font-bold">
-      {rolling
-        ? `${name} đang ném`
-        : `Mời ${name} ném xúc xắc trên bàn cờ: nhấn giữ để lắc, kéo rồi thả tay.`}
-    </p>
-  );
-}
-
-function joinNames(names: string[]): string {
-  if (names.length <= 1) return names.join("");
-  return `${names.slice(0, -1).join(", ")} và ${names.at(-1)}`;
 }
 
 /* ------------------------------------------------------------------ */
@@ -356,7 +252,6 @@ function AnswerContent({ game, busy, actions }: { game: GameState; busy: boolean
             ? `Hết giờ, đáp án đúng là ${answer}.`
             : `Chưa đúng, đáp án đúng là ${answer}.`}
       </p>
-      <BonusBadges plan={phase.plan} />
       <div className="mt-auto flex flex-col items-start gap-4 pt-6">
         <ThrowPrompt name={name} rolling={rolling} />
         {rolling ? null : (
@@ -369,29 +264,14 @@ function AnswerContent({ game, busy, actions }: { game: GameState; busy: boolean
   );
 }
 
-function BonusBadges({ plan }: { plan: Pick<RollPlan, "lucky" | "boost"> }) {
-  if (!plan.lucky && plan.boost === 0) return null;
+/** Lời nhắc ném xúc xắc trên bàn cờ (người chơi tự ném, không có nút lắc hộ). */
+function ThrowPrompt({ name, rolling }: { name: string; rolling: boolean }) {
   return (
-    <div className="mt-2 flex flex-wrap gap-2">
-      {plan.lucky ? <LightBadge color="#a87b12">Bùa may mắn: thêm 1 xúc xắc</LightBadge> : null}
-      {plan.boost > 0 ? <LightBadge color="#16753f">Tiếp sức: tiến thêm {plan.boost} ô</LightBadge> : null}
-    </div>
-  );
-}
-
-/** Huy hiệu trên nền giấy trắng (màu đậm hơn bản trên nền tối). */
-function LightBadge({ color, children }: { color: string; children: ReactNode }) {
-  return (
-    <span
-      className="rounded-full px-3 text-[24px] leading-[1.5] font-bold"
-      style={{
-        color,
-        background: `${color}18`,
-        boxShadow: `inset 0 0 0 1.5px ${color}70`,
-      }}
-    >
-      {children}
-    </span>
+    <p className="rounded-2xl bg-cham-tint px-6 py-4 text-[30px] leading-snug font-bold">
+      {rolling
+        ? `${name} đang ném`
+        : `Mời ${name} ném xúc xắc trên bàn cờ: nhấn giữ để lắc, kéo rồi thả tay.`}
+    </p>
   );
 }
 
@@ -404,7 +284,7 @@ function MoveContent({ game, landed, stepsTaken }: { game: GameState; landed: bo
   const def = teamDef(currentTeam(game).id);
   const roll = game.lastRoll;
   const rolling = phase.kind === "rolling" && !phase.physical;
-  const total = roll ? roll.values.reduce((sum, v) => sum + v, 0) + roll.boost : 0;
+  const total = roll ? roll.values.reduce((sum, v) => sum + v, 0) : 0;
   const move = rolling ? null : diceMove(game);
 
   return (
@@ -413,7 +293,7 @@ function MoveContent({ game, landed, stepsTaken }: { game: GameState; landed: bo
         {rolling ? "Đang lắc xúc xắc" : headline(game, landed, total)}
       </h2>
       {roll ? (
-        <div className="mt-6 flex flex-col gap-4">
+        <div className="mt-6">
           <DiceRow
             count={roll.values.length}
             values={roll.values}
@@ -421,13 +301,11 @@ function MoveContent({ game, landed, stepsTaken }: { game: GameState; landed: bo
             color={def.color}
             size={110}
           />
-          <BonusBadges plan={roll} />
         </div>
       ) : null}
       {roll && move ? (
         <MoveDistance
           values={roll.values}
-          boost={roll.boost}
           total={move.total}
           steps={move.to - move.from}
           taken={stepsTaken}
@@ -460,17 +338,17 @@ function headline(game: GameState, landed: boolean, total: number): string {
   return `${mover} ${delta > 0 ? "tiến" : "lùi"} ${Math.abs(delta)} ô`;
 }
 
-/** "Lắc được 4 và 5, cộng 1 ô tiếp sức: đi 10 ô." */
-function rollSentence(values: number[], boost: number): string {
+/** "Lắc được 4 và 5: đi 9 ô." */
+function rollSentence(values: number[]): string {
   const faces =
     values.length === 1 ? `${values[0]}` : `${values.slice(0, -1).join(", ")} và ${values.at(-1)}`;
-  const total = values.reduce((sum, v) => sum + v, 0) + boost;
-  return `Lắc được ${faces}${boost > 0 ? `, cộng ${boost} ô tiếp sức` : ""}: đi ${total} ô.`;
+  const total = values.reduce((sum, v) => sum + v, 0);
+  return `Lắc được ${faces}: đi ${total} ô.`;
 }
 
-/** "4 + 5 + 1 tiếp sức": các số cộng lại thành quãng đường của lượt. */
-export function moveEquation(values: number[], boost: number): string {
-  return [...values.map(String), ...(boost > 0 ? [`${boost} tiếp sức`] : [])].join(" + ");
+/** "4 + 5": các số chấm cộng lại thành quãng đường của lượt. */
+export function moveEquation(values: number[]): string {
+  return values.join(" + ");
 }
 
 /**
@@ -479,7 +357,6 @@ export function moveEquation(values: number[], boost: number): string {
  */
 function MoveDistance({
   values,
-  boost,
   total,
   steps,
   taken,
@@ -487,7 +364,6 @@ function MoveDistance({
   color,
 }: {
   values: number[];
-  boost: number;
   total: number;
   /** Số ô thật sự đi (ít hơn `total` khi về đích sớm). */
   steps: number;
@@ -501,10 +377,8 @@ function MoveDistance({
       <div className="flex items-baseline gap-3">
         <p className="text-[96px] leading-none font-extrabold tabular-nums">{total}</p>
         <p className="text-[40px] font-extrabold">ô</p>
-        {values.length > 1 || boost > 0 ? (
-          <p className="ml-auto text-right text-[30px] font-semibold text-cham-soft">
-            {moveEquation(values, boost)}
-          </p>
+        {values.length > 1 ? (
+          <p className="ml-auto text-right text-[30px] font-semibold text-cham-soft">{moveEquation(values)}</p>
         ) : null}
       </div>
       <p className="mt-3 text-[28px] leading-snug font-semibold">
@@ -681,13 +555,13 @@ function TargetContent({
       <h2 className="text-[40px] leading-tight font-extrabold">
         {card.swap ? "Chọn đội để đổi chỗ" : `Chọn đội phải lùi ${Math.abs(card.cells)} ô`}
       </h2>
-      <p className="mt-2 text-[28px] text-cham-soft">
-        {card.targetAheadOnly
-          ? `Chỉ chọn được đội đang đứng trước ${attacker}.`
-          : card.swap === "leader"
-            ? "Có nhiều đội cùng dẫn đầu, chọn một đội."
-            : "Đội đứng cuối đang được bảo hộ nên không chọn được."}
-      </p>
+      {card.targetAheadOnly || card.swap === "leader" ? (
+        <p className="mt-2 text-[28px] text-cham-soft">
+          {card.targetAheadOnly
+            ? `Chỉ chọn được đội đang đứng trước ${attacker}.`
+            : "Có nhiều đội cùng dẫn đầu, chọn một đội."}
+        </p>
+      ) : null}
       <div className="mt-6 flex flex-col gap-3">
         {game.teams
           .filter((team) => team.id !== currentTeam(game).id)
@@ -739,9 +613,8 @@ function SummaryContent({
       <ul className="mt-6 flex flex-col gap-3 text-[30px] leading-snug">
         <li>
           {outcome.correct ? "Trả lời đúng." : outcome.timedOut ? "Hết giờ trả lời." : "Trả lời chưa đúng."}{" "}
-          {rollSentence(outcome.dice, outcome.boost)}
+          {rollSentence(outcome.dice)}
         </li>
-        {outcome.lucky ? <li className="text-[#a87b12]">Có bùa may mắn nên được thêm 1 xúc xắc.</li> : null}
         {outcome.cardId ? <li>{cardSentence(outcome)}</li> : null}
       </ul>
       <div className="mt-auto pt-6">

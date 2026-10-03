@@ -9,17 +9,8 @@ import {
 } from "@/content/game-balance";
 import { FINISH_POSITION, tileAt } from "@/content/game-board";
 import type { GameQuestion, OptionId } from "@/content/game-questions";
-import {
-  catchUpSteps,
-  currentTeam,
-  hasLuckyCharm,
-  optionOrder,
-  shownLetter,
-  type GameState,
-  type RollPlan,
-} from "./engine";
+import { currentTeam, optionOrder, shownLetter, type GameState } from "./engine";
 import { sfx } from "./game-audio";
-import { Badge, BALANCE_COLORS } from "./leaderboard";
 import { teamDef } from "./palette";
 import { TeamAvatar } from "./team-piece";
 
@@ -41,6 +32,9 @@ const CIRCUMFERENCE = 2 * Math.PI * RADIUS;
 /** Đỏ sáng cho chữ trên nền tối (màu son gốc quá tối để đọc). */
 const ALERT = "#ff6b6f";
 
+/** Xanh lá sáng cho chữ "Chính xác" trên nền tối. */
+const SUCCESS = "#4fd88a";
+
 export function QuestionScreen({
   game,
   question,
@@ -59,12 +53,6 @@ export function QuestionScreen({
   const answered = phase.kind === "waiting-roll" ? phase : null;
   const team = currentTeam(game);
   const def = teamDef(team.id);
-  // Trước khi trả lời: cho khán giả thấy đội này đang có bùa / tiếp sức gì.
-  const plan: RollPlan = answered?.plan ?? {
-    dice: 0,
-    lucky: hasLuckyCharm(team),
-    boost: catchUpSteps(game, team.id),
-  };
   const verdict = answered
     ? answered.correct
       ? "right"
@@ -138,18 +126,13 @@ export function QuestionScreen({
               <div className="min-w-0">
                 <p
                   className="text-[48px] leading-none font-extrabold"
-                  style={{
-                    color: answered.correct ? BALANCE_COLORS.boost : ALERT,
-                  }}
+                  style={{ color: answered.correct ? SUCCESS : ALERT }}
                 >
                   {verdictText(verdict, shownLetter(game, question.id, question.correctAnswer))}
                 </p>
-                <div className="mt-3 flex items-center gap-3">
-                  <p className="text-[30px] leading-none text-on-cham-soft">
-                    {answered.correct ? "Được lắc" : "Vẫn được lắc"} {answered.plan.dice} xúc xắc
-                  </p>
-                  <Bonuses plan={answered.plan} />
-                </div>
+                <p className="mt-3 text-[30px] leading-none text-on-cham-soft">
+                  {answered.correct ? "Được lắc" : "Vẫn được lắc"} {answered.plan.dice} xúc xắc
+                </p>
               </div>
               <button
                 type="button"
@@ -161,12 +144,9 @@ export function QuestionScreen({
               </button>
             </>
           ) : (
-            <>
-              <p className="text-[32px] leading-snug text-on-cham-soft">
-                Đúng được lắc {DICE_WHEN_CORRECT} xúc xắc, sai hoặc hết giờ vẫn được lắc {DICE_WHEN_WRONG}.
-              </p>
-              <Bonuses plan={plan} />
-            </>
+            <p className="text-[32px] leading-snug text-on-cham-soft">
+              Đúng được lắc {DICE_WHEN_CORRECT} xúc xắc, sai hoặc hết giờ vẫn được lắc {DICE_WHEN_WRONG}.
+            </p>
           )}
         </footer>
       </div>
@@ -210,16 +190,6 @@ function verdictText(verdict: "right" | "wrong" | "timeout" | null, correctAnswe
   if (verdict === "right") return "Chính xác";
   if (verdict === "timeout") return `Hết giờ, đáp án đúng là ${correctAnswer}`;
   return `Chưa đúng, đáp án đúng là ${correctAnswer}`;
-}
-
-function Bonuses({ plan }: { plan: Pick<RollPlan, "lucky" | "boost"> }) {
-  if (!plan.lucky && plan.boost === 0) return null;
-  return (
-    <div className="flex shrink-0 gap-3">
-      {plan.lucky ? <Badge color={BALANCE_COLORS.lucky}>Bùa may mắn: thêm 1 xúc xắc</Badge> : null}
-      {plan.boost > 0 ? <Badge color={BALANCE_COLORS.boost}>Tiếp sức: tiến thêm {plan.boost} ô</Badge> : null}
-    </div>
-  );
 }
 
 /**

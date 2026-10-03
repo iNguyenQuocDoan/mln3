@@ -60,7 +60,7 @@ chuyển ở cửa sổ nào thì cửa sổ kia cũng chuyển theo. Màn hình
 chưa có lời thì hiện dòng **Gợi ý (chưa có trong bản Word)**, viết lại từ
 chữ trên màn hình; nhóm có thể sửa ở `content/script.ts` → `HINTS`.
 
-## Trò chơi "Đường đua tiếp nhiên liệu"
+## Trò chơi "Đường đua đại đoàn kết"
 
 Trò chơi ôn tập sau phần thuyết trình. Vào từ slide **Trò chơi** (ngay trước
 slide Cảm ơn) hoặc mở thẳng http://localhost:3000/tro-choi. Người chơi dùng
@@ -68,44 +68,34 @@ chuột bấm trực tiếp trên màn hình chiếu.
 
 ### Một ván chơi
 
-1. Ở slide Trò chơi, bấm **Vào đường đua**. Trang chuyển ngay trong trình
-   duyệt nên TV vẫn ở chế độ toàn màn hình.
-2. Sảnh chờ: chọn số đội (2–6), đặt tên đội, độ dài đường đua, thời gian
-   trả lời, bật/tắt âm thanh, rồi bấm **Bắt đầu đua**. Sảnh chờ hiện thời
-   lượng ước tính theo số đội và độ dài đường.
-3. Mỗi đội cử một bạn lên bấm **Gieo** xúc xắc. Số lớn hơn đi trước; các đội
-   ra trùng số gieo lại. Có thứ tự rồi thì bấm **Xuất phát**.
-4. Tới lượt đội nào, một bạn của đội đó lên chọn cây xăng và trả lời.
+1. Ở slide Trò chơi, bấm **Vào đường đua**, đọc luật rồi bấm **Vào trò
+   chơi**. Trang chuyển ngay trong trình duyệt nên TV vẫn ở chế độ toàn màn
+   hình.
+2. Chọn số đội (2–5) rồi bấm **Bắt đầu**. Không lắc chọn thứ tự: các đội đi
+   lần lượt theo số thứ tự, Đội 1 đi trước.
+3. Tới lượt đội nào, câu hỏi hiện toàn màn hình và đội có 15 giây để chọn
+   đáp án. Đúng được lắc 2 xúc xắc, sai hoặc hết giờ vẫn được lắc 1.
+4. Đội tự ném xúc xắc trên bàn cờ (nhấn giữ để lắc, kéo rồi thả tay), quân
+   cờ đi đúng tổng số chấm. Dừng đúng ô có hộp quà thì chọn một trong ba thẻ
+   úp: thẻ tiến, thẻ tự lùi hoặc thẻ tấn công (bắt một đội khác lùi, đổi chỗ).
+5. MC bấm **Đến lượt Đội n** để sang đội kế tiếp. Đội về đích đầu tiên
+   thắng; các đội còn lại xếp theo số ô, bằng nhau thì xét số câu đúng.
 
-| Cây xăng | Bên trong | Trả lời đúng | Sai hoặc hết giờ |
-| --- | --- | --- | --- |
-| E5 (1 lít) | câu dễ | tiến 1 ô | đứng yên |
-| RON95 (2 lít) | câu vừa | tiến 2 ô | đứng yên |
-| ??? | rút thăm một sự kiện, xem bảng dưới | | |
+Màn hình không có ưu đãi nào cho đội đi sau: đội nào cũng lắc cùng số xúc
+xắc, đi đúng số chấm, và thẻ tấn công nhắm được mọi đội khác.
 
-| Sự kiện của bình ??? | Kết quả |
-| --- | --- |
-| Câu hỏi khó | đúng thì tiến 3 ô |
-| Nitro | tiến 2 ô ngay |
-| Cướp xăng | chọn một đội đang có xăng: đội đó lùi 1 ô, mình tiến 1 ô |
-| Nổ lốp | lùi 1 ô (không xảy ra khi xe còn ở vạch xuất phát) |
-| Cảnh sát | mất lượt |
-
-Đội đầu tiên chạm vạch đích thắng. Các đội còn lại xếp theo số ô, bằng nhau
-thì xét số câu đúng, rồi số lít xăng đã đổ.
-
-**Cân bằng ngầm** (chỉ nhóm biết, màn hình không hiện): tỉ lệ các sự kiện
-của bình ??? thay đổi theo thế của đội đang chơi, để không đội nào hên quá mà
+**Cân bằng ngầm** (chỉ nhóm biết, màn hình không hiện): khi một đội mở hộp
+quà, tỉ lệ các nhóm thẻ đổi theo thế của đội đó, để không đội nào hên quá mà
 bỏ xa cả lớp.
 
-| Thế của đội | Câu khó | Nitro | Cướp xăng | Nổ lốp | Cảnh sát |
-| --- | --- | --- | --- | --- | --- |
-| Sát nhau (chênh dưới 2 ô) | 50% | 15% | 15% | 10% | 10% |
-| Bỏ xa mọi đội khác từ 2 ô | 50% | 5% | 5% | 20% | 20% |
-| Đứng cuối, kém đội đầu từ 2 ô | 50% | 25% | 25% | 0% | 0% |
+| Thế của đội lúc mở hộp | Thẻ tiến | Thẻ tấn công | Thẻ tự lùi |
+| --- | --- | --- | --- |
+| Sát nhau | 40% | 40% | 20% |
+| Bỏ xa mọi đội khác từ 5 ô | 20% | 40% | 40% |
+| Đứng cuối, kém đội dẫn đầu từ 5 ô | 60% | 40% | 0% |
 
-Muốn chỉnh các con số này thì sửa `MYSTERY_ODDS` và `BALANCE_GAP` trong
-`components/game/engine.ts`.
+Muốn chỉnh các con số này thì sửa `CARD_ODDS` và `BALANCE_GAP` trong
+`content/game-balance.ts`.
 
 ### Điều khiển cho người dẫn
 
@@ -113,36 +103,27 @@ Muốn chỉnh các con số này thì sửa `MYSTERY_ODDS` và `BALANCE_GAP` tr
 | --- | --- |
 | F | Bật/tắt toàn màn hình |
 | M | Bật/tắt âm thanh |
+| Z | Hoàn tác thao tác vừa rồi |
 | Esc | Đóng menu |
-| Nút ≡ ở góc phải | Toàn màn hình, âm thanh, **Dừng đua và xếp hạng** (khi hết giờ), **Bỏ ván này**, **Về bài thuyết trình** |
+| Nút ≡ dưới cột lượt chơi | Hoàn tác, toàn màn hình, âm thanh, **Chơi lại từ đầu**, **Kết quả các ván**, **Xóa lịch sử các ván**, **Về bài thuyết trình** |
 
-Ván chơi, kể cả kết quả gieo xúc xắc và thứ tự xuất phát, được lưu vào
-localStorage của trình duyệt sau mỗi lần bấm. Lỡ tải lại trang hoặc quay về
-slide thì vào lại game sẽ có nút **Chơi tiếp**. Trước buổi thuyết trình, nhớ
-bỏ ván chơi thử (menu ≡ → **Bỏ ván này**, hoặc **Ván mới** ở bảng kết quả).
+Ván chơi được lưu vào localStorage của trình duyệt sau mỗi lần bấm. Lỡ tải
+lại trang hoặc quay về slide thì vào lại game vẫn chơi tiếp đúng chỗ cũ.
+Trước buổi thuyết trình, nhớ bỏ ván chơi thử (menu ≡ → **Chơi lại từ đầu**).
 
 ### Câu hỏi
 
-Câu hỏi nằm ở `content/quiz.ts`: 103 câu, gồm 38 câu E5, 36 câu RON95 và 29
-câu khó.
+Câu hỏi nằm ở `content/game-questions.ts`: 108 câu, mỗi câu 4 đáp án;
+`correctAnswer` là chữ cái của đáp án đúng (A–D), `difficulty` là độ khó.
 
-- Mỗi ván mới, thứ tự rút câu được xáo lại. Trình duyệt nhớ khoảng 50 câu
-  đã hỏi gần nhất (localStorage), nên ván sau hỏi trước những câu chưa gặp
-  ở các ván trước; câu đã hỏi bị dồn xuống cuối.
-- Mỗi lần một câu được rút, bốn đáp án lại được xáo vị trí A–D, nên gặp lại
-  câu cũ thì đáp án đúng nằm ở ô khác. Cách xếp được lưu cùng ván chơi, nên
-  tải lại trang không làm đáp án đổi chỗ giữa chừng.
-
-Mỗi câu có 4 đáp án; `correct` là vị trí đáp án đúng trong danh sách (0 là
-đáp án đầu tiên); `explain` hiện sau khi trả lời; `source` ghi slide để đối
-chiếu. Câu có đáp án là số, năm hoặc thứ tự (ví dụ 51, 52, 53, 54) được đánh
-dấu `keepOrder: true` để giữ nguyên thứ tự cho dễ đọc. Các câu có nguồn
-"Kiến thức chung", "Hiến pháp 2013" hoặc "Tổng điều tra 2019" nằm ngoài 15
-slide, nhóm nên đọc lại trước khi chơi.
+- Mỗi ván mới, thứ tự câu được xáo lại; câu đã hỏi ở các ván trước bị dồn
+  xuống cuối, hỏi hết một vòng ngân hàng câu thì tính lại từ đầu.
+- Bốn đáp án được xáo vị trí theo từng ván, nên gặp lại câu cũ thì đáp án
+  đúng nằm ở ô khác; trong cùng một ván, tải lại trang không làm đáp án đổi
+  chỗ.
 
 Sửa xong chạy `npm test`. Lệnh này kiểm tra luật chơi và ngân hàng câu hỏi:
-đủ bốn đáp án, không trùng mã câu, câu không dài quá khung hiển thị, câu giữ
-thứ tự thì các số tăng dần.
+đủ bốn đáp án, không trùng mã câu, các đáp án dài tương đương nhau.
 
 ## Chỉnh nội dung
 
@@ -155,7 +136,8 @@ thứ tự thì các số tăng dần.
 | Gợi ý lời cho màn hình mới | `content/script.ts` → `HINTS` |
 | Thứ tự màn hình, đoạn lời gắn với màn hình nào | `content/slides.tsx` |
 | Chữ trên từng màn hình | `components/slides/` (mỗi mục một file) |
-| Câu hỏi của trò chơi | `content/quiz.ts` |
+| Câu hỏi của trò chơi | `content/game-questions.ts` |
+| Luật và cân bằng ngầm của trò chơi | `content/game-balance.ts` |
 
 Trường nào để trống thì không hiển thị trên slide.
 
@@ -201,10 +183,10 @@ tộc và nguồn; bấm vào tên nguồn sẽ mở bài gốc trong tab mới.
 | 1, nền slide bìa | Bản đồ Việt Nam trên nền trống đồng (`ban-do-trong-dong.webp`) | nhóm cung cấp |
 | 3, mở đầu Phần 1 | Văn hóa dân tộc Tày, Nùng (`van-hoa-tay-nung.jpg`) | [Báo Chính phủ – Sắc màu văn hóa các dân tộc Việt Nam tại Làng Văn hóa (4/4/2024)](https://baochinhphu.vn/gioi-thieu-sac-mau-van-hoa-cac-dan-toc-viet-nam-tai-lang-van-hoa-du-lich-cac-dan-toc-viet-nam-102240404103553803.htm) |
 | 6, cạnh ba đặc trưng của tộc người | Người Dao Chàm (`phu-nu-vung-cao.jpg`) | [vietnam.travel – trang phục truyền thống](https://vietnam.travel/vi/things-to-do/traditional-ethnic-costumes-vietnam) |
-| 8, Hai xu hướng: tách ra | Nhân dân ở Ba Đình nghe Tuyên ngôn Độc lập, 2/9/1945 (`doc-lap-ba-dinh-1945.jpg`) | [TTXVN/VietnamPlus – Quảng trường Ba Đình trong thời khắc lịch sử](https://www.vietnamplus.vn/photo-quang-truong-ba-dinh-trong-thoi-khac-lich-su-70-nam-truoc-post340716.vnp) (ảnh tư liệu TTXVN) |
+| 8, Hai xu hướng: tách ra | Lễ chào cờ kỷ niệm 80 năm Quốc khánh ở Quảng trường Ba Đình, 2/9/2025 (`chao-co-ba-dinh-2025.jpg`) | [Báo Chính phủ – Tổng thuật: Kỷ niệm trọng thể 80 năm Quốc khánh (2/9/2025)](https://baochinhphu.vn/truc-tiep-ky-niem-trong-the-80-nam-quoc-khanh-nuoc-cong-hoa-xhcn-viet-nam-102250902000653367.htm) (ảnh VGP/Nhật Bắc) |
 | 8, Hai xu hướng: liên hiệp | Lễ thượng cờ ASEAN tại Bộ Ngoại giao, 2025 (`thuong-co-asean.jpg`) | [Báo Chính phủ – Lễ thượng cờ kỷ niệm 58 năm thành lập ASEAN (8/8/2025)](https://baochinhphu.vn/le-thuong-co-ky-niem-58-nam-thanh-lap-asean-102250808095515908.htm) (ảnh Tuấn Dũng) |
 | 9, Cương lĩnh: bình đẳng | Nữ đại biểu các dân tộc tại Đại hội MTTQ Việt Nam lần thứ XI, 2026 (`dai-bieu-cac-dan-toc.jpg`) | [Nhân Dân – Sắc màu đại đoàn kết tại Đại hội MTTQ Việt Nam lần thứ XI (12/5/2026)](https://nhandan.vn/anh-sac-mau-dai-doan-ket-tai-dai-hoi-dai-bieu-toan-quoc-mat-tran-to-quoc-viet-nam-lan-thu-xi-post961609.html) |
-| 10, Cương lĩnh: quyền tự quyết | Cử tri bỏ phiếu trong Tổng tuyển cử 6/1/1946 (`tong-tuyen-cu-1946.jpg`) | [TTXVN/VietnamPlus – Những hình ảnh Ngày Tổng tuyển cử đầu tiên](https://www.vietnamplus.vn/nhung-hinh-anh-ngay-tong-tuyen-cu-dau-tien-cach-day-73-nam-post545639.vnp) (ảnh tư liệu TTXVN) |
+| 10, Cương lĩnh: quyền tự quyết | Cử tri người Mường ở Ninh Bình bỏ phiếu bầu Quốc hội khóa XVI, 15/3/2026 (`cu-tri-bau-cu-2026.jpg`) | [VnExpress – Nhiều nơi vượt 70% cử tri đi bầu trong buổi sáng (15/3/2026)](https://vnexpress.net/cu-tri-ca-nuoc-bo-phieu-bau-nguoi-dai-dien-5050485.html) (ảnh Lam Sơn) |
 | 11, Cương lĩnh: liên hiệp công nhân | Tuần hành Ngày Quốc tế Lao động ở La Habana, Cuba, 2019 (`quoc-te-lao-dong.jpg`) | [TTXVN/VietnamPlus – Chùm ảnh tôn vinh người lao động ngày 1/5](https://www.vietnamplus.vn/photo-chum-anh-ton-vinh-nguoi-lao-dong-trong-ngay-15-post637892.vnp) (ảnh Lê Hà, phóng viên TTXVN tại Cuba) |
 | 12, mở đầu Phần 3 | Người H'Mông Đen (`nam-trang-phuc-truyen-thong.jpg`) | như trên |
 | 14, Dân cư & địa bàn | Bản đồ dân tộc trong Atlat Địa lí Việt Nam, số liệu năm 1999 (`phan-bo-dan-toc.jpg`) | [iDiaLy.com – Atlatvn: Dân tộc](https://www.idialy.com/2015/02/atlatvn-dan-toc.html) |
@@ -223,7 +205,7 @@ tộc và nguồn; bấm vào tên nguồn sẽ mở bài gốc trong tab mới.
 | 25, Chính sách dân tộc: an ninh – quốc phòng | Khu trưng bày Bộ Quốc phòng tại Triển lãm thành tựu đất nước (`an-ninh-quoc-phong.jpg`) | [QĐND – Đại tướng Phan Văn Giang kiểm tra khu trưng bày Bộ Quốc phòng…](https://www.qdnd.vn/80-nam-trien-lam-thanh-tuu-dat-nuoc-hanh-trinh-doc-lap-tu-do-hanh-phuc/dai-tuong-phan-van-giang-kiem-tra-khu-trung-bay-bo-quoc-phong-tai-trien-lam-thanh-tuu-dat-nuoc-845903) |
 | 27, Cảm ơn | Bản đồ minh họa trang phục các dân tộc Việt Nam (`phan-bo-dan-toc-2.jpg`) | [Behance – Dạ Hương: Brochure bản đồ dân tộc Vietnam](https://www.behance.net/gallery/150172805/BROCHURE-BN-D-DAN-TC-VIETNAM-VIETNAM-WHY-NOT) |
 
-Các màn lý luận (hai xu hướng, Cương lĩnh dân tộc) dùng ảnh tư liệu lịch sử hoặc ảnh sự kiện minh họa đúng ý từng nội dung.
+Các màn lý luận (hai xu hướng, Cương lĩnh dân tộc) dùng ảnh màu chụp sự kiện thật minh họa đúng ý từng nội dung, không dùng ảnh tư liệu đen trắng.
 Ảnh chụp lấy từ báo chí, cơ quan nhà nước và có ghi nguồn; không dùng ảnh do AI tạo. Hai bản đồ là ngoại lệ: trang Dân tộc của Atlat Địa lí Việt Nam (đăng lại trên iDiaLy.com) và bản đồ minh họa ở slide cảm ơn (đồ án của Dạ Hương trên Behance).
 Chú thích dưới ảnh giữ một dòng ngắn. Ảnh có logo báo ở góc thì dùng `focus` (và `zoom` khi cần) để khung ảnh cắt bỏ góc đó.
 Ảnh người gốc chỉ 870 × 580 nên khung ảnh được giữ ở mức không phóng quá
