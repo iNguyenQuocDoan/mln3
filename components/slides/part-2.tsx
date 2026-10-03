@@ -102,7 +102,7 @@ function Trend({
   return (
     <section className="anim-rise flex flex-col" style={stagger(order)}>
       <figure>
-        <Photo photo={photo} className="h-76 w-full" />
+        <Photo photo={photo} className="h-100 w-full" />
         <PhotoCaption photo={photo} className="mt-3" />
       </figure>
       <div className="mt-5 flex items-baseline justify-between gap-6">
