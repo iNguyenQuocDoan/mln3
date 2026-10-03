@@ -110,7 +110,7 @@ Em xin trình bày phần hai: quan điểm của chủ nghĩa Mác – Lênin v
 
 ![Màn 8: Hai xu hướng khách quan](kich-ban/man-08.jpg)
 
-> **Trên slide:** Tiêu đề phụ: Trong sự phát triển quan hệ dân tộc. Cột trái: TÁCH RA (Xu hướng thứ nhất). Cộng đồng dân cư muốn hình thành cộng đồng dân tộc độc lập. Sơ đồ: Cộng đồng dân cư, mũi tên, Dân tộc độc lập. Cột phải: LIÊN HIỆP (Xu hướng thứ hai). Các dân tộc có nhu cầu liên hệ và liên hiệp với nhau. Sơ đồ: Dân tộc A + Dân tộc B + Dân tộc C. Giữa hai cột: mũi tên hai chiều.
+> **Trên slide:** Tiêu đề phụ: Trong sự phát triển quan hệ dân tộc. Cột trái: TÁCH RA (Xu hướng thứ nhất). Sơ đồ: Cộng đồng dân cư, mũi tên, Dân tộc độc lập. Cột phải: LIÊN HIỆP (Xu hướng thứ hai). Sơ đồ: Dân tộc A + Dân tộc B + Dân tộc C. Giữa hai cột: mũi tên hai chiều.
 >
 > **Ảnh:** Bên trái: Nhân dân ở Ba Đình nghe Tuyên ngôn Độc lập, 2/9/1945; Bên phải: Lễ thượng cờ ASEAN tại Bộ Ngoại giao, 2025.
 
@@ -126,7 +126,7 @@ Mũi tên hai chiều ở giữa nhắc rằng hai xu hướng này cùng tồn 
 
 ![Màn 9: Cương lĩnh dân tộc: bình đẳng](kich-ban/man-09.jpg)
 
-> **Trên slide:** Dòng dẫn: Nội dung thứ nhất của Cương lĩnh dân tộc. Tiêu đề: 01 BÌNH ĐẲNG. Các dân tộc hoàn toàn bình đẳng. Không có dân tộc nào được đặt ở vị trí cao hơn hoặc thấp hơn dân tộc khác. Sơ đồ: Dân tộc A = Dân tộc B = Dân tộc C, cùng trên một đường nền.
+> **Trên slide:** Dòng dẫn: Nội dung thứ nhất của Cương lĩnh dân tộc. Tiêu đề: 01 BÌNH ĐẲNG. Các dân tộc hoàn toàn bình đẳng. Sơ đồ: Dân tộc A = Dân tộc B = Dân tộc C, cùng trên một đường nền.
 >
 > **Ảnh:** Bên phải: Nữ đại biểu các dân tộc tại Đại hội MTTQ, 2026.
 
@@ -140,7 +140,7 @@ Bình đẳng nghĩa là các dân tộc có quyền lợi và nghĩa vụ ngang
 
 ![Màn 10: Cương lĩnh dân tộc: quyền tự quyết](kich-ban/man-10.jpg)
 
-> **Trên slide:** Dòng dẫn: Nội dung thứ hai của Cương lĩnh dân tộc. Tiêu đề: 02 QUYỀN TỰ QUYẾT. Các dân tộc được quyền tự quyết. Định nghĩa: Quyền tự quyết là quyền một dân tộc tự quyết định vận mệnh của mình và lựa chọn con đường phát triển của mình. Hai nhánh: TÁCH RA ĐỘC LẬP (có quyền tách ra để thành lập quốc gia dân tộc độc lập) và TỰ NGUYỆN LIÊN HIỆP (có quyền tự nguyện liên hiệp với dân tộc khác trên cơ sở bình đẳng). Khung cuối: Tự quyết không chỉ có tách ra. Mà là: tự quyết định vận mệnh và tự lựa chọn con đường phát triển.
+> **Trên slide:** Dòng dẫn: Nội dung thứ hai của Cương lĩnh dân tộc. Tiêu đề: 02 QUYỀN TỰ QUYẾT. Các dân tộc được quyền tự quyết. Hai nhánh: TÁCH RA ĐỘC LẬP và TỰ NGUYỆN LIÊN HIỆP. Khung cuối: Tự quyết không chỉ có tách ra. Mà là: tự quyết định vận mệnh và tự lựa chọn con đường phát triển.
 >
 > **Ảnh:** Bên phải: Cử tri bỏ phiếu trong Tổng tuyển cử 6/1/1946.
 
@@ -156,7 +156,7 @@ Quyền này có hai nhánh như sơ đồ. Một là quyền tách ra để th�
 
 ![Màn 11: Cương lĩnh dân tộc: liên hiệp công nhân](kich-ban/man-11.jpg)
 
-> **Trên slide:** Dòng dẫn: Nội dung thứ ba của Cương lĩnh dân tộc. Tiêu đề: 03 LIÊN HIỆP. Liên hiệp công nhân tất cả các dân tộc. Nhấn mạnh sự đoàn kết và liên hiệp giữa công nhân thuộc các dân tộc khác nhau. Sơ đồ: Công nhân dân tộc A, B, C cùng gom về ô LIÊN HIỆP.
+> **Trên slide:** Dòng dẫn: Nội dung thứ ba của Cương lĩnh dân tộc. Tiêu đề: 03 LIÊN HIỆP. Liên hiệp công nhân tất cả các dân tộc. Sơ đồ: Công nhân dân tộc A, B, C cùng gom về ô LIÊN HIỆP.
 >
 > **Ảnh:** Bên phải: Tuần hành Ngày Quốc tế Lao động ở Cuba, 2019.
 

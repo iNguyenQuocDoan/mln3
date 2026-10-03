@@ -44,15 +44,6 @@ function SidePhoto({ photo }: { photo: DeckPhoto }) {
   );
 }
 
-/** Câu ý chính, cỡ tiêu đề phụ. */
-function Statement({ children }: { children: string }) {
-  return (
-    <p className="max-w-380 text-sub font-semibold text-pretty">
-      {keepWords(children)}
-    </p>
-  );
-}
-
 /* ---------- Nội dung thứ nhất: bình đẳng ---------- */
 
 const PEOPLES = ["Dân tộc A", "Dân tộc B", "Dân tộc C"];
@@ -67,17 +58,10 @@ export function EqualitySlide() {
       className="grid grid-cols-[1fr_680px] gap-16"
     >
       <div className="flex flex-col">
-        <div className="anim-rise" style={stagger(0)}>
-          <Statement>
-            Không có dân tộc nào được đặt ở vị trí cao hơn hoặc thấp hơn dân tộc
-            khác.
-          </Statement>
-        </div>
-
         {/* Ba ô bằng nhau đứng trên cùng một đường nền. */}
         <div
           className="anim-rise flex flex-1 flex-col items-center justify-center"
-          style={stagger(1)}
+          style={stagger(0)}
           role="img"
           aria-label="Dân tộc A bằng dân tộc B bằng dân tộc C"
         >
@@ -106,8 +90,8 @@ export function EqualitySlide() {
 /* ---------- Nội dung thứ hai: quyền tự quyết ---------- */
 
 /*
- * Một màn hình: định nghĩa (hai ý được tô son), sơ đồ hai nhánh của quyền
- * tự quyết, và điều cần nhớ: tự quyết không chỉ có tách ra.
+ * Một màn hình: sơ đồ hai nhánh của quyền tự quyết, và điều cần nhớ: tự
+ * quyết không chỉ có tách ra.
  */
 export function SelfDeterminationSlide() {
   const item = PROGRAM[1];
@@ -119,24 +103,9 @@ export function SelfDeterminationSlide() {
       className="grid grid-cols-[1fr_560px] gap-12"
     >
       <div className="flex flex-col">
-        <p
-          className="anim-rise text-lead leading-[1.3] font-semibold text-pretty"
-          style={stagger(0)}
-        >
-          {keepWords("Quyền tự quyết là quyền một dân tộc ")}
-          <span className="text-son">
-            {keepWords("tự quyết định vận mệnh")}
-          </span>
-          {keepWords(" của mình và ")}
-          <span className="text-son">
-            {keepWords("lựa chọn con đường phát triển")}
-          </span>
-          {keepWords(" của mình.")}
-        </p>
-
         <div
-          className="anim-rise mt-6 flex w-full flex-col items-center"
-          style={stagger(1)}
+          className="anim-rise flex w-full flex-1 flex-col items-center justify-center"
+          style={stagger(0)}
         >
           <FlowBox
             tone="solid"
@@ -158,22 +127,14 @@ export function SelfDeterminationSlide() {
             />
           </svg>
           <div className="grid w-full grid-cols-2 gap-x-10">
-            <Branch
-              tone="accent"
-              label="TÁCH RA ĐỘC LẬP"
-              text="Có quyền tách ra để thành lập quốc gia dân tộc độc lập."
-            />
-            <Branch
-              tone="strong"
-              label="TỰ NGUYỆN LIÊN HIỆP"
-              text="Có quyền tự nguyện liên hiệp với dân tộc khác trên cơ sở bình đẳng."
-            />
+            <Branch tone="accent" label="TÁCH RA ĐỘC LẬP" />
+            <Branch tone="strong" label="TỰ NGUYỆN LIÊN HIỆP" />
           </div>
         </div>
 
         <div
-          className="anim-rise mt-auto flex flex-col border-l-8 border-son bg-cham-tint px-6 py-3"
-          style={stagger(2)}
+          className="anim-rise flex flex-col border-l-8 border-son bg-cham-tint px-6 py-3"
+          style={stagger(1)}
         >
           <p className="text-lead font-extrabold">
             {keepWords("Tự quyết")}{" "}
@@ -196,27 +157,20 @@ export function SelfDeterminationSlide() {
 function Branch({
   tone,
   label,
-  text,
 }: {
   tone: "accent" | "strong";
   label: string;
-  text: string;
 }) {
   return (
-    <div className="flex flex-col items-center">
-      <FlowBox
-        tone={tone}
-        border="border-4"
-        weight="font-bold"
-        padding="px-4 py-4"
-        className="w-full text-lead"
-      >
-        {keepWords(label)}
-      </FlowBox>
-      <p className="mt-4 text-center text-body leading-[1.4] text-pretty">
-        {keepWords(text)}
-      </p>
-    </div>
+    <FlowBox
+      tone={tone}
+      border="border-4"
+      weight="font-bold"
+      padding="px-4 py-4"
+      className="w-full text-lead"
+    >
+      {keepWords(label)}
+    </FlowBox>
   );
 }
 
@@ -232,16 +186,9 @@ export function WorkersUnionSlide() {
       className="grid grid-cols-[1fr_640px] gap-16"
     >
       <div className="flex flex-col">
-        <div className="anim-rise" style={stagger(0)}>
-          <Statement>
-            Nhấn mạnh sự đoàn kết và liên hiệp giữa công nhân thuộc các dân tộc
-            khác nhau.
-          </Statement>
-        </div>
-
         <div
           className="anim-rise flex flex-1 items-center justify-center"
-          style={stagger(1)}
+          style={stagger(0)}
         >
           <div className="flex w-full flex-col">
             <SumRow

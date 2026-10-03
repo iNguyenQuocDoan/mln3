@@ -10,7 +10,7 @@ import { SlideFrame } from "./frame";
 /* ---------- 03. Hai xu hướng khách quan ---------- */
 
 /*
- * Hai cột đối xứng: ảnh minh họa, từ khóa, một câu giải thích, sơ đồ ngang.
+ * Hai cột đối xứng: ảnh minh họa, từ khóa, sơ đồ ngang.
  * Màu son cho "tách ra" (nhân dân Ba Đình nghe Tuyên ngôn Độc lập), màu
  * chàm cho "liên hiệp" (lễ thượng cờ ASEAN); mũi tên hai chiều ở giữa nhắc
  * rằng hai xu hướng cùng tồn tại.
@@ -27,7 +27,6 @@ export function TrendsSlide() {
         label="Xu hướng thứ nhất"
         word="TÁCH RA"
         wordClassName="text-son"
-        text="Cộng đồng dân cư muốn hình thành cộng đồng dân tộc độc lập."
         photo={PHOTOS.independence}
         flow={
           <div className="flex items-stretch">
@@ -65,7 +64,6 @@ export function TrendsSlide() {
         order={1}
         label="Xu hướng thứ hai"
         word="LIÊN HIỆP"
-        text="Các dân tộc có nhu cầu liên hệ và liên hiệp với nhau."
         photo={PHOTOS.aseanFlag}
         flow={
           // Từ khóa "LIÊN HIỆP" ngay trên đã là kết quả, nên sơ đồ chỉ còn
@@ -91,7 +89,6 @@ function Trend({
   label,
   word,
   wordClassName = "",
-  text,
   photo,
   flow,
 }: {
@@ -99,7 +96,6 @@ function Trend({
   label: string;
   word: string;
   wordClassName?: string;
-  text: string;
   photo: DeckPhoto;
   flow: ReactNode;
 }) {
@@ -117,9 +113,6 @@ function Trend({
         </h3>
         <p className="text-label font-semibold text-cham-soft">{label}</p>
       </div>
-      <p className="mt-3 text-body leading-[1.4] font-semibold text-pretty">
-        {keepWords(text)}
-      </p>
       <div className="mt-5">{flow}</div>
     </section>
   );
